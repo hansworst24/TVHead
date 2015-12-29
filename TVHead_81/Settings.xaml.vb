@@ -180,39 +180,7 @@ Partial Public Class AppSettings
         End Set
     End Property
 
-    'Public ReadOnly Property supportedVersions As List(Of String)
-    '    Get
-    '        Dim i As New List(Of String)
-    '        i.Add("3.4")
-    '        i.Add("3.9")
-    '        i.Add("4.x")
-    '        Return i
-    '    End Get
-    'End Property
-
-    'Public Property ChannelsPerScreen As Integer
-    '    'DEFINES HOW MANY HOURS OF EPG DATA TO SHOW ON 1 PAGE (screen width long)
-    '    Get
-    '        Return GetValueOrDefault(Of Integer)(intChannelsPerEPGGridViewKeyName, intChannelsPerEPGGridViewDefault)
-    '    End Get
-    '    Set(value As Integer)
-    '        If AddOrUpdateValue(intChannelsPerEPGGridViewKeyName, value) Then
-    '            Save()
-    '        End If
-    '    End Set
-    'End Property
-
-    'Public Property HoursPerScreen As Integer
-    '    'DEFINES HOW MANY HOURS OF EPG DATA TO SHOW ON 1 PAGE (screen width long)
-    '    Get
-    '        Return GetValueOrDefault(Of Integer)(intEPGHoursPerPageKeyName, intEPGHoursPerPageDefault)
-    '    End Get
-    '    Set(value As Integer)
-    '        If AddOrUpdateValue(intEPGHoursPerPageKeyName, value) Then
-    '            Save()
-    '        End If
-    '    End Set
-    'End Property
+  
 
     Public Property ConfirmDeletion As Boolean
         'DEFINES HOW MANY EPG ITEMS PER CHANNEL SHOULD BE DOWNLOADED
