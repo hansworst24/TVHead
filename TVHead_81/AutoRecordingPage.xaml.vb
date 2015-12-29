@@ -1,8 +1,4 @@
 ﻿Imports TVHead_81.Common
-Imports TVHead_81.ViewModels
-
-
-' The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
 Public NotInheritable Class AutoRecordingPage
     Inherits Page
@@ -11,12 +7,8 @@ Public NotInheritable Class AutoRecordingPage
     Private WithEvents _navigationHelper As New NavigationHelper(Me)
     Private ReadOnly _defaultViewModel As New ObservableDictionary
 
-    'Public backupAutoRecording As AutoRecordingViewModel
-    'Public originalAutoRecording As AutoRecordingViewModel
-
     Public Sub New()
         InitializeComponent()
-        Dim app As App = CType(Application.Current, App)
         lstDVRConfig.ItemsSource = app.DefaultViewModel.DVRConfigs.items
         lstChannelTag.ItemsSource = app.DefaultViewModel.ChannelTags.items
         lstGenre.ItemsSource = app.DefaultViewModel.Genres.items
@@ -87,7 +79,7 @@ Public NotInheritable Class AutoRecordingPage
     ''' <param name="e">Event data that describes how this page was reached.</param>
     Protected Overrides Sub OnNavigatedTo(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedTo(e)
-        Me.DataContext = App.DefaultViewModel
+        Me.DataContext = app.DefaultViewModel
     End Sub
 
     Protected Overrides Sub OnNavigatedFrom(e As NavigationEventArgs)
@@ -122,9 +114,5 @@ Public NotInheritable Class AutoRecordingPage
         If frame.CanGoBack Then frame.GoBack()
         e.Handled = True
     End Sub
-
-
-
-
 
 End Class

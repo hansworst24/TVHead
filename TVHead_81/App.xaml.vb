@@ -11,23 +11,7 @@ Public NotInheritable Class App
     Inherits Application
 
     Private _transitions As TransitionCollection
-
-
     Public settings As New AppSettings
-
-
-    'Public validTVHConnection As Boolean
-    'Public TVHIPAddress As String
-    'Public TVHPort As String
-    'Public TVHVersion As String
-    'Public TVHVersionLong As String
-    'Public ChannelList As ObservableCollection(Of ChannelViewModel)
-    'Public ChannelDetailList As ObservableCollection(Of ChannelViewModel)
-
-    'Public favouriteChannelTag As ChannelTagViewModel
-    'Public selectedChannelTag As ChannelTagViewModel
-    'Public ChannelTagsList As List(Of ChannelTagViewModel)
-
     Public DefaultViewModel As New TVHead_ViewModel
 
 
@@ -39,9 +23,16 @@ Public NotInheritable Class App
         InitializeComponent()
         AddHandler Application.Current.Resuming, AddressOf App_Resuming
     End Sub
-
+    ''' <summary>
+    ''' Reloads or loads the data of the app when the app is resuming
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
     Private Async Sub App_Resuming(sender As Object, e As Object)
         WriteToDebug("App.App_Resuming()", "launched")
+
+        'Check and set access flags to TVH server
+        Await Me.DefaultViewModel.checkAccess()
 
         If Me.DefaultViewModel.hasEPGAccess Then
             If Not Me.DefaultViewModel.SelectedChannel Is Nothing Then Await Me.DefaultViewModel.SelectedChannel.RefreshEPG(True)
@@ -92,25 +83,20 @@ Public NotInheritable Class App
             rootFrame.CacheSize = 1
 
             ' Set the default language
-            'Dim a = Windows.Globalization.ApplicationLanguages.Languages
-
             rootFrame.Language = Windows.Globalization.ApplicationLanguages.Languages(0)
-            'If settings.PreferredLanguage <> "" Then
-            '    rootFrame.Language = Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = settings.PreferredLanguage
-            'End If
-            '            App.DefaultViewModel.supportedLanguages.languages.Insert(0, New Language With {.code = myRegion.CodeTwoLetter, .val = App.DefaultViewModel.loader.GetString("usePhoneLanguage")})
-            If e.PreviousExecutionState = ApplicationExecutionState.Terminated Then
-                    ' TODO: Load state from previously suspended application
-                    Try
-                        Await SuspensionManager.RestoreAsync()
-                    Catch ex As SuspensionManagerException
-                        ' Something went wrong restoring state.
-                        ' Assume there is no state and continue.
-                    End Try
-                End If
 
-                ' Place the frame in the current Window
-                Window.Current.Content = rootFrame
+            If e.PreviousExecutionState = ApplicationExecutionState.Terminated Then
+                ' TODO: Load state from previously suspended application
+                Try
+                    Await SuspensionManager.RestoreAsync()
+                Catch ex As SuspensionManagerException
+                    ' Something went wrong restoring state.
+                    ' Assume there is no state and continue.
+                End Try
+            End If
+
+            ' Place the frame in the current Window
+            Window.Current.Content = rootFrame
             End If
 
             If rootFrame.Content Is Nothing Then
@@ -132,11 +118,7 @@ Public NotInheritable Class App
                 Throw New Exception("Failed to create initial page")
             End If
         End If
-        'Me.DefaultViewModel.CatchCometsBoxID = Await GetBoxID()
-        'Me.DefaultViewModel.doCatchComents = True
-
         ' Ensure the current window is active
-
         Window.Current.Activate()
 
     End Sub
