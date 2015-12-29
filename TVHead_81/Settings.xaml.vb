@@ -33,10 +33,6 @@ Partial Public Class AppSettings
     Const blHideNamelessServicesKeyName As String = "blHideNamelessServices"
     Const blEasyOnBandwidthKeyName As String = "blEasyOnBandwidth"
 
-    'Private hoursPerEPGTimeLine As New List(Of Integer)
-    'Private hoursPerEPGScreen As New List(Of Integer)
-    'Private channelsPerEPGScreen As New List(Of Integer)
-
     Const strLanguageDefault = ""
     Const strProposeAutoRecordingDefault As Boolean = True
     Const intMaxEPGItemsPerChannelDefault As Integer = 500
