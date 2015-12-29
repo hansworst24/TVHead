@@ -1,0 +1,173 @@
+﻿<UserControl x:Class="TVHead_81.ucService"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:Media="using:Microsoft.Xaml.Interactions.Media"
+    mc:Ignorable="d"
+    xmlns:local="using:TVHead_81" 
+   >
+
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="cvsServiceDetails" Source="{Binding servicedetails}"/>
+
+            <Storyboard x:Name="DetailsBounceIn">
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="brBody">
+                    <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="Visible"/>
+                </ObjectAnimationUsingKeyFrames>
+                <DoubleAnimation From="0" To="1"  Duration="00:00:1" 
+                    Storyboard.TargetName="brBody" 
+                    Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)">
+                    <DoubleAnimation.EasingFunction>
+                        <BounceEase Bounces="2" EasingMode="EaseOut" 
+                            Bounciness="2" />
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+                <ColorAnimation From="Transparent" To="{Binding Color, Source={StaticResource PhoneAccentBrush}}" Duration="0:0:0.5"
+                    Storyboard.TargetName="BackgroundDrop" Storyboard.TargetProperty="(UIElement.Background).(SolidColorBrush.Color)"/>
+                </Storyboard>
+            <Storyboard x:Name="DetailsBounceOut">
+                <DoubleAnimation From="1" To="0" Duration="00:00:1" 
+                    Storyboard.TargetName="brBody" 
+                    Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)">
+                    <DoubleAnimation.EasingFunction>
+                        <BounceEase Bounces="2" EasingMode="EaseOut" 
+                            Bounciness="2" />
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="brBody">
+                <DiscreteObjectKeyFrame KeyTime="0:0:1" Value="Collapsed"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ColorAnimation From="{Binding Color, Source={StaticResource PhoneAccentBrush}}" To="Transparent" Duration="0:0:0.5"
+                Storyboard.TargetName="BackgroundDrop" Storyboard.TargetProperty="(UIElement.Background).(SolidColorBrush.Color)"/>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <Grid x:Name="MainGrid" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Button x:Name="btnExpand" Command="{Binding ExpandCollapseCommand}" 
+                Grid.Row="0" Grid.Column="0" Style="{StaticResource myTransparentButtonStyle}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <Button.Content>
+                    <Border HorizontalAlignment="Stretch">
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image x:Name="Chip" Grid.Column="0"  Source="/Images/service.png" Height="30"/>
+                        <Border x:Name="BackgroundDrop" Grid.Row="0" Grid.Column="1" Background="Transparent"/>
+                        <TextBlock TextWrapping="NoWrap" HorizontalAlignment="Left" Grid.Column="1" 
+							TextTrimming="WordEllipsis" Text="{Binding svcname}" FontSize="{StaticResource TextStyleLargeFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
+                    </Grid>
+                    </Border>
+                </Button.Content>
+            </Button>
+        <Border x:Name="brBody" Background="Transparent" Visibility="Collapsed" Margin="0" BorderThickness="0" Grid.Row="1" Grid.Column="0" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Multiplex :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="SID :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="LCN :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="Enabled :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="Created :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="Last Seen :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="Network :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="Streams :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+
+                <TextBlock Grid.Row="0" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding multiplex}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="1" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding sid}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="2" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding lcn}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="3" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding enabled}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="4" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding created}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="5" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding last_seen}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="6" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding network}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
+                
+                <Grid x:Name="grDetails" Grid.Row="8" Grid.Column="1" HorizontalAlignment="Stretch" 
+                      Grid.ColumnSpan="3" Margin="0,10,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="#"  FontSize="{StaticResource TextStyleMediumFontSize}"/>
+                    <TextBlock Grid.Column="1" Text="Pid"  FontSize="{StaticResource TextStyleMediumFontSize}"/>
+                    <TextBlock Grid.Column="2" Text="Type"  FontSize="{StaticResource TextStyleMediumFontSize}"/>
+                    <TextBlock Grid.Column="3" Text="Language"  FontSize="{StaticResource TextStyleMediumFontSize}"/>
+                    <ProgressBar Grid.Row="1" Grid.Column="0" Height="5" Grid.ColumnSpan="4"  IsIndeterminate="{Binding IsLoadingSteams}" Background="Transparent" VerticalAlignment="Bottom"/>
+                    <ListView ItemsSource="{Binding Source={StaticResource cvsServiceDetails}}"
+                        ContinuumNavigationTransitionInfo.ExitElementContainer="True" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0" />
+                                <Setter Property="Height" Value="25"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding index}"  Margin="0,0,0,0" FontSize="{StaticResource TextStyleMediumFontSize}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding pid}"  Margin="0,0,0,0" FontSize="{StaticResource TextStyleMediumFontSize}" />
+                                    <TextBlock Grid.Column="2" Text="{Binding type}"  Margin="0,0,0,0" FontSize="{StaticResource TextStyleMediumFontSize}" />
+                                    <TextBlock Grid.Column="3" Text="{Binding details}"  Margin="0,0,0,0" FontSize="{StaticResource TextStyleMediumFontSize}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </Grid>
+            <Border.RenderTransform>
+                <ScaleTransform ScaleY="0"/>
+            </Border.RenderTransform>
+        </Border>
+        <Interactivity:Interaction.Behaviors>
+            <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Expanded">
+                <Media:ControlStoryboardAction Storyboard="{StaticResource DetailsBounceIn}" />
+            </Core:DataTriggerBehavior>
+            <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Collapsed">
+                <Media:ControlStoryboardAction Storyboard="{StaticResource DetailsBounceOut}" />
+            </Core:DataTriggerBehavior>
+        </Interactivity:Interaction.Behaviors>
+    </Grid>
+</UserControl>
+    

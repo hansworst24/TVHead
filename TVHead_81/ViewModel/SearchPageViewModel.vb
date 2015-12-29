@@ -1,0 +1,140 @@
+﻿Imports System.Threading
+Imports GalaSoft.MvvmLight
+Imports TVHead_81.Common
+Imports TVHead_81.ViewModels
+
+Public Class SearchPageViewModel
+    Inherits ViewModelBase
+
+    Public timer As New DispatcherTimer
+
+
+
+    Private Property _UseFullTextSearch As Boolean
+    Public Property UseFullTextSearch As Boolean
+        Get
+            Return _UseFullTextSearch
+        End Get
+        Set(value As Boolean)
+            _UseFullTextSearch = value
+            RaisePropertyChanged("UseFullTextSearch")
+        End Set
+    End Property
+
+    Private Property _SearchValue As String
+    Public Property SearchValue As String
+        Get
+            Return _SearchValue
+        End Get
+        Set(value As String)
+            _SearchValue = value
+            RaisePropertyChanged("SearchValue")
+        End Set
+    End Property
+
+    Public Property SearchResults As New ObservableCollection(Of ChannelViewModel)
+
+    Private Property _GroupedSearchResults As ObservableCollection(Of Group(Of ChannelViewModel))
+    Public Property GroupedSearchResults As ObservableCollection(Of Group(Of ChannelViewModel))
+        Get
+            Return _GroupedSearchResults
+        End Get
+        Set(value As ObservableCollection(Of Group(Of ChannelViewModel)))
+            _GroupedSearchResults = value
+            RaisePropertyChanged("GroupedSearchResults")
+        End Set
+    End Property
+
+    Private Property _SearchIsActive As String
+    Public Property SearchIsActive As String
+        Get
+            Return _SearchIsActive
+        End Get
+        Set(value As String)
+            _SearchIsActive = value
+            RaisePropertyChanged("SearchIsActive")
+        End Set
+    End Property
+
+    Private Property _SearchProgressPercentage As Double
+    Public Property SearchProgressPercentage As Double
+        Get
+            Return _SearchProgressPercentage
+        End Get
+        Set(value As Double)
+            _SearchProgressPercentage = value
+            RaisePropertyChanged("SearchProgressPercentage")
+        End Set
+    End Property
+
+    Public Property SearchTextChangedCommand As RelayCommand
+        Get
+            Return New RelayCommand(Async Sub()
+                                        WriteToDebug("SearchPageViewModel.SearchTextChangedCommand", "start")
+                                        Await Task.Delay(100)
+                                        If Not SearchValue = "" And SearchValue.Length >= 3 Then
+                                            WriteToDebug("SearchPageViewModel.SearchTextChangedCommand", String.Format("SearchKeyUpCommand Executed : Text = {0}", SearchValue))
+                                            Me.SearchIsActive = "True"
+                                            Await StartSearch(SearchValue)
+                                            Me.SearchIsActive = "False"
+                                            'timer.Stop()
+                                            'timer.Start()
+
+                                            WriteToDebug("SearchPageViewModel.SearchTextChangedCommand", "stop")
+                                        End If
+                                    End Sub)
+
+        End Get
+        Set(value As RelayCommand)
+        End Set
+    End Property
+
+    Public Property SearchButtonCommand As RelayCommand
+        Get
+            Return New RelayCommand(Async Sub()
+                                        WriteToDebug("SearchPageViewModel.SearchButtonCommand", "start")
+                                        If Not SearchValue = "" And SearchValue.Length >= 3 Then
+                                            WriteToDebug("SearchPageViewModel.SearchTextChangedCommand", String.Format("SearchKeyUpCommand Executed : Text = {0}", SearchValue))
+                                            SearchIsActive = True
+                                            Await StartSearch(SearchValue)
+                                            SearchIsActive = False
+                                            WriteToDebug("SearchPageViewModel.SearchTextChangedCommand", "stop")
+                                        End If
+                                    End Sub)
+
+        End Get
+        Set(value As RelayCommand)
+        End Set
+    End Property
+
+
+
+    Public Async Function StartSearch(searchvalue As String) As Task
+        WriteToDebug("SearchPageViewModel.StartSearch", "start")
+        'Me.SearchIsActive = "True"
+        Dim i As IEnumerable(Of ChannelViewModel)
+        i = Await SearchEPGEntry(searchvalue, UseFullTextSearch)
+        For Each result In i
+            result.loadEPGButtonEnabled = False
+        Next
+        GroupedSearchResults = (From e In i Group By Day = e.currentEPGItem.startDate.ToString(System.Globalization.DateTimeFormatInfo.CurrentInfo.LongDatePattern) Into Group
+                                Select New Group(Of ChannelViewModel)(Day, Group)).ToObservableCollection()
+        'Me.SearchIsActive = "False"
+        WriteToDebug("SearchPageViewModel.StartSearch", "stop")
+        'timer.Stop()
+    End Function
+
+    'Private Async Function ExecuteSearch(value As String) As Task(Of IEnumerable(Of ChannelViewModel))
+    '    WriteToDebug("SearchPageViewModel.ExecuteSearch", "start")
+    '    WriteToDebug("SearchPageViewModel.ExecuteSearch", String.Format("Search EPG Entries ofr keyword : {0}", value))
+    '    Return Await SearchEPGEntry(value, UseFullTextSearch)
+    '    WriteToDebug("SearchPageViewModel.ExecuteSearch", "stop")
+    'End Function
+
+
+    Public Sub New()
+        '    timer.Interval = New TimeSpan(0, 0, 0, 0, 500)
+        '    AddHandler timer.Tick, AddressOf StartSearch
+        '    SearchValue = ""
+    End Sub
+End Class

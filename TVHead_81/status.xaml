@@ -1,0 +1,214 @@
+﻿<Page
+    x:Class="TVHead_81.StatusPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TVHead_81"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:TVHead_81.ViewModels"
+    xmlns:cmd="using:GalaSoft.MvvmLight.Command"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core" 
+    NavigationCacheMode="Required"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <vm:StatusUpdateViewModel x:Key="MyTopHeader" x:Name="MyTopHeader" UpdateText="TVHeadend Server Comes Here"  IsBusy="True"/>
+        <CollectionViewSource x:Key="cvsLogMessages" Source="{Binding logmessages.entries}"/>
+        <CollectionViewSource x:Key="cvsAdapters" Source="{Binding Streams.items}"/>
+        <CollectionViewSource x:Key="cvsSubscriptions" Source="{Binding Subscriptions.items}"/>
+        <CollectionViewSource x:Key="cvsServices" Source="{Binding Services.items, Mode=TwoWay}"/>
+        <CollectionViewSource x:Key="cvsMuxes" Source="{Binding Muxes.items, Mode=TwoWay}"/>
+        <local:BoolToVisibilityConverter x:Key="myBoolVisConvertor"/>
+    </Page.Resources>
+
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                <NavigationThemeTransition.DefaultNavigationTransitionInfo>
+                    <ContinuumNavigationTransitionInfo/>
+                </NavigationThemeTransition.DefaultNavigationTransitionInfo>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Margin="20,0,0,0" VerticalAlignment="Top" Canvas.ZIndex="100">
+        		<local:ucTopHeader Canvas.ZIndex="100" VerticalAlignment="Bottom" DataContext="{Binding}"/>
+        </Border>
+        <Border Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,0" VerticalAlignment="Top" Canvas.ZIndex="100">
+            <local:ucToastList Canvas.ZIndex="100" VerticalAlignment="Bottom" DataContext="{Binding ToastMessages}"/>
+        </Border>
+        <!--<TextBlock x:Uid="txtLongPollingDisabled" Grid.Row="1" VerticalAlignment="Center" 
+                   Text="Long polling is not enabled. Enable long polling to receive information about streams, log etc." 
+                   Visibility="{Binding LongPollingVisibility}" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}" 
+                               FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>-->
+
+        <Pivot Grid.Row="1" x:Uid="Pivot" Margin="0,-10,0,0" SelectedIndex="{Binding StatusPivotSelectedIndex, Mode=TwoWay}">
+            <Pivot.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" Height="50"  FontSize="{ThemeResource TextStyleExtraExtraLargeFontSize}" 
+                               FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>
+                </DataTemplate>
+            </Pivot.HeaderTemplate>
+            <PivotItem x:Uid="pviStatusGeneral" Header="General" Margin="10,0,10,0" >
+                <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Row="1" Margin="10,0,0,0">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock x:Uid="streams" Text="Streams" Height="50" FontSize="{ThemeResource TextStyleExtraLargeFontSize}" 
+                               FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>
+
+                        <ListView ItemsSource="{Binding Source={StaticResource cvsAdapters}}" Margin="10,0,0,0"
+                        ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,0,0,5" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <local:ucStream />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <TextBlock x:Uid="subscriptions" Text="Subscriptions" Height="50" FontSize="{ThemeResource TextStyleExtraLargeFontSize}" 
+                               FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>
+                        <ListView ItemsSource="{Binding Source={StaticResource cvsSubscriptions}}"  Margin="10,0,0,0"
+                        ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,0,0,5" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <local:ucSubscription />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <TextBlock x:Uid="diskspace" Text="Disk Space" Height="50" FontSize="{ThemeResource TextStyleExtraLargeFontSize}" 
+                               FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>
+                        <!--<Image Source="/Images/diskspace.png" Height="40"/>-->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Rectangle x:Name="TotalDiskSpace" Grid.Row="0" Margin="10,0,10,0" HorizontalAlignment="Stretch" Height="20" Fill="{ThemeResource PhoneAccentBrush}" Opacity="0.3"/>
+                            <Rectangle x:Name="FreeDiskSpace" Grid.Row="0" HorizontalAlignment="Stretch" Margin="10,0,10,0" Height="20" Fill="{ThemeResource PhoneAccentBrush}" Opacity="0.3">
+                                <Rectangle.RenderTransform>
+                                    <ScaleTransform x:Name="FreeDiskSpaceScale" CenterX="1" CenterY="0"  ScaleX="{Binding DiskSpaceStats.FreeDiskspacePercentage}" />
+                                    <!--{Binding DiskSpaceStats.FreeDiskspacePercentage}-->
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+                            <Rectangle Grid.Row="0" x:Name="UsedDiskSpace" Margin="10,0,10,0" Height="20" Fill="{ThemeResource PhoneAccentBrush}" Opacity="0.3">
+                                <Rectangle.RenderTransform>
+                                    <ScaleTransform x:Name="UsedDiskSpaceScale" CenterX="0" CenterY="0"  ScaleX="{Binding DiskSpaceStats.UsedDiskspacePercentage}" />
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+                            <TextBlock Grid.Row="1" Margin="10,5,10,0" Text="{Binding DiskSpaceStats.UsedDiskspaceString}" FontSize="{ThemeResource TextStyleMediumFontSize}" Opacity="0.9" Foreground="{ThemeResource PhoneAccentBrush}" HorizontalAlignment="Left"/>
+                            <TextBlock Grid.Row="1" Margin="10,5,10,0" Text="{Binding DiskSpaceStats.TotalDiskspaceString}" FontSize="{ThemeResource TextStyleMediumFontSize}" Opacity="0.6" Foreground="{ThemeResource PhoneAccentBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Margin="10,5,10,0" Text="{Binding DiskSpaceStats.FreeDiskspaceString}" FontSize="{ThemeResource TextStyleMediumFontSize}" Opacity="0.3"  Foreground="{ThemeResource PhoneAccentBrush}" HorizontalAlignment="Right"/>
+                            <!--<TextBlock Grid.Row="1" Margin="10,0,10,0" Text="85 GB" FontSize="{ThemeResource TextStyleLargeFontSize}"  HorizontalAlignment="Right"/>-->
+                            <ProgressBar Grid.Row="2" Background="Transparent" IsIndeterminate="{Binding DiskSpaceStats.WaitingForUpdate, Mode=TwoWay}"/>
+                        </Grid>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </PivotItem>
+            <PivotItem x:Uid="pviStatusLog" Header="Log"  Margin="10,0,10,0" >
+                <ListView ItemsSource="{Binding Source={StaticResource cvsLogMessages}}" Margin="10,0,0,0"
+                        ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Height" Value="15"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" TextWrapping="NoWrap"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </PivotItem>
+        </Pivot>
+        
+        <!--<Pivot Grid.Row="1" x:Uid="Pivot" Margin="0,-10,0,0" SelectedIndex="{Binding StatusPivotSelectedIndex, Mode=TwoWay}">
+            <Pivot.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" Height="50" FontSize="{ThemeResource TextStyleExtraExtraLargeFontSize}" 
+                               FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>
+                </DataTemplate>
+            </Pivot.HeaderTemplate>
+            <PivotItem x:Uid="pviStatusPageAdapter" Header="Streams" Margin="10,0,10,0" >
+                
+            </PivotItem>
+            <PivotItem x:Uid="pviStatusPageSubscriptions" Header="Subscriptions"  Margin="10,0,10,0" >
+                
+            </PivotItem>
+            <PivotItem x:Uid="pviStatusPageServices" Header="Services"  Margin="10,0,10,0" >
+                <ListView ItemsSource="{Binding Source={StaticResource cvsServices}}"
+                        ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <local:ucService />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </PivotItem>
+            <PivotItem x:Uid="pviStatusPageMuxes" Header="Muxes"  Margin="10,0,10,0" >
+                <ListView ItemsSource="{Binding Source={StaticResource cvsMuxes}}"
+                        ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0,0,0,5" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <local:ucMux />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </PivotItem>
+        </Pivot>-->
+    </Grid>
+    <Page.BottomAppBar>
+        <CommandBar Visibility="{Binding AppBar.CommandBarVisibility}">
+            <AppBarButton x:Uid="abbRefresh" Label="Refresh" IsEnabled="{Binding AppBar.ButtonEnabled.refreshButton, Mode=TwoWay}" Visibility="{Binding AppBar.ButtonVisibility.refreshButton}" Command="{Binding RefreshStatusCommand}">
+                <AppBarButton.Icon>
+                    <BitmapIcon UriSource="ms-appx:///Images/refresh.png"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </CommandBar>
+    </Page.BottomAppBar>
+</Page>

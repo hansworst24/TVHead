@@ -1,0 +1,289 @@
+﻿<UserControl x:Class="TVHead_81.ucRecording"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"  
+    xmlns:Media="using:Microsoft.Xaml.Interactions.Media"
+    mc:Ignorable="d"
+    xmlns:local="using:TVHead_81" 
+    FontFamily="{StaticResource PhoneFontFamilyLight}"
+    Foreground="{StaticResource PhoneForegroundBrush}">
+    <UserControl.Resources>
+        <!--<local:DateToTimeConverter x:Key="myDateTimeConvertor"/>-->
+        <Storyboard x:Name="RecordingOn" RepeatBehavior="Forever">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingErrorIcon">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="0"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingScheduledIcon">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="0"/>
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingIcon">
+                <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:2" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="RecordingOff">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingIcon">
+                <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingScheduledIcon">
+                <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingErrorIcon">
+                <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="RecordingError">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingIcon">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="0"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingScheduledIcon">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="0"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingErrorIcon">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="1"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="RecordingScheduled">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingIcon">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="0"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingErrorIcon">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="0"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingScheduledIcon">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="1"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+    </UserControl.Resources>
+
+	<Grid x:Name="mainGrid" Margin="0,5,5,5" RenderTransformOrigin="0.5, 0.5">
+        <VisualStateManager.VisualStateGroups>
+           
+
+            <VisualStateGroup x:Name="VisualStateGroup">
+                <VisualStateGroup.Transitions>
+                    <VisualTransition GeneratedDuration="0:0:0.5" To="Collapsed">
+                        <Storyboard>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="grRecordingDetails">
+                                <DiscreteObjectKeyFrame KeyTime="0:0:0.3">
+                                    <DiscreteObjectKeyFrame.Value>
+                                        <Visibility>Collapsed</Visibility>
+                                    </DiscreteObjectKeyFrame.Value>
+                                </DiscreteObjectKeyFrame>
+                            </ObjectAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="grRecordingDetails">
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.0" Value="1"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="HeaderBackdrop">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
+                            </DoubleAnimationUsingKeyFrames>
+
+                        </Storyboard>
+                    </VisualTransition>
+                        <VisualTransition GeneratedDuration="0:0:0.3" To="Expanded">
+                        <Storyboard>
+                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="grRecordingDetails">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                            </ObjectAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="grRecordingDetails">
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="HeaderBackdrop">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0.5"/>
+                            </DoubleAnimationUsingKeyFrames>
+
+                        </Storyboard>
+                    </VisualTransition>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="Expanded">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="grRecordingDetails">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="HeaderBackdrop">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="0.5"/>
+                        </ObjectAnimationUsingKeyFrames>
+
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Collapsed">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="grRecordingDetails">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="HeaderBackdrop">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
+                        </ObjectAnimationUsingKeyFrames>
+
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Grid.RowDefinitions>
+			<RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+        <Rectangle x:Name="HeaderBackdrop" Fill="{ThemeResource PhoneBackgroundBrush}" Grid.Column="0" 
+                   Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Opacity="0"/>
+
+        <Grid Grid.Column="0" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnSelectRecording" Style="{StaticResource myTransparentButtonStyle}"
+                    Visibility="Collapsed" Background="Transparent" 
+                    BorderBrush="Transparent" Width="30" 
+                    HorizontalAlignment="Center"
+                    Grid.Column="0" Canvas.ZIndex="100"/>
+            <Image x:Name="rowChannelIcon" Margin="0" Grid.Column="0" Canvas.ZIndex="99"
+                    VerticalAlignment="Center" Width="60" Height="60">
+                <Image.Source>
+                    <BitmapImage UriSource="{Binding chicon}"/>
+                </Image.Source>
+            </Image>
+            <Image x:Name="RecordingIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small.png" 
+                    Height="20" Canvas.ZIndex="100" VerticalAlignment="Top" HorizontalAlignment="Right" 
+                    Opacity="0"/>
+            <Image x:Name="RecordingErrorIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small_error.png" 
+				Height="20" Canvas.ZIndex="100" VerticalAlignment="Top" HorizontalAlignment="Right" Opacity="0"
+				Visibility="Visible"/>
+            <Image x:Name="RecordingScheduledIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small_scheduled.png" 
+				Height="20" Canvas.ZIndex="100" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
+				Visibility="Visible"/>
+
+            <Grid.RenderTransform>
+                <TranslateTransform X="0" Y="0" />
+            </Grid.RenderTransform>
+        </Grid>
+
+        <Button x:Name="btnRecordingButton" Grid.Column="1" Grid.Row="0" Opacity="1"
+                Style="{StaticResource myTransparentButtonStyle}" Command="{Binding ExpandCollapseCommand}"
+                Background="Transparent" IsEnabled="{Binding ExpanseCollapseEnabled}"
+                HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" 
+                HorizontalAlignment="Stretch">
+			<Button.Content>
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="auto"/>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="auto"/>
+					</Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0"  
+                               Grid.ColumnSpan="3" TextWrapping="NoWrap" Text="{Binding title}"
+                               FontSize="{StaticResource TextStyleLargeFontSize}"/>
+                    <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" 
+                                   Text="{Binding status}" Style="{ThemeResource SubTitleAccent}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Right"
+                                   Text="{Binding filesizeGB}"  Style="{ThemeResource SubTitleAccent}"/>
+                    </Grid>
+                    <TextBlock Grid.Row="3" Grid.Column="0" 
+                               VerticalAlignment="Center" TextAlignment="Left" 
+                               Text="{Binding startDateString}" 
+                               HorizontalAlignment="Left" Style="{ThemeResource SubTitle}"/>
+                    <Rectangle Margin="10,0,10,0" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Height="5" Fill="{ThemeResource PhoneAccentBrush}" Opacity="0.2"/>
+                    <Rectangle Margin="10,0,10,0" Grid.Row="3" Grid.Column="1"  Height="5"  Fill="{ThemeResource PhoneAccentBrush}">
+						<Rectangle.RenderTransform>
+							<ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0" ScaleX="{Binding percentcompleted}" />
+						</Rectangle.RenderTransform>
+					</Rectangle>
+                    <TextBlock Grid.Row="3" Grid.Column="2" 
+                               TextAlignment="Right" Text="{Binding stopDateString}" 
+                               HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource SubTitle}"/>
+				</Grid>
+			</Button.Content>
+			<Button.Template>
+				<ControlTemplate TargetType="Button">
+					<ContentPresenter Content="{TemplateBinding Content}"/>
+				</ControlTemplate>
+			</Button.Template>
+		</Button>
+        <Border x:Name="grRecordingDetails" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"  VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch" Visibility="Collapsed">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                <Border Background="Transparent" VerticalAlignment="Stretch" Grid.Row="0"
+				        BorderThickness="0,2,0,2" BorderBrush="{ThemeResource PhoneAccentBrush}" Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
+                    <TextBlock HorizontalAlignment="left" VerticalAlignment="Center" 
+                               FontSize="20" Margin="10,5,0,5" Text="{Binding title}" Style="{StaticResource SubTitle}"/>
+                </Border>
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,0,0,0" Text="Channel :" Style="{StaticResource SubTitle}" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" Text="{Binding channel}" Style="{StaticResource SubTitleAccent}"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,0,0,0" Text="Creator :" Style="{StaticResource SubTitle}"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" Text="{Binding creator}" Style="{StaticResource SubTitleAccent}"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,0,0,0" Text="Schedule State :" Style="{StaticResource SubTitle}"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" Text="{Binding status}" Style="{StaticResource SubTitleAccent}"/>
+                <TextBlock Grid.Row="4" Grid.Column="0" Margin="5,0,0,0" Text="Size :" Style="{StaticResource SubTitle}"/>
+                <TextBlock Grid.Row="4" Grid.Column="1" Margin="10,0,0,0" Text="{Binding filesizeGB}" Style="{StaticResource SubTitleAccent}"/>
+                <TextBlock Grid.Row="5" Margin="5,20,0,0" HorizontalAlignment="Left" Text="Description :" Style="{StaticResource SubTitle}"/>
+                <TextBlock Grid.Row="6" Grid.ColumnSpan="2" TextWrapping="Wrap" Margin="5,0,0,0" Text="{Binding Path=description}" Style="{StaticResource SubTitleAccent}"/>
+            </Grid>
+            <Interactivity:Interaction.Behaviors>
+                <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Visible">
+                    <Core:GoToStateAction StateName="Expanded" />
+                </Core:DataTriggerBehavior>
+                <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Collapsed">
+                    <Core:GoToStateAction StateName="Collapsed" />
+                </Core:DataTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>
+        </Border>
+        <Interactivity:Interaction.Behaviors>
+            <Core:DataTriggerBehavior Binding="{Binding IsRecorded}" Value="1">
+                <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingOn}" />
+            </Core:DataTriggerBehavior>
+            <Core:DataTriggerBehavior Binding="{Binding IsRecorded}" Value="0">
+                <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingOff}" />
+            </Core:DataTriggerBehavior>
+            <Core:DataTriggerBehavior Binding="{Binding IsRecorded}" Value="2">
+                <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingError}" />
+            </Core:DataTriggerBehavior>
+            <Core:DataTriggerBehavior Binding="{Binding IsRecorded}" Value="3">
+                <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingScheduled}" />
+            </Core:DataTriggerBehavior>
+        </Interactivity:Interaction.Behaviors>
+        <Grid.RenderTransform>
+            <ScaleTransform ScaleX="1" ScaleY="1"/>
+        </Grid.RenderTransform>
+    </Grid>
+	
+</UserControl>
+    

@@ -1,0 +1,516 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="appBarAbout.Label" xml:space="preserve">
+    <value>über...</value>
+  </data>
+  <data name="appBarSettings.Label" xml:space="preserve">
+    <value>einstellungen...</value>
+  </data>
+  <data name="appBarStatus.Label" xml:space="preserve">
+    <value>tvheadend status</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="NavigationFailedExceptionMessage" xml:space="preserve">
+    <value>Navigation fehlgeschlagen</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="RecordingAbortContent" xml:space="preserve">
+    <value>Bist du sicher, dass du diese Aufnahme abbrechen möchtest ?</value>
+  </data>
+  <data name="RecordingAbortErrorContent" xml:space="preserve">
+    <value>Ein Fehler ist aufgetreten beim Löschen der Aufnahme</value>
+  </data>
+  <data name="RecordingAbortErrorHeader" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="RecordingAbortHeader" xml:space="preserve">
+    <value>Aufnahme abbrechen</value>
+  </data>
+  <data name="RecordingAbortSuccess" xml:space="preserve">
+    <value>Aufnahme ist erfolgreich abgebrochen</value>
+  </data>
+  <data name="RecordingStartErrorContent" xml:space="preserve">
+    <value>Ein Fehler ist aufgetreten beim Erstellen der Aufnahme</value>
+  </data>
+  <data name="RecordingStartErrorHeader" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="RecordingStartSuccess" xml:space="preserve">
+    <value>Erstellen der Aufnahme war erfolgreich </value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="AutoRecording" xml:space="preserve">
+    <value>Auto-Aufnahme</value>
+  </data>
+  <data name="Once" xml:space="preserve">
+    <value>Einmalig</value>
+  </data>
+  <data name="RecordingProposeAutoRecordingContent" xml:space="preserve">
+    <value>Möchtest du diese Aufnahme einmalig starten oder eine Auto-Aufnahme erstellen ?</value>
+  </data>
+  <data name="RecordingProposeAutoRecordingHeader" xml:space="preserve">
+    <value>Aufnahme starten</value>
+  </data>
+  <data name="abbTags.Label" xml:space="preserve">
+    <value>sendergruppen</value>
+  </data>
+  <data name="RecordingDeleteContent" xml:space="preserve">
+    <value>Bist du sicher, dass du {0} von {1} Aufnahme löschen möchtest ?</value>
+  </data>
+  <data name="RecordingDeleteErrorContent" xml:space="preserve">
+    <value>Fehler beim Löschen der Aufnahme "{0}" </value>
+  </data>
+  <data name="RecordingDeleteErrorHeader" xml:space="preserve">
+    <value>Fehler beim Löschen der Aufnahme</value>
+  </data>
+  <data name="RecordingDeleteHeader" xml:space="preserve">
+    <value>Aufnahme löschen</value>
+  </data>
+  <data name="RecordingProposeSeriesRecordingContent" xml:space="preserve">
+    <value>Möchtest du diese Aufnahme einmalig starten oder ein Serien-Aufnahme erstellen ?</value>
+  </data>
+  <data name="RecordingProposeSeriesRecordingHeader" xml:space="preserve">
+    <value>Aufnahme starten</value>
+  </data>
+  <data name="SeriesRecording" xml:space="preserve">
+    <value>Serien-Aufnahme</value>
+  </data>
+  <data name="AutoRecordingDeleteContent" xml:space="preserve">
+    <value>Bist du sicher, dass du {0} von {1} Auto-Aufnahmen löschen möchtest ? Geplante Aufnahmen generiert durch diese Auto-Aufnahme werden auch entfernt.</value>
+  </data>
+  <data name="AutoRecordingDeleteErrorContent" xml:space="preserve">
+    <value>Ein Fehler ist aufgetreten beim Löschen der Automatische Aufnahme "{0}".  </value>
+  </data>
+  <data name="AutoRecordingDeleteErrorHeader" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="AutoRecordingDeleteHeader" xml:space="preserve">
+    <value>Auto-Aufnahmen löschen</value>
+  </data>
+  <data name="pviAutoRecordings.Header" xml:space="preserve">
+    <value>Auto-Aufnahmen</value>
+  </data>
+  <data name="pviChannelEPG.Header" xml:space="preserve">
+    <value>TV Programm</value>
+  </data>
+  <data name="pviChannelList.Header" xml:space="preserve">
+    <value>Sender</value>
+  </data>
+  <data name="pviFailedRecordings.Header" xml:space="preserve">
+    <value>Fehlgeschlagene Aufnahmen</value>
+  </data>
+  <data name="pviFinishedRecordings.Header" xml:space="preserve">
+    <value>Erfolgreiche Aufnahmen</value>
+  </data>
+  <data name="pviUpcomingRecordings.Header" xml:space="preserve">
+    <value>Geplante Aufnahmen</value>
+  </data>
+  <data name="tbChannelSelection.Text" xml:space="preserve">
+    <value>Wahl Sender</value>
+  </data>
+  <data name="tbChannelSelectionExplanation.Text" xml:space="preserve">
+    <value>Gib der ersten Buchstabe von der Sendernahme um der Sender zu selektieren</value>
+  </data>
+  <data name="tbChannelTagSelection.Text" xml:space="preserve">
+    <value>Wahl Sender Gruppe</value>
+  </data>
+  <data name="tbDVRConfigSelection.Text" xml:space="preserve">
+    <value>Selektier Aufnahmeprofil</value>
+  </data>
+  <data name="tbGenreSelection.Text" xml:space="preserve">
+    <value>Wahl Genre</value>
+  </data>
+  <data name="tbDescription.Text" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="pviEPGSearch.Header" xml:space="preserve">
+    <value>Im TV Programm suchen</value>
+  </data>
+  <data name="tbEventSearchDescription.Text" xml:space="preserve">
+    <value>Stichwort wonach du suchen möchtest (min. 3 Buchstaben)</value>
+  </data>
+  <data name="strAnyChannel" xml:space="preserve">
+    <value>*Jeder Sender*</value>
+  </data>
+  <data name="strAnyChannelTag" xml:space="preserve">
+    <value>*Jeder Sender Gruppe*</value>
+  </data>
+  <data name="strAnyGenre" xml:space="preserve">
+    <value>*Jeder Genre*</value>
+  </data>
+  <data name="tbChannel.Text" xml:space="preserve">
+    <value>Sender</value>
+  </data>
+  <data name="tbChannelTag.Text" xml:space="preserve">
+    <value>Sender Gruppe</value>
+  </data>
+  <data name="tbDVRConfig.Text" xml:space="preserve">
+    <value>DVR Konfigierung</value>
+  </data>
+  <data name="tbEnabled.Content" xml:space="preserve">
+    <value>Eingeschaltet</value>
+  </data>
+  <data name="tbGenre.Text" xml:space="preserve">
+    <value>Genre</value>
+  </data>
+  <data name="tbName.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="tbStartAfter.Text" xml:space="preserve">
+    <value>Anfangszeit</value>
+  </data>
+  <data name="tbStartBefore.Text" xml:space="preserve">
+    <value>Endzeit</value>
+  </data>
+  <data name="tbTitleRegExp.Text" xml:space="preserve">
+    <value>Titel (regexp)</value>
+  </data>
+  <data name="tbWeekDays.Text" xml:space="preserve">
+    <value>Wochentage</value>
+  </data>
+  <data name="NoInformationAvailable" xml:space="preserve">
+    <value>Keine Information vorhanden</value>
+  </data>
+  <data name="status_RefreshingChannels" xml:space="preserve">
+    <value>Sender werden aktualisiert...</value>
+  </data>
+  <data name="status_UpdatingChannel" xml:space="preserve">
+    <value>Sender {0} wird akualisiert...</value>
+  </data>
+  <data name="tbNoChannelSelected.Text" xml:space="preserve">
+    <value>Bitte wähle ein Sender aus der Senderliste. Drücke auf das Icon des Senders, um das TV Programm zu laden</value>
+  </data>
+  <data name="tbNoEPGAvailable.Text" xml:space="preserve">
+    <value>Kein TV Programm Information ist vorhanden für diesem Sender </value>
+  </data>
+  <data name="tbStartTime.Text" xml:space="preserve">
+    <value>Anfangszeit</value>
+  </data>
+  <data name="tbStopTime.Text" xml:space="preserve">
+    <value>Endzeit</value>
+  </data>
+  <data name="tbTitle.Text" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="tbNoAutoRecordings.Text" xml:space="preserve">
+    <value>Kein Auto Aufnahmen vorhanden</value>
+  </data>
+  <data name="tbNoFailedRecordings.Text" xml:space="preserve">
+    <value>Keine fehlgeschlagenen Aufnahmen vorhanden</value>
+  </data>
+  <data name="tbNoFinishedRecordings.Text" xml:space="preserve">
+    <value>Keine erfolgreichen Aufnahmen vorhanden</value>
+  </data>
+  <data name="tbNoUpcomingRecordings.Text" xml:space="preserve">
+    <value>Keine geplanten Aufnahmen vorhanden</value>
+  </data>
+  <data name="status_RefreshingAutoRecordings" xml:space="preserve">
+    <value>Auto-Aufnahmen werden aktualisiert...</value>
+  </data>
+  <data name="status_RefreshingEPGEntries" xml:space="preserve">
+    <value>TV Programm wird aktualisiert...</value>
+  </data>
+  <data name="status_RefreshingFailedRecordings" xml:space="preserve">
+    <value>Fehlgeschlagene Aufnahmen werden aktualisiert...</value>
+  </data>
+  <data name="status_RefreshingFinishedRecordings" xml:space="preserve">
+    <value>Erfolgreiche Aufnahmen werden aktualisiert...</value>
+  </data>
+  <data name="status_RefreshingUpcomingRecordings" xml:space="preserve">
+    <value>Geplante Aufnahmen werden aktualisiert...</value>
+  </data>
+  <data name="status_Connected" xml:space="preserve">
+    <value>Verbunden !</value>
+  </data>
+  <data name="status_Connecting" xml:space="preserve">
+    <value>Verbindung wird hergestellt...</value>
+  </data>
+  <data name="status_ConnectionError" xml:space="preserve">
+    <value>Verbindung fehlgeschlagen</value>
+  </data>
+  <data name="diskspace.Text" xml:space="preserve">
+    <value>Speicherplatz</value>
+  </data>
+  <data name="pviStatusGeneral.Header" xml:space="preserve">
+    <value>Algemein</value>
+  </data>
+  <data name="pviStatusLog.Header" xml:space="preserve">
+    <value>Log</value>
+  </data>
+  <data name="streams.Text" xml:space="preserve">
+    <value>Streams</value>
+  </data>
+  <data name="subscriptions.Text" xml:space="preserve">
+    <value>Abonnements</value>
+  </data>
+  <data name="abbAdd.Label" xml:space="preserve">
+    <value>hinfugen</value>
+  </data>
+  <data name="abbCancel.Label" xml:space="preserve">
+    <value>annulieren</value>
+  </data>
+  <data name="abbChannels.Label" xml:space="preserve">
+    <value>sender</value>
+  </data>
+  <data name="abbDelete.Label" xml:space="preserve">
+    <value>entfernen</value>
+  </data>
+  <data name="abbManage.Label" xml:space="preserve">
+    <value>manage</value>
+  </data>
+  <data name="abbRecordings.Label" xml:space="preserve">
+    <value>aufnahmen</value>
+  </data>
+  <data name="abbRefresh.Label" xml:space="preserve">
+    <value>erneuen</value>
+  </data>
+  <data name="abbSave.Label" xml:space="preserve">
+    <value>sichern</value>
+  </data>
+  <data name="abbSearch.Label" xml:space="preserve">
+    <value>suchen</value>
+  </data>
+  <data name="btntestConnection.Content" xml:space="preserve">
+    <value>Verbindung testen</value>
+  </data>
+  <data name="Channels.Text" xml:space="preserve">
+    <value>Sender</value>
+  </data>
+  <data name="ipaddress.Text" xml:space="preserve">
+    <value>IP Adresse</value>
+  </data>
+  <data name="password.Text" xml:space="preserve">
+    <value>Passwort</value>
+  </data>
+  <data name="port.Text" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Recordings.Text" xml:space="preserve">
+    <value>Aufnahmen</value>
+  </data>
+  <data name="tsAskForAutoRecording.Header" xml:space="preserve">
+    <value>Frage um Auto-Aufnahme beim erstellen eines Aufnahme</value>
+  </data>
+  <data name="tsConfirmDeletion.Header" xml:space="preserve">
+    <value>Löschen bestätigen</value>
+  </data>
+  <data name="tsHideNumberlessChannels.Header" xml:space="preserve">
+    <value>Sender ohne Nummer ausblenden</value>
+  </data>
+  <data name="tsShowChannelNumbers.Header" xml:space="preserve">
+    <value>Sendernummer anzeigen</value>
+  </data>
+  <data name="username.Text" xml:space="preserve">
+    <value>Benutzername</value>
+  </data>
+  <data name="tbChannelGroup.Text" xml:space="preserve">
+    <value>Favoriete Sendergruppe</value>
+  </data>
+  <data name="tbChannelGroupExplanation.Text" xml:space="preserve">
+    <value>Wähle deine favorite Sendergruppe. Sender in dieser Gruppe werden beim Start der App geladen. Wenn keine Sendergruppe vorhanden ist oder alle deaktiviert sind, dann wirden alle Sender geladen (nicht epfehlenswert)</value>
+  </data>
+  <data name="deleted" xml:space="preserve">
+    <value>gelöscht</value>
+  </data>
+  <data name="Recording" xml:space="preserve">
+    <value>Aufnahme</value>
+  </data>
+  <data name="Settings.Text" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="tbAutoRefresh.Text" xml:space="preserve">
+    <value>Wenn Auto Refresh aktiv ist, reagiert die App auf eingehende Status Updates vom TVH Server. Wenn Auto Refresh deaktiviert ist, aktualisiert die App seine Informationen periodisch. Empfohlene Einstellung ist On für TVH 4.x und Aus für alles darunter.</value>
+  </data>
+  <data name="tbAutoRefreshHeader.Text" xml:space="preserve">
+    <value>Auto Refresh</value>
+  </data>
+  <data name="tbLanguage.Text" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="added" xml:space="preserve">
+    <value>hingefügt</value>
+  </data>
+  <data name="AutoRecordingAdded" xml:space="preserve">
+    <value>Auto Aufnahme '{0}' hingefügt</value>
+  </data>
+  <data name="AutoRecordingAddedError" xml:space="preserve">
+    <value>Fehel beim hinfügen der Auto Aufnahme '{0}'</value>
+  </data>
+  <data name="AutoRecordingDeleted" xml:space="preserve">
+    <value>Auto Aufnahme '{0}' gelöscht</value>
+  </data>
+  <data name="AutoRecordingDeletedError" xml:space="preserve">
+    <value>Fehel beim löschen der Auto Aufnahme '{0}'</value>
+  </data>
+  <data name="AutoRecordingUpdated" xml:space="preserve">
+    <value>Auto Aufnahme '{0}' aktualisiert</value>
+  </data>
+  <data name="AutoRecordingUpdatedError" xml:space="preserve">
+    <value>Fehel beim aktualisieren der Auto Aufnahme '{0}'</value>
+  </data>
+  <data name="RecordingAbortMultipleContent" xml:space="preserve">
+    <value>Bist du sicher, dass du {0} von {1} Aufnahmen abbrechen möchtest ?</value>
+  </data>
+  <data name="RecordingAbortMultipleErrorContent" xml:space="preserve">
+    <value>Ein Fehler ist aufgetreten beim Löschen Aufnahme "{0}".</value>
+  </data>
+  <data name="RecordingAbortMultipleErrorHeader" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="RecordingAbortMultipleHeader" xml:space="preserve">
+    <value>Aufnahme abbrechen</value>
+  </data>
+  <data name="updated" xml:space="preserve">
+    <value>aktualisiert</value>
+  </data>
+  <data name="cbDVRConfig.Header" xml:space="preserve">
+    <value>Selektier Aufnahmeprofil</value>
+  </data>
+  <data name="RecordingConfigurationHeader" xml:space="preserve">
+    <value>Aufnahme Konfiguration</value>
+  </data>
+  <data name="usePhoneLanguage" xml:space="preserve">
+    <value>An Handysprache anpassen</value>
+  </data>
+  <data name="AddAutoRecording" xml:space="preserve">
+    <value>Füg Auto Aufnahme hin</value>
+  </data>
+  <data name="EditAutoRecording" xml:space="preserve">
+    <value>Bearbeit Auto Aufnahme</value>
+  </data>
+  <data name="FreeDiskSpace" xml:space="preserve">
+    <value>Verfügbar: {0:0.##} {1}</value>
+  </data>
+  <data name="TotalDiskSpace" xml:space="preserve">
+    <value>Gesamt : {0:0.##} {1}</value>
+  </data>
+  <data name="UsedDiskSpace" xml:space="preserve">
+    <value>Benutzt : {0:0.##} {1}</value>
+  </data>
+</root>

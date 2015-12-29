@@ -1,0 +1,516 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="appBarAbout.Label" xml:space="preserve">
+    <value>over...</value>
+  </data>
+  <data name="appBarSettings.Label" xml:space="preserve">
+    <value>instellingen...</value>
+  </data>
+  <data name="appBarStatus.Label" xml:space="preserve">
+    <value>tvheadend status</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="Header.Text" xml:space="preserve">
+    <value>TV Head Dutch</value>
+  </data>
+  <data name="Hub.Header" xml:space="preserve">
+    <value>TV Head Dutch</value>
+  </data>
+  <data name="ChannelList.Header" xml:space="preserve">
+    <value>Kanalen</value>
+  </data>
+  <data name="ChannelEPG.Header" xml:space="preserve">
+    <value>Programma Gids</value>
+  </data>
+  <data name="NavigationFailedExceptionMessage" xml:space="preserve">
+    <value>Navigation failed.</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nee</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="RecordingAbortContent" xml:space="preserve">
+    <value>Weet je zeker dat je deze opname wilt annuleren ?</value>
+  </data>
+  <data name="RecordingAbortErrorContent" xml:space="preserve">
+    <value>Een probleem is opgetreden tijdens het annuleren van de opname</value>
+  </data>
+  <data name="RecordingAbortErrorHeader" xml:space="preserve">
+    <value>Fout</value>
+  </data>
+  <data name="RecordingAbortHeader" xml:space="preserve">
+    <value>Opname annuleren</value>
+  </data>
+  <data name="RecordingAbortSuccess" xml:space="preserve">
+    <value>Opname succesvol geannuleerd</value>
+  </data>
+  <data name="RecordingStartErrorContent" xml:space="preserve">
+    <value>Een probleem is opgetreden tijdens het aanmaken van de opname :-(</value>
+  </data>
+  <data name="RecordingStartErrorHeader" xml:space="preserve">
+    <value>Fout</value>
+  </data>
+  <data name="RecordingStartSuccess" xml:space="preserve">
+    <value>Opname succesvol aangemaakt</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="AutoRecording" xml:space="preserve">
+    <value>Auto opname</value>
+  </data>
+  <data name="Once" xml:space="preserve">
+    <value>Eenmalig</value>
+  </data>
+  <data name="RecordingProposeAutoRecordingContent" xml:space="preserve">
+    <value>Wil je deze opname eenmalig starten, of er een Auto Opname van maken ?</value>
+  </data>
+  <data name="RecordingProposeAutoRecordingHeader" xml:space="preserve">
+    <value>Start opname</value>
+  </data>
+  <data name="abbTags.Label" xml:space="preserve">
+    <value>tags</value>
+  </data>
+  <data name="RecordingDeleteContent" xml:space="preserve">
+    <value>Weet je zeker dat je {0} van {1} opnames wilt verwijderen ?</value>
+  </data>
+  <data name="RecordingDeleteErrorContent" xml:space="preserve">
+    <value>Er is een fout opgetreden bij het verwijderen van opname "{0}" </value>
+  </data>
+  <data name="RecordingDeleteErrorHeader" xml:space="preserve">
+    <value>Fout bij verwijderen opname</value>
+  </data>
+  <data name="RecordingDeleteHeader" xml:space="preserve">
+    <value>Opname verwijderen</value>
+  </data>
+  <data name="RecordingProposeSeriesRecordingContent" xml:space="preserve">
+    <value>Wil je deze opname eenmalig starten, of er een Serie Opname van maken ?</value>
+  </data>
+  <data name="RecordingProposeSeriesRecordingHeader" xml:space="preserve">
+    <value>Start opname</value>
+  </data>
+  <data name="SeriesRecording" xml:space="preserve">
+    <value>Serie opname</value>
+  </data>
+  <data name="AutoRecordingDeleteContent" xml:space="preserve">
+    <value>Weet je zeker dat je {0} van {1} automatische opnames wilt verwijderen ? Geplande opnames, gegenereerd door deze automatische opnames zullen ook verwijderd worden...</value>
+  </data>
+  <data name="AutoRecordingDeleteErrorContent" xml:space="preserve">
+    <value>Een probleem is opgetreden tijdens het verwijderen van Auto opname "{0}".  </value>
+  </data>
+  <data name="AutoRecordingDeleteErrorHeader" xml:space="preserve">
+    <value>Fout bij het verwijderen van automatische opname</value>
+  </data>
+  <data name="AutoRecordingDeleteHeader" xml:space="preserve">
+    <value>Auto opname verwijderen</value>
+  </data>
+  <data name="pviAutoRecordings.Header" xml:space="preserve">
+    <value>Automatische opnames</value>
+  </data>
+  <data name="pviChannelEPG.Header" xml:space="preserve">
+    <value>Programma's</value>
+  </data>
+  <data name="pviChannelList.Header" xml:space="preserve">
+    <value>Kanalen</value>
+  </data>
+  <data name="pviFailedRecordings.Header" xml:space="preserve">
+    <value>Mislukte opnames</value>
+  </data>
+  <data name="pviFinishedRecordings.Header" xml:space="preserve">
+    <value>Succesvolle opnames</value>
+  </data>
+  <data name="pviUpcomingRecordings.Header" xml:space="preserve">
+    <value>Geplande opnames</value>
+  </data>
+  <data name="tbChannelSelection.Text" xml:space="preserve">
+    <value>Selecteer Kanaal</value>
+  </data>
+  <data name="tbChannelSelectionExplanation.Text" xml:space="preserve">
+    <value>Geef de eerste letters van het kanaal om het juiste kanaal uit de lijst te selecteren</value>
+  </data>
+  <data name="tbChannelTagSelection.Text" xml:space="preserve">
+    <value>Selecteer Kanaal Groep</value>
+  </data>
+  <data name="tbDVRConfigSelection.Text" xml:space="preserve">
+    <value>Selecteer Opname Profiel</value>
+  </data>
+  <data name="tbGenreSelection.Text" xml:space="preserve">
+    <value>Selecteer Genre</value>
+  </data>
+  <data name="tbDescription.Text" xml:space="preserve">
+    <value>Omschrijving</value>
+  </data>
+  <data name="pviEPGSearch.Header" xml:space="preserve">
+    <value>Zoeken in programmagids</value>
+  </data>
+  <data name="tbEventSearchDescription.Text" xml:space="preserve">
+    <value>Zoekterm waarop je wilt zoeken (min. 3 karakters)</value>
+  </data>
+  <data name="strAnyChannel" xml:space="preserve">
+    <value>*Elk Kanaal*</value>
+  </data>
+  <data name="strAnyChannelTag" xml:space="preserve">
+    <value>*Elke Kanaal Groep*</value>
+  </data>
+  <data name="strAnyGenre" xml:space="preserve">
+    <value>*Elk Genre*</value>
+  </data>
+  <data name="tbChannel.Text" xml:space="preserve">
+    <value>Kanaal</value>
+  </data>
+  <data name="tbChannelTag.Text" xml:space="preserve">
+    <value>Kanaal Groep</value>
+  </data>
+  <data name="tbDVRConfig.Text" xml:space="preserve">
+    <value>DVR Configuratie</value>
+  </data>
+  <data name="tbEnabled.Content" xml:space="preserve">
+    <value>Ingeschakeld</value>
+  </data>
+  <data name="tbGenre.Text" xml:space="preserve">
+    <value>Genre</value>
+  </data>
+  <data name="tbName.Text" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="tbStartAfter.Text" xml:space="preserve">
+    <value>Start Tijd</value>
+  </data>
+  <data name="tbStartBefore.Text" xml:space="preserve">
+    <value>Eind Tijd</value>
+  </data>
+  <data name="tbTitleRegExp.Text" xml:space="preserve">
+    <value>Titel (regexp)</value>
+  </data>
+  <data name="tbWeekDays.Text" xml:space="preserve">
+    <value>Dagen van de week</value>
+  </data>
+  <data name="NoInformationAvailable" xml:space="preserve">
+    <value>Geen informatie beschikbaar</value>
+  </data>
+  <data name="status_RefreshingChannels" xml:space="preserve">
+    <value>Zenders worden bijgewerkt...</value>
+  </data>
+  <data name="status_UpdatingChannel" xml:space="preserve">
+    <value>Zender {0} wordt bijgewerkt...</value>
+  </data>
+  <data name="tbNoChannelSelected.Text" xml:space="preserve">
+    <value>Er is geen zender geselecteerd. Kies een zender uit de zenderlijst om de EPG informatie te laden</value>
+  </data>
+  <data name="tbNoEPGAvailable.Text" xml:space="preserve">
+    <value>Er is geen EPG informatie voorhanden voor deze zender</value>
+  </data>
+  <data name="tbStartTime.Text" xml:space="preserve">
+    <value>Start Tijd</value>
+  </data>
+  <data name="tbStopTime.Text" xml:space="preserve">
+    <value>Eind Tijd</value>
+  </data>
+  <data name="tbTitle.Text" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="tbNoAutoRecordings.Text" xml:space="preserve">
+    <value>Geen Auto opnames beschikbaar</value>
+  </data>
+  <data name="tbNoFailedRecordings.Text" xml:space="preserve">
+    <value>Geen mislukte opnames beschikbaar</value>
+  </data>
+  <data name="tbNoFinishedRecordings.Text" xml:space="preserve">
+    <value>Geen succesvolle opnames beschikbaar</value>
+  </data>
+  <data name="tbNoUpcomingRecordings.Text" xml:space="preserve">
+    <value>Geen geplande opnames beschikbaar</value>
+  </data>
+  <data name="status_RefreshingAutoRecordings" xml:space="preserve">
+    <value>Automatische opnames worden bijgewerkt...</value>
+  </data>
+  <data name="status_RefreshingEPGEntries" xml:space="preserve">
+    <value>EPG informatie wordt bijgewerkt...</value>
+  </data>
+  <data name="status_RefreshingFailedRecordings" xml:space="preserve">
+    <value>Mislukte opnames worden bijgewerkt...</value>
+  </data>
+  <data name="status_RefreshingFinishedRecordings" xml:space="preserve">
+    <value>Succesvolle opnames worden bijgewerkt...</value>
+  </data>
+  <data name="status_RefreshingUpcomingRecordings" xml:space="preserve">
+    <value>Geplande opnames worden bijgewerkt...</value>
+  </data>
+  <data name="status_Connected" xml:space="preserve">
+    <value>Verbonden !</value>
+  </data>
+  <data name="status_Connecting" xml:space="preserve">
+    <value>Verbinding maken...</value>
+  </data>
+  <data name="status_ConnectionError" xml:space="preserve">
+    <value>Verbinding verbroken</value>
+  </data>
+  <data name="diskspace.Text" xml:space="preserve">
+    <value>Schijfruimte</value>
+  </data>
+  <data name="pviStatusGeneral.Header" xml:space="preserve">
+    <value>Algemeen</value>
+  </data>
+  <data name="pviStatusLog.Header" xml:space="preserve">
+    <value>Log</value>
+  </data>
+  <data name="streams.Text" xml:space="preserve">
+    <value>Streams</value>
+  </data>
+  <data name="subscriptions.Text" xml:space="preserve">
+    <value>Abonnementen</value>
+  </data>
+  <data name="abbAdd.Label" xml:space="preserve">
+    <value>toevoegen</value>
+  </data>
+  <data name="abbCancel.Label" xml:space="preserve">
+    <value>annuleren</value>
+  </data>
+  <data name="abbChannels.Label" xml:space="preserve">
+    <value>kanalen</value>
+  </data>
+  <data name="abbDelete.Label" xml:space="preserve">
+    <value>verwijderen</value>
+  </data>
+  <data name="abbManage.Label" xml:space="preserve">
+    <value>beheren</value>
+  </data>
+  <data name="abbRecordings.Label" xml:space="preserve">
+    <value>opnames</value>
+  </data>
+  <data name="abbRefresh.Label" xml:space="preserve">
+    <value>vernieuwen</value>
+  </data>
+  <data name="abbSave.Label" xml:space="preserve">
+    <value>opslaan</value>
+  </data>
+  <data name="abbSearch.Label" xml:space="preserve">
+    <value>zoeken</value>
+  </data>
+  <data name="btntestConnection.Content" xml:space="preserve">
+    <value>test verbinding</value>
+  </data>
+  <data name="Channels.Text" xml:space="preserve">
+    <value>Kanalen</value>
+  </data>
+  <data name="ipaddress.Text" xml:space="preserve">
+    <value>IP adres</value>
+  </data>
+  <data name="password.Text" xml:space="preserve">
+    <value>Wachtwoord</value>
+  </data>
+  <data name="port.Text" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Recordings.Text" xml:space="preserve">
+    <value>Opnames</value>
+  </data>
+  <data name="tsAskForAutoRecording.Header" xml:space="preserve">
+    <value>vraag om een Auto opname aan te maken bij het aanmaken van een opname</value>
+  </data>
+  <data name="tsConfirmDeletion.Header" xml:space="preserve">
+    <value>bevestig verwijderen van opnames</value>
+  </data>
+  <data name="tsHideNumberlessChannels.Header" xml:space="preserve">
+    <value>kanalen zonder nummer verbergen</value>
+  </data>
+  <data name="tsShowChannelNumbers.Header" xml:space="preserve">
+    <value>laat kanaalnummers zien</value>
+  </data>
+  <data name="username.Text" xml:space="preserve">
+    <value>Gebruikersnaam</value>
+  </data>
+  <data name="tbChannelGroup.Text" xml:space="preserve">
+    <value>Favoriete Kanaal Groep</value>
+  </data>
+  <data name="tbChannelGroupExplanation.Text" xml:space="preserve">
+    <value>Selecteer je favoriete kanaal groep. Kanalen in deze groep worden tijdens het opstarten geladen. Als er geen kanaal groepen bestaan, of ze zijn allemaal uitgeschakeld, dan worden alle kanalen geladen (niet aanbevolen)</value>
+  </data>
+  <data name="deleted" xml:space="preserve">
+    <value>verwijderd</value>
+  </data>
+  <data name="Recording" xml:space="preserve">
+    <value>Opname</value>
+  </data>
+  <data name="Settings.Text" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="tbAutoRefresh.Text" xml:space="preserve">
+    <value>Als Auto Refresh is ingeschakeld luistert de app naar binnenkomende status berichten van de TVH server. Indien uitgeschakeld, ververst de app de informatie periodiek. Aanbevolen stand is Aan voor TVH 4.x en Uit voor alles lager.</value>
+  </data>
+  <data name="tbAutoRefreshHeader.Text" xml:space="preserve">
+    <value>Auto Refresh</value>
+  </data>
+  <data name="tbLanguage.Text" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="added" xml:space="preserve">
+    <value>toegevoegd</value>
+  </data>
+  <data name="AutoRecordingUpdated" xml:space="preserve">
+    <value>Auto opname {0} geactualiseerd</value>
+  </data>
+  <data name="AutoRecordingUpdatedError" xml:space="preserve">
+    <value>Fout bij het actualiseren van Auto opname {0}</value>
+  </data>
+  <data name="RecordingAbortMultipleContent" xml:space="preserve">
+    <value>Weet je zeker dat je {0} van {1} opnames wilt annuleren ?</value>
+  </data>
+  <data name="RecordingAbortMultipleErrorContent" xml:space="preserve">
+    <value>Een probleem is opgetreden tijdens het annuleren van opname "{0}".</value>
+  </data>
+  <data name="RecordingAbortMultipleErrorHeader" xml:space="preserve">
+    <value>Fout</value>
+  </data>
+  <data name="RecordingAbortMultipleHeader" xml:space="preserve">
+    <value>Opname annuleren</value>
+  </data>
+  <data name="updated" xml:space="preserve">
+    <value>geaktualiseerd</value>
+  </data>
+  <data name="cbDVRConfig.Header" xml:space="preserve">
+    <value>Selecteer opname profiel</value>
+  </data>
+  <data name="RecordingConfigurationHeader" xml:space="preserve">
+    <value>Opname configuratie</value>
+  </data>
+  <data name="usePhoneLanguage" xml:space="preserve">
+    <value>Gebruik telefoon taal</value>
+  </data>
+  <data name="AddAutoRecording" xml:space="preserve">
+    <value>Voeg Auto opname toe</value>
+  </data>
+  <data name="EditAutoRecording" xml:space="preserve">
+    <value>Bewerk Auto opname</value>
+  </data>
+  <data name="FreeDiskSpace" xml:space="preserve">
+    <value>Beschikbaar : {0:0.##} {1}</value>
+  </data>
+  <data name="TotalDiskSpace" xml:space="preserve">
+    <value>Totaal : {0:0.##} {1}</value>
+  </data>
+  <data name="UsedDiskSpace" xml:space="preserve">
+    <value>Gebruikt : {0:0.##} {1}</value>
+  </data>
+</root>
