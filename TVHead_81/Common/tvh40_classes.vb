@@ -601,12 +601,6 @@ Namespace tvh40
         Public ReadOnly Property apiGetEPGEvent(eventids As List(Of Integer))
             'Seems only to be supported in TVH 4.x -ish
             Get
-                If eventids.Count > 1 Then
-                    'WriteToDebug("", "[" + String.Join(",", eventids) + "]")
-                End If
-
-
-
                 Return settings.GetFullURL() + String.Format("/api/epg/events/load?eventId={0}", "[" + String.Join(",", eventids) + "]")
             End Get
         End Property
@@ -618,8 +612,7 @@ Namespace tvh40
                     If channelid = "" Then
                         Return settings.GetFullURL() + "/api/epg/events/grid?start=0&sort=&dir=ASC&limit=" & 99999
                     Else
-                        Return settings.GetFullURL() + "/api/epg/events/grid?start=0&sort=&dir=ASC&limit=" & settings.MaxEPGItemsPerChannel & "&channel=" & channelid
-                        'Return settings.GetFullURL() + "/api/epg/events/grid?start=0&limit=" & 5 & "&channel=" & channelid
+                        Return settings.GetFullURL() + "/api/epg/events/grid?start=0&sort=&dir=ASC&limit=" & 99999 & "&channel=" & channelid
                     End If
                 Else
                     'Only return the first EPG Event

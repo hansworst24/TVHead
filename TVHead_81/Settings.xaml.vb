@@ -1,33 +1,23 @@
 ﻿Imports TVHead_81.Common
 Imports TVHead_81.ViewModels
-Imports System.Net.Http
 
 Partial Public Class AppSettings
 
 
     Dim settings As Windows.Storage.ApplicationDataContainer
-
     Const strLanguageKeyName As String = "strLanguage"
     Const strProposeAutoRecordingKeyName As String = "strProposeAutoRecording"
-    Const intRefreshRateKeyName As String = "intRefreshRate"
-    Const intMaxEPGItemsPerChannelKeyName As String = "intMaxEPGItemsPerChannel"
     Const blAskConfirmationWhenDeletingKeyName As String = "blAskConfirmationWhenDeleting"
     Const blLongPollingEnabledKeyName As String = "blLongPollingEnabled"
     Const strServerIPKeyName As String = "strServerIP"
     Const strServerPortKeyName As String = "strServerPort"
     Const strUsernameKeyName As String = "strUserName"
     Const strUserPasswordKeyName As String = "strUserPassword"
-    Const strAppNameKeyName As String = "strAppName"
     Const strTVHVersionKeyName As String = "strTVHVersion"
     Const strTVHVersionLongKeyName As String = "strTVHVersionLong"
-    Const strAppVersionKeyName As String = "strAppVersion"
     Const strConnectionStatusKeyName As String = "blConnected"
     Const strFavouriteChannelTagKeyName As String = "strFavouriteChannelTag"
     Const blHideNumberlessChannelsKeyName As String = "blHideNumberlessChannels"
-    Const intEPGHoursPerViewKeyName As String = "EPGHoursPerView"
-    Const intEPGHoursPerPageKeyName As String = "EPGHoursPerPage"
-    Const intChannelsPerEPGGridViewKeyName As String = "ChannelsPerEPGGridViewe"
-    Const blShowChannelCountPerChannelTagKeyName As String = "ShowChannelCountPerChannelTag"
     Const blShowChannelNumbersKeyName As String = "ShowChannelNumbers"
     Const blHideDisabledServicesKeyName As String = "blHideDisabledServices"
     Const blHideNamelessServicesKeyName As String = "blHideNamelessServices"
@@ -35,8 +25,6 @@ Partial Public Class AppSettings
 
     Const strLanguageDefault = ""
     Const strProposeAutoRecordingDefault As Boolean = True
-    Const intMaxEPGItemsPerChannelDefault As Integer = 500
-    Const intRefreshRateDefault As Integer = 0
     Const blAskConfirmationWhenDeletingDefault As Boolean = True
     Const blHideDisabledServicesDefault = True
     Const blLongPollingEnabledDefault = False
@@ -49,8 +37,6 @@ Partial Public Class AppSettings
     Const intEPGHoursPerPageDefault As Integer = 1
     Const intChannelsPerEPGGridViewDefault As Integer = 10
     Const strFavouriteChannelTagDefault = ""
-    Const strAppNameDefault = "TV Head"
-    Const strAppVersionDefault = "2.0"
     Const blHideNumberlessChannelsDefault = True
     Const blHideNamelessServicesDefault = True
 
@@ -75,7 +61,6 @@ Partial Public Class AppSettings
     Const strConnectionStatusDefault = False
 
     Public Sub New()
-        'Dim localSettings As Windows.Storage.ApplicationDataContainer = Windows.Storage.ApplicationData.Current.LocalSettings
         settings = Windows.Storage.ApplicationData.Current.LocalSettings
     End Sub
 
@@ -101,7 +86,6 @@ Partial Public Class AppSettings
     End Function
 
     Public Function GetValueOrDefault(Of T)(Key As String, defaultValue As T) As T
-
         Dim value As T
         ' If the key exists, retrieve the value.
         If Not settings.Values(Key) Is Nothing Then
@@ -157,7 +141,6 @@ Partial Public Class AppSettings
 
 
     Public Property HideDisabledServices As Boolean
-        'DEFINES IF DISABLED SERVICES ARE HIDDEN IN THE STATUS PAGE
         Get
             Return GetValueOrDefault(Of Boolean)(blHideDisabledServicesKeyName, blHideDisabledServicesDefault)
         End Get
@@ -169,7 +152,6 @@ Partial Public Class AppSettings
     End Property
 
     Public Property HideNamelessServices As Boolean
-        'DEFINES IF DISABLED SERVICES ARE HIDDEN IN THE STATUS PAGE
         Get
             Return GetValueOrDefault(Of Boolean)(blHideNamelessServicesKeyName, blHideNamelessServicesDefault)
         End Get
@@ -180,10 +162,9 @@ Partial Public Class AppSettings
         End Set
     End Property
 
-  
+
 
     Public Property ConfirmDeletion As Boolean
-        'DEFINES HOW MANY EPG ITEMS PER CHANNEL SHOULD BE DOWNLOADED
         Get
             Return GetValueOrDefault(Of Boolean)(blAskConfirmationWhenDeletingKeyName, blAskConfirmationWhenDeletingDefault)
         End Get
@@ -193,31 +174,6 @@ Partial Public Class AppSettings
             End If
         End Set
     End Property
-
-    Public Property MaxEPGItemsPerChannel As Integer
-        'DEFINES HOW MANY EPG ITEMS PER CHANNEL SHOULD BE DOWNLOADED
-        Get
-            Return GetValueOrDefault(Of Integer)(intMaxEPGItemsPerChannelKeyName, intMaxEPGItemsPerChannelDefault)
-        End Get
-        Set(value As Integer)
-            If AddOrUpdateValue(intMaxEPGItemsPerChannelKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
-    'Public Property HoursPerView As Integer
-    '    'DEFINES HOW MANY HOURS OF EPG DATA TO SHOW IN THE TOTAL VIEW
-    '    Get
-    '        Return GetValueOrDefault(Of Integer)(intEPGHoursPerViewKeyName, intEPGHoursPerViewDefault)
-    '    End Get
-    '    Set(value As Integer)
-    '        If AddOrUpdateValue(intEPGHoursPerViewKeyName, value) Then
-    '            Save()
-    '        End If
-    '    End Set
-    'End Property
-
 
     Public Property TVHVersionLong As String
         Get
@@ -252,48 +208,7 @@ Partial Public Class AppSettings
         End Set
     End Property
 
-
-
-
-    Public Property ChannelsPerEPGGridView As Integer
-        'DEFINES HOW MANY Channels to render in the EPG Grid View... Too many and you'll run out of memory
-        Get
-            Return GetValueOrDefault(Of Integer)(intChannelsPerEPGGridViewKeyName, intChannelsPerEPGGridViewDefault)
-        End Get
-        Set(value As Integer)
-            If AddOrUpdateValue(intChannelsPerEPGGridViewKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
-
-    Public Property RefreshRate As Integer
-        Get
-            Return GetValueOrDefault(Of Integer)(intRefreshRateKeyName, intRefreshRateDefault)
-        End Get
-        Set(value As Integer)
-            If AddOrUpdateValue(intRefreshRateKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
-
-    Public Property ShowChannelCountPerChannelTag As Boolean
-        'DEFINES If the ChannelTag view should show the amount of channels associated with it (a bit slower to load)
-        Get
-            Return GetValueOrDefault(Of Boolean)(blShowChannelCountPerChannelTagKeyName, blShowChannelCountPerChannelTagDefault)
-        End Get
-        Set(value As Boolean)
-            If AddOrUpdateValue(blShowChannelCountPerChannelTagKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
     Public Property ShowChannelNumbers As Boolean
-        'DEFINES If the ChannelTag view should show the amount of channels associated with it (a bit slower to load)
         Get
             Return GetValueOrDefault(Of Boolean)(blShowChannelNumbersKeyName, blShowChannelNumbersDefault)
         End Get
@@ -337,22 +252,6 @@ Partial Public Class AppSettings
         End Set
     End Property
 
-    Public Property ApplicationName() As String
-        Get
-            Return GetValueOrDefault(Of String)(strAppNameKeyName, strAppNameDefault)
-        End Get
-        Set(value As String)
-            If AddOrUpdateValue(strAppNameKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
-    Public ReadOnly Property ApplicationVersion() As String
-        Get
-            Return GetValueOrDefault(Of String)(strAppVersionKeyName, strAppVersionDefault)
-        End Get
-    End Property
 
     Public Property ServerIPSetting As String
         Get
@@ -386,9 +285,6 @@ Partial Public Class AppSettings
             End If
         End Set
     End Property
-
-
-
 End Class
 
 Partial Public Class AppSettingsPage
@@ -431,26 +327,7 @@ Partial Public Class AppSettingsPage
     ''' a dictionary of state preserved by this page during an earlier
     ''' session. The state will be null the first time a page is visited.</param>
     Private Sub NavigationHelper_LoadState(sender As Object, e As LoadStateEventArgs) Handles _navigationHelper.LoadState
-        'Dim app As App = CType(Application.Current, App)
-        '' TODO: Create an appropriate data model for your problem domain to replace the sample data
-        'Dim settings As New AppSettings
-        'Dim blaat As New ApplicationViewModel
 
-        'Dim isConnected As Boolean = Await existValidServerConnection()
-        'If app.isConnected Then
-        '    'app.TVHVersion = getShortTVHeadendVersion(Await GetServerVersionInformation())
-        '    channelTags = Await LoadChannelTags()
-        '    If Not channelTags Is Nothing Then
-        '        cbChannelTags.ItemsSource = channelTags
-        '        If Not settings.FavouriteChannelTag Is Nothing Then
-        '            Dim selectedChannelTag = (From tags In channelTags Where tags.uuid = settings.FavouriteChannelTag Select tags).FirstOrDefault
-        '            If Not selectedChannelTag Is Nothing Then
-        '                cbChannelTags.SelectedIndex = cbChannelTags.Items.IndexOf(selectedChannelTag)
-        '            End If
-        '        End If
-        '    End If
-        'End If
-        ' Await BindChannelTags()
 
     End Sub
 
@@ -515,8 +392,6 @@ Partial Public Class AppSettingsPage
         AddHandler HardwareButtons.BackPressed, AddressOf SettingsBackPressed
     End Sub
 
-
-
     Public Function BindChannelTags() As String
 
         Dim chTags As New List(Of ChannelTagViewModel)
@@ -545,7 +420,6 @@ Partial Public Class AppSettingsPage
 
     Private Async Sub btnTestConnection_Click(sender As Object, e As RoutedEventArgs)
         Dim app As App = CType(Application.Current, App)
-        'First save all settings
         pbTestResult.IsIndeterminate = True
         tbTestResult.Text = "Testing connection..."
         Dim sInfo As ServerInfoViewModel
@@ -575,25 +449,13 @@ Partial Public Class AppSettingsPage
             Else
                 cbChannelTags.IsEnabled = False
             End If
-
         End If
-
     End Sub
 
     Private Sub cbChannelTags_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
         If Not cbChannelTags.SelectedItem Is Nothing Then
             vm.appSettings.FavouriteChannelTag = CType(cbChannelTags.SelectedItem, ChannelTagViewModel).uuid
         End If
-    End Sub
-
-    Private Sub slRefreshRate_ValueChanged(sender As Object, e As RangeBaseValueChangedEventArgs)
-        Dim steppie As Integer = 2
-        TryCast(sender, Slider).Value = If((e.NewValue Mod steppie <> 0), (steppie - e.NewValue Mod steppie) + e.NewValue, e.NewValue)
-    End Sub
-
-    Private Sub slEPGItems_ValueChanged(sender As Object, e As RangeBaseValueChangedEventArgs)
-        Dim steppie As Integer = 2
-        TryCast(sender, Slider).Value = If((e.NewValue Mod steppie <> 0), (steppie - e.NewValue Mod steppie) + e.NewValue, e.NewValue)
     End Sub
 
     Private Sub SettingsBackPressed(sender As Object, e As BackPressedEventArgs)
