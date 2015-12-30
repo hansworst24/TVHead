@@ -229,6 +229,7 @@
     <Content Include="Images\feature.settings.png" />
     <Content Include="Images\folder.png" />
     <Content Include="Images\forum.png" />
+    <Content Include="Images\github.png" />
     <Content Include="Images\home.png" />
     <Content Include="Images\host.png" />
     <Content Include="Images\in.png" />

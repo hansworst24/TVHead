@@ -53,77 +53,81 @@
             </Grid.ColumnDefinitions>
             <Image Grid.Row="0" HorizontalAlignment="Right" Height="200" VerticalAlignment="Bottom" Source="/Assets/Square71x71Logo.scale-240.png"/>
         </Grid>
-        <Grid Grid.Row="1" Margin="10,40,10,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="about..." FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
-            <TextBlock Grid.Row="1" Margin="0,20,0,30" TextAlignment="Justify" Text="This WP app is the result of pure hobbyism in spare time by a non-professional programmer. The lack of a WP app for TVHeadend has moved me to dive into writing this app with little extensive programming knowledge. Nevertheless I hope to be able to continue tuning and updating the app in my spare time and that other people might find it useful too ! Regards, Frank" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
-            <Image Grid.Row="3" Source="/Images/email.png" HorizontalAlignment="Left" Height="30"/>
-            <HyperlinkButton Grid.Row="3" HorizontalAlignment="Left" Margin="40,0,0,0" NavigateUri="mailto:tvhead@outlook.com" Content="tvhead@outlook.com" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
-            <Image Grid.Row="4" Source="/Images/forum.png" Margin="0,20,0,0" HorizontalAlignment="Left" Height="30"/>
-            <HyperlinkButton Grid.Row="4" HorizontalAlignment="Left" Margin="40,20,0,0" NavigateUri="https://tvheadend.org/boards/5/topics/12220" Content="TV Head thread on tvheadend.org forum" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
-
-            <TextBlock Grid.Row="5" Margin="0,20,0,0" Text="Long polling stats:" Style="{ThemeResource SubTitleAccent}" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
-            <Grid Grid.Row="6" Background="Transparent">
+        <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Row="1" Margin="00,0,10,0">
+            <Grid Margin="10,40,10,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Text="create" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Text="update" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="0" Grid.Column="3" Margin="5,0,5,0" Text="change" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="0" Grid.Column="4" Margin="5,0,5,0" Text="delete" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="0" Grid.Column="5" Margin="5,0,5,0" Text="dvr_update" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="0" Grid.Column="6" Margin="5,0,5,0" Text="dvr_delete" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="0" Text="about..." FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
+                <TextBlock Grid.Row="1" Margin="0,20,0,30" TextAlignment="Justify" Text="This WP app is the result of pure hobbyism in spare time by a non-professional programmer. The lack of a WP app for TVHeadend has moved me to dive into writing this app with little extensive programming knowledge. Nevertheless I hope to be able to continue tuning and updating the app in my spare time and that other people might find it useful too ! Regards, Frank" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
+                <Image Grid.Row="3" Source="/Images/email.png" HorizontalAlignment="Left" Height="30"/>
+                <HyperlinkButton Grid.Row="3" HorizontalAlignment="Left" Margin="40,0,0,0" NavigateUri="mailto:tvhead@outlook.com" Content="tvhead@outlook.com" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
+                <Image Grid.Row="4" Source="/Images/forum.png" Margin="0,20,0,0" HorizontalAlignment="Left" Height="30"/>
+                <HyperlinkButton Grid.Row="4" HorizontalAlignment="Left" Margin="40,20,0,0" NavigateUri="https://tvheadend.org/boards/5/topics/12220" Content="TV Head thread on tvheadend.org forum" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
+                <Image Grid.Row="5" Source="/Images/github.png" Margin="0,20,0,0" HorizontalAlignment="Left" Height="30"/>
+                <HyperlinkButton Grid.Row="5" HorizontalAlignment="Left" Margin="40,20,0,0" NavigateUri="https://github.com/hansworst24/TVHead" Content="Source Code on GitHub" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,0,5,0" Text="epg"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding currentCometStats.intEPGCreate}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding currentCometStats.intEPGUpdate}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding currentCometStats.intEPGChange}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding currentCometStats.intEPGDelete}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="5" Text="{Binding currentCometStats.intEPGDVRUpdate}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding currentCometStats.intEPGDVRDelete}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,0,5,0" Text="dvrentry"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding currentCometStats.intDVRCreate}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding currentCometStats.intDVRUpdate}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding currentCometStats.intDVRChange}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding currentCometStats.intDVRDelete}" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="6" Margin="0,20,0,0" Text="Long polling stats:" Style="{ThemeResource SubTitleAccent}" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
+                <Grid Grid.Row="7" Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Text="create" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Text="update" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Margin="5,0,5,0" Text="change" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Grid.Column="4" Margin="5,0,5,0" Text="delete" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Grid.Column="5" Margin="5,0,5,0" Text="dvr_update" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Grid.Column="6" Margin="5,0,5,0" Text="dvr_delete" HorizontalAlignment="Center"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,0,5,0" Text="dvrautorec"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding currentCometStats.intDVRAutoRecCreate}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding currentCometStats.intDVRAutoRecUpdate}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding currentCometStats.intDVRAutoRecChange}" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding currentCometStats.intDVRAutoRecDelete}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,0,5,0" Text="epg"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding currentCometStats.intEPGCreate}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding currentCometStats.intEPGUpdate}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding currentCometStats.intEPGChange}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding currentCometStats.intEPGDelete}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Grid.Column="5" Text="{Binding currentCometStats.intEPGDVRUpdate}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding currentCometStats.intEPGDVRDelete}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,0,5,0" Text="dvrentry"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding currentCometStats.intDVRCreate}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding currentCometStats.intDVRUpdate}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding currentCometStats.intDVRChange}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding currentCometStats.intDVRDelete}" HorizontalAlignment="Center"/>
 
+                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,0,5,0" Text="dvrautorec"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding currentCometStats.intDVRAutoRecCreate}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding currentCometStats.intDVRAutoRecUpdate}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding currentCometStats.intDVRAutoRecChange}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding currentCometStats.intDVRAutoRecDelete}" HorizontalAlignment="Center"/>
+
+
+                </Grid>
+                <TextBlock Grid.Row="8" Margin="0,20,0,0" Text="total bytes received :" Style="{ThemeResource SubTitleAccent}" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
+                <TextBlock Grid.Row="9" Margin="0,0,0,0" Text="{Binding totalBytesReceived}" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}" VerticalAlignment="Top"/>
 
             </Grid>
-            <TextBlock Grid.Row="7" Margin="0,20,0,0" Text="total bytes received :" Style="{ThemeResource SubTitleAccent}" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
-            <TextBlock Grid.Row="8" Margin="0,0,0,0" Text="{Binding totalBytesReceived}" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}" VerticalAlignment="Top"/>
-            
-        </Grid>
-        
+        </ScrollViewer>
     </Grid>
 </Page>
