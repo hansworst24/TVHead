@@ -164,14 +164,6 @@ Public NotInheritable Class HubPage
     Private Sub HubBackPressed(sender As Object, e As BackPressedEventArgs)
         ''Override certain BackKeyPresses
         WriteToDebug("HubPage.OnBackPressed()", "start")
-        'DefaultViewModel("UpcomingRecordings") = New AutoRecordingListViewModel
-
-        'Dim tst As AutoRecordingListViewModel = DefaultViewModel("UpcomingRecordings")
-        'If tst.MultiSelectMode = ListViewSelectionMode.Multiple Then
-        '    tst.MultiSelectMode = ListViewSelectionMode.None
-        '    e.Handled = True
-        '    Exit Function
-        'End If
 
         If vm.UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Multiple Then
             vm.UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
