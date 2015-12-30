@@ -1,14 +1,8 @@
-﻿Imports System.Threading
-Imports GalaSoft.MvvmLight
+﻿Imports GalaSoft.MvvmLight
 Imports TVHead_81.Common
-Imports TVHead_81.ViewModels
 
 Public Class SearchPageViewModel
     Inherits ViewModelBase
-
-    Public timer As New DispatcherTimer
-
-
 
     Private Property _UseFullTextSearch As Boolean
     Public Property UseFullTextSearch As Boolean
@@ -77,9 +71,6 @@ Public Class SearchPageViewModel
                                             Me.SearchIsActive = "True"
                                             Await StartSearch(SearchValue)
                                             Me.SearchIsActive = "False"
-                                            'timer.Stop()
-                                            'timer.Start()
-
                                             WriteToDebug("SearchPageViewModel.SearchTextChangedCommand", "stop")
                                         End If
                                     End Sub)
@@ -111,7 +102,6 @@ Public Class SearchPageViewModel
 
     Public Async Function StartSearch(searchvalue As String) As Task
         WriteToDebug("SearchPageViewModel.StartSearch", "start")
-        'Me.SearchIsActive = "True"
         Dim i As IEnumerable(Of ChannelViewModel)
         i = Await SearchEPGEntry(searchvalue, UseFullTextSearch)
         For Each result In i
@@ -119,22 +109,7 @@ Public Class SearchPageViewModel
         Next
         GroupedSearchResults = (From e In i Group By Day = e.currentEPGItem.startDate.ToString(System.Globalization.DateTimeFormatInfo.CurrentInfo.LongDatePattern) Into Group
                                 Select New Group(Of ChannelViewModel)(Day, Group)).ToObservableCollection()
-        'Me.SearchIsActive = "False"
         WriteToDebug("SearchPageViewModel.StartSearch", "stop")
-        'timer.Stop()
+
     End Function
-
-    'Private Async Function ExecuteSearch(value As String) As Task(Of IEnumerable(Of ChannelViewModel))
-    '    WriteToDebug("SearchPageViewModel.ExecuteSearch", "start")
-    '    WriteToDebug("SearchPageViewModel.ExecuteSearch", String.Format("Search EPG Entries ofr keyword : {0}", value))
-    '    Return Await SearchEPGEntry(value, UseFullTextSearch)
-    '    WriteToDebug("SearchPageViewModel.ExecuteSearch", "stop")
-    'End Function
-
-
-    Public Sub New()
-        '    timer.Interval = New TimeSpan(0, 0, 0, 0, 500)
-        '    AddHandler timer.Tick, AddressOf StartSearch
-        '    SearchValue = ""
-    End Sub
 End Class
