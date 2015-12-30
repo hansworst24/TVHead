@@ -1,7 +1,5 @@
 ﻿Imports TVHead_81.Common
-
 Imports TVHead_81.ViewModels
-
 
 
 ' The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
@@ -12,13 +10,6 @@ Public NotInheritable Class StatusPage
     Private WithEvents _navigationHelper As New NavigationHelper(Me)
     Private ReadOnly _defaultViewModel As New ObservableDictionary
     Private ReadOnly _resourceLoader As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
-
-    ' Public searchStatus As IAsyncAction
-    Dim doRefresh As Boolean
-
-    'Public timer As New DispatcherTimer
-    ''Private streamWebSocket As StreamWebSocket
-    'Private readBuffer As Byte()
 
     ' Set a reference to the Public objects in app.xaml.vb
     Dim app As App = CType(Application.Current, App)
@@ -100,8 +91,7 @@ Public NotInheritable Class StatusPage
     Protected Overrides Async Sub OnNavigatedTo(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedTo(e)
         'Loading of data happens here
-        Dim s As New AppSettings
-        Me.DataContext = app.DefaultViewModel
+        DataContext = app.DefaultViewModel
         If Not app.DefaultViewModel.hasAdminAccess Then
             Await app.DefaultViewModel.checkAdminAccess()
         End If
@@ -114,11 +104,8 @@ Public NotInheritable Class StatusPage
             app.DefaultViewModel.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "You don't have Admin access to the TVH server with this account. Therefore you won't see Subscriptions / Stream updates."})
         End If
         If app.DefaultViewModel.FreeDiskSpace = "" Then app.DefaultViewModel.WaitingForDiskspaceUpdate = True Else app.DefaultViewModel.WaitingForDiskspaceUpdate = False
-        If Not s.LongPollingEnabled Then app.DefaultViewModel.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "Auto Refresh is not enabled. Enable Auto Refresh to receive continuous updates for streams/subscriptions and log."})
+        If Not app.DefaultViewModel.appSettings.LongPollingEnabled Then app.DefaultViewModel.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "Auto Refresh is not enabled. Enable Auto Refresh to receive continuous updates for streams/subscriptions and log."})
     End Sub
-
-
-
 
     Protected Overrides Sub OnNavigatedFrom(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedFrom(e)
@@ -129,7 +116,5 @@ Public NotInheritable Class StatusPage
     Private Sub OnBackPressed(sender As Object, e As BackPressedEventArgs)
 
     End Sub
-
-
 
 End Class
