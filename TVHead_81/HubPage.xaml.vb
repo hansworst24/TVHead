@@ -134,6 +134,7 @@ Public NotInheritable Class HubPage
                 app.DefaultViewModel.TVHPass = s.PasswordSetting
                 'Retrigger the loading of data by setting the dataLoaded property of each list to False. LoadDataSync() will then reload the data
                 vm.logmessages.entries.Clear()
+                vm.DVRConfigs.dataLoaded = False
                 vm.AllChannels.dataLoaded = False
                 vm.Channels.dataLoaded = False
                 vm.Genres.dataLoaded = False
