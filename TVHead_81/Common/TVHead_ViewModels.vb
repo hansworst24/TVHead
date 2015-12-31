@@ -1800,7 +1800,7 @@ Namespace ViewModels
 
                 If isConnected And hasEPGAccess Then
                     If Me.ChannelTags.dataLoaded = False Then Await LoadChannelTags()
-                    If Me.DVRConfigs.dataLoaded = False Then Await LoadDVRConfig()
+                    If Me.DVRConfigs.dataLoaded = False Then Await Me.DVRConfigs.Load()
                     If Me.AllGenres.dataLoaded = False Then Await LoadContentTypes(True)
                     If Me.Genres.dataLoaded = False Then Await LoadContentTypes(False)
                     If Me.AllChannels.dataLoaded = False Then Await Me.AllChannels.LoadAll()
@@ -3780,6 +3780,14 @@ Namespace ViewModels
     Public Class DVRConfigListViewModel
         Public Property items As New List(Of DVRConfigViewModel)
         Public Property dataLoaded As Boolean
+
+        Public Async Function Load() As Task
+            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
+                                                                                                             items.Clear()
+                                                                                                             items = (Await LoadDVRConfigs()).ToList()
+                                                                                                             dataLoaded = True
+                                                                                                         End Sub)
+        End Function
     End Class
 
 

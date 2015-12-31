@@ -879,19 +879,15 @@ Module TVHead_Modules
         Return result.OrderBy(Function(x) x.start)
     End Function
 
-    Public Async Function LoadDVRConfig() As Task
-        WriteToDebug("Modules.LoadDVRConfig()", "start")
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
-        Dim settings As New AppSettings
-
-        Dim recordings As New List(Of RecordingViewModel)
+    Public Async Function LoadDVRConfigs() As Task(Of List(Of DVRConfigViewModel))
+        WriteToDebug("Modules.LoadDVRConfigs()", "start")
         Dim result As New List(Of DVRConfigViewModel)
         Dim json_result As String
         Try
             json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetDVRConfigs())).Content.ReadAsStringAsync
         Catch ex As Exception
             WriteToDebug("Modules.LoadDVRConfig()", "stop-error")
-            Return
+            Return result
         End Try
 
         If Not json_result = "" Then
@@ -904,12 +900,8 @@ Module TVHead_Modules
             End If
 
         End If
-        For Each c In result.OrderBy(Function(x) x.name)
-            vm.DVRConfigs.items.Add(c)
-        Next
-        vm.DVRConfigs.dataLoaded = True
-        WriteToDebug("Modules.LoadDVRConfig()", "stop")
-        'Return result.OrderBy(Function(x) x.name)
+        WriteToDebug("Modules.LoadDVRConfigs()", "stop")
+        Return (result.OrderBy(Function(x) x.name)).ToList()
     End Function
 
     Public Async Function LoadContentTypes(Optional all As Boolean = False) As Task
