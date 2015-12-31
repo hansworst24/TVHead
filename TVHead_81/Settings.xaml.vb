@@ -44,10 +44,10 @@ Partial Public Class AppSettings
 
 #If DEBUG Then
     'TEST SETTINGS
-    Const strServerIPDefault = "192.168.168.2"
-    Const strServerPortDefault = "9981"
-    Const strUsernameDefault = "tvhead"
-    Const strUserPasswordDefault = "tvhead"
+    Const strServerIPDefault = ""
+    Const strServerPortDefault = ""
+    Const strUsernameDefault = ""
+    Const strUserPasswordDefault = ""
     Const intMaxEPGEntries = 30000
 #Else
     'PROD SETTINGS

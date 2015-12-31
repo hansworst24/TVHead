@@ -12,12 +12,6 @@ Public NotInheritable Class HubPage
     Private ReadOnly _defaultViewModel As New ObservableDictionary
     Private ReadOnly _resourceLoader As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
 
-    Public searchStatus As IAsyncAction
-    'Public ct As CancellationToken
-    'Public tokenSource As New CancellationTokenSource()
-
-    Public timer As New DispatcherTimer
-
     Dim app As App = CType(Application.Current, App)
     Dim vm As TVHead_ViewModel = app.DefaultViewModel
 
@@ -26,10 +20,8 @@ Public NotInheritable Class HubPage
     ''' </summary>
     Public Sub New()
         InitializeComponent()
-        AddHandler HardwareButtons.BackPressed, AddressOf HubBackPressed
         DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait
         NavigationCacheMode = NavigationCacheMode.Enabled
-
     End Sub
 
     ''' <summary>
@@ -40,7 +32,6 @@ Public NotInheritable Class HubPage
             Return _navigationHelper
         End Get
     End Property
-
 
     Public ReadOnly Property DefaultViewModel As ObservableDictionary
         Get
@@ -73,7 +64,6 @@ Public NotInheritable Class HubPage
     ''' serializable state.</param>
     Private Sub NavigationHelper_SaveState(sender As Object, e As SaveStateEventArgs) Handles _navigationHelper.SaveState
         ' TODO: Save the unique state of the page here.
-        'vm.StopRefresh()
     End Sub
 
 
@@ -94,44 +84,38 @@ Public NotInheritable Class HubPage
     ''' <param name="e">Event data that describes how this page was reached.</param>
     Protected Overrides Async Sub OnNavigatedTo(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedTo(e)
+        AddHandler HardwareButtons.BackPressed, AddressOf HubBackPressed
         'Loading of data happens here
-        Dim s As New AppSettings
         Me.DataContext = app.DefaultViewModel
-        If e.NavigationMode = NavigationMode.New Then
-            If s.ServerIPSetting = "" Or s.ServerPortSetting = "" Then
-                Await vm.StatusBar.Update("IP address and/or port not set. Go to settings !", False, 0, False, False)
-                ' parameter
-            Else
-                App.DefaultViewModel.TVHIPAddress = s.ServerIPSetting
-                App.DefaultViewModel.TVHPort = s.ServerPortSetting
-                app.DefaultViewModel.TVHVersion = s.TVHVersion
-                app.DefaultViewModel.TVHUser = s.UsernameSetting
-                app.DefaultViewModel.TVHPass = s.PasswordSetting
 
-                Await Task.Run(Function() vm.LoadDataAsync())
-            End If
+        'Redirect to Settings page immediately when IP address or port are not set
+        If vm.appSettings.ServerIPSetting = "" Or vm.appSettings.ServerPortSetting = "" Then
+            Await vm.StatusBar.Update("IP address and/or port not set. Go to settings !", False, 0, False, False)
+            Await Me.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, Sub()
+                                                                                            Me.Frame.Navigate(GetType(AppSettingsPage))
+                                                                                        End Sub)
+            Exit Sub
+        End If
+
+        If e.NavigationMode = NavigationMode.New Then
+            app.DefaultViewModel.TVHIPAddress = vm.appSettings.ServerIPSetting
+            app.DefaultViewModel.TVHPort = vm.appSettings.ServerPortSetting
+            app.DefaultViewModel.TVHVersion = vm.appSettings.TVHVersion
+            app.DefaultViewModel.TVHUser = vm.appSettings.UsernameSetting
+            app.DefaultViewModel.TVHPass = vm.appSettings.PasswordSetting
+            Await Task.Run(Function() vm.LoadDataAsync())
         End If
 
         If e.NavigationMode = NavigationMode.Back Then
-            AddHandler HardwareButtons.BackPressed, AddressOf HubBackPressed
-            'Reset the tests we've done to ensure access to the TVH server
-
-
-            If s.ServerIPSetting = "" Or s.ServerPortSetting = "" Then
-                Await vm.StatusBar.Update("IP address and/or port not set. Go to settings !", False, 0, False, False)
-            ElseIf (app.DefaultViewModel.TVHIPAddress <> s.ServerIPSetting) Or
-                   (app.DefaultViewModel.TVHPort <> s.ServerPortSetting) Or
-                   (app.DefaultViewModel.TVHUser <> s.UsernameSetting) Or
-                   (app.DefaultViewModel.TVHPass <> s.PasswordSetting) Then
-                vm.hasEPGAccess = False
-                vm.hasDVRAccess = False
-                vm.hasAdminAccess = False
-                vm.isConnected = False
-                vm.doCatchComents = False
-                app.DefaultViewModel.TVHIPAddress = s.ServerIPSetting
-                app.DefaultViewModel.TVHPort = s.ServerPortSetting
-                app.DefaultViewModel.TVHUser = s.UsernameSetting
-                app.DefaultViewModel.TVHPass = s.PasswordSetting
+            If (app.DefaultViewModel.TVHIPAddress <> vm.appSettings.ServerIPSetting) Or
+                   (app.DefaultViewModel.TVHPort <> vm.appSettings.ServerPortSetting) Or
+                   (app.DefaultViewModel.TVHUser <> vm.appSettings.UsernameSetting) Or
+                   (app.DefaultViewModel.TVHPass <> vm.appSettings.PasswordSetting) Then
+                'Set the apps variables to reflect the new app settings. Used to detect setting changes
+                app.DefaultViewModel.TVHIPAddress = vm.appSettings.ServerIPSetting
+                app.DefaultViewModel.TVHPort = vm.appSettings.ServerPortSetting
+                app.DefaultViewModel.TVHUser = vm.appSettings.UsernameSetting
+                app.DefaultViewModel.TVHPass = vm.appSettings.PasswordSetting
                 'Retrigger the loading of data by setting the dataLoaded property of each list to False. LoadDataSync() will then reload the data
                 vm.logmessages.entries.Clear()
                 vm.DVRConfigs.dataLoaded = False
@@ -147,17 +131,15 @@ Public NotInheritable Class HubPage
                 vm.SelectedChannel = Nothing
                 Await Task.Run(Function() vm.LoadDataAsync())
                 vm.CatchCometsBoxID = ""
-            Else
             End If
         End If
-        If s.ServerIPSetting <> "" And s.ServerPortSetting <> "" And s.LongPollingEnabled Then vm.StartRefresh()
+        If vm.appSettings.ServerIPSetting <> "" And vm.appSettings.ServerPortSetting <> "" And vm.appSettings.LongPollingEnabled Then vm.StartRefresh()
 
     End Sub
 
     Protected Overrides Sub OnNavigatedFrom(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedFrom(e)
         RemoveHandler HardwareButtons.BackPressed, AddressOf HubBackPressed
-
     End Sub
 
 #End Region
@@ -195,21 +177,16 @@ Public NotInheritable Class HubPage
             Exit Sub
         End If
 
+        'If Pivot is on any EPG or Upcoming Recordings, or... go one pivotitem back
         If vm.PivotSelectedIndex > 0 Then
             vm.PivotSelectedIndex -= 1
             e.Handled = True
             Exit Sub
         End If
-
+        'If Pivot is on Channels PivotItem, close the app
         If vm.PivotSelectedIndex = 0 Then
             Application.Current.Exit()
         End If
         WriteToDebug("HubPage.OnBackPressed()", "stop")
-
-
     End Sub
-
-    Public result As IEnumerable(Of ChannelViewModel)
-
-
 End Class
