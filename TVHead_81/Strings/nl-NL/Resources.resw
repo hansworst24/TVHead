@@ -426,9 +426,6 @@
   <data name="Recordings.Text" xml:space="preserve">
     <value>Opnames</value>
   </data>
-  <data name="tsAskForAutoRecording.Header" xml:space="preserve">
-    <value>vraag om een Auto opname aan te maken bij het aanmaken van een opname</value>
-  </data>
   <data name="tsConfirmDeletion.Header" xml:space="preserve">
     <value>bevestig verwijderen van opnames</value>
   </data>
@@ -512,5 +509,8 @@
   </data>
   <data name="UsedDiskSpace" xml:space="preserve">
     <value>Gebruikt : {0:0.##} {1}</value>
+  </data>
+  <data name="tsShowRecordingOptions.Header" xml:space="preserve">
+    <value>Laat opname-opties zien wanneer een opname gestart wordt</value>
   </data>
 </root>

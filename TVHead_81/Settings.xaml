@@ -132,7 +132,7 @@
                     <ToggleSwitch x:Uid="tsShowChannelNumbers" HeaderTemplate="{StaticResource ToggleSwitchHeaderTemplate}" Header="Show Channel Numbers" Margin="0" IsOn="{Binding appSettings.ShowChannelNumbers, Mode=TwoWay}" />
                     <TextBlock x:Uid="Recordings" Margin="0,20,0,10" Text="Recordings" FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
                     <ToggleSwitch x:Uid="tsConfirmDeletion" HeaderTemplate="{StaticResource ToggleSwitchHeaderTemplate}" Header="Confirm Recording Deletion" Margin="0" IsOn="{Binding appSettings.ConfirmDeletion, Mode=TwoWay}" />
-                    <ToggleSwitch x:Uid="tsAskForAutoRecording" HeaderTemplate="{StaticResource ToggleSwitchHeaderTemplate}" Header="Ask to record once or create an auto recording when recording a program." Margin="0" IsOn="{Binding appSettings.ProposeAutoRecording, Mode=TwoWay}" />
+                    <ToggleSwitch x:Uid="tsShowRecordingOptions" HeaderTemplate="{StaticResource ToggleSwitchHeaderTemplate}" Header="Ask to record once or create an auto recording when recording a program." Margin="0" IsOn="{Binding appSettings.ProposeAutoRecording, Mode=TwoWay}" />
                 </StackPanel>
             </Grid>
             

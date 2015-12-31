@@ -414,9 +414,6 @@
   <data name="Recordings.Text" xml:space="preserve">
     <value>Aufnahmen</value>
   </data>
-  <data name="tsAskForAutoRecording.Header" xml:space="preserve">
-    <value>Frage um Auto-Aufnahme beim erstellen eines Aufnahme</value>
-  </data>
   <data name="tsConfirmDeletion.Header" xml:space="preserve">
     <value>Löschen bestätigen</value>
   </data>
@@ -512,5 +509,8 @@
   </data>
   <data name="UsedDiskSpace" xml:space="preserve">
     <value>Benutzt : {0:0.##} {1}</value>
+  </data>
+  <data name="tsShowRecordingOptions.Header" xml:space="preserve">
+    <value>Zeig Aufnahme-optionen beim starten der Aufnahme</value>
   </data>
 </root>
