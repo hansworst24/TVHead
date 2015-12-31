@@ -1482,6 +1482,7 @@ Namespace ViewModels
                                             FailedRecordings.SetExpanseCollapseEnabled(True)
                                             AutoRecordings.SetExpanseCollapseEnabled(True)
                                             SetApplicationBarButtons()
+
                                             'If Me.PivotSelectedIndex = 2 And Me.UpcomingRecordings.dataLoaded Then Await Me.UpcomingRecordings.Reload()
                                             'If Me.PivotSelectedIndex = 3 And Me.FinishedRecordings.dataLoaded Then Await Me.FinishedRecordings.Reload()
                                             'If Me.PivotSelectedIndex = 4 And Me.FailedRecordings.dataLoaded Then Await Me.FailedRecordings.Reload()

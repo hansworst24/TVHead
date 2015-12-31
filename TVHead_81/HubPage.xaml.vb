@@ -198,11 +198,12 @@ Public NotInheritable Class HubPage
         If vm.PivotSelectedIndex > 0 Then
             vm.PivotSelectedIndex -= 1
             e.Handled = True
+            Exit Sub
         End If
 
-        'If vm.PivotSelectedIndex = 0 Then
-
-        'End If
+        If vm.PivotSelectedIndex = 0 Then
+            Application.Current.Exit()
+        End If
         WriteToDebug("HubPage.OnBackPressed()", "stop")
 
 
