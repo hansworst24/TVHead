@@ -59,7 +59,7 @@
             <PivotItem x:Uid="pviStatusGeneral" Header="General" Margin="10,0,10,0" >
                 <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Row="1" Margin="10,0,0,0">
                     <StackPanel Orientation="Vertical">
-                        <TextBlock x:Uid="streams" Text="Streams" Height="50" FontSize="{ThemeResource TextStyleExtraLargeFontSize}" 
+                        <TextBlock x:Uid="streams" Text="Streams" Height="50"
                                FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>
 
                         <ListView ItemsSource="{Binding Source={StaticResource cvsAdapters}}" Margin="10,0,0,0"
@@ -79,7 +79,7 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                        <TextBlock x:Uid="subscriptions" Text="Subscriptions" Height="50" FontSize="{ThemeResource TextStyleExtraLargeFontSize}" 
+                        <TextBlock x:Uid="subscriptions" Text="Subscriptions" Height="50" 
                                FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>
                         <ListView ItemsSource="{Binding Source={StaticResource cvsSubscriptions}}"  Margin="10,0,0,0"
                         ContinuumNavigationTransitionInfo.ExitElementContainer="True">
@@ -98,7 +98,7 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                        <TextBlock x:Uid="diskspace" Text="Disk Space" Height="50" FontSize="{ThemeResource TextStyleExtraLargeFontSize}" 
+                        <TextBlock x:Uid="diskspace" Text="Disk Space" Height="50" 
                                FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>
                         <!--<Image Source="/Images/diskspace.png" Height="40"/>-->
                         <Grid>
@@ -107,21 +107,21 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <Rectangle x:Name="TotalDiskSpace" Grid.Row="0" Margin="10,0,10,0" HorizontalAlignment="Stretch" Height="20" Fill="{ThemeResource PhoneAccentBrush}" Opacity="0.3"/>
-                            <Rectangle x:Name="FreeDiskSpace" Grid.Row="0" HorizontalAlignment="Stretch" Margin="10,0,10,0" Height="20" Fill="{ThemeResource PhoneAccentBrush}" Opacity="0.3">
+                            <Rectangle x:Name="TotalDiskSpace" Grid.Row="0" Margin="10,0,10,0" HorizontalAlignment="Stretch" Height="20"  Opacity="0.3"/>
+                            <Rectangle x:Name="FreeDiskSpace" Grid.Row="0" HorizontalAlignment="Stretch" Margin="10,0,10,0" Height="20"  Opacity="0.3">
                                 <Rectangle.RenderTransform>
                                     <ScaleTransform x:Name="FreeDiskSpaceScale" CenterX="1" CenterY="0"  ScaleX="{Binding DiskSpaceStats.FreeDiskspacePercentage}" />
                                     <!--{Binding DiskSpaceStats.FreeDiskspacePercentage}-->
                                 </Rectangle.RenderTransform>
                             </Rectangle>
-                            <Rectangle Grid.Row="0" x:Name="UsedDiskSpace" Margin="10,0,10,0" Height="20" Fill="{ThemeResource PhoneAccentBrush}" Opacity="0.3">
+                            <Rectangle Grid.Row="0" x:Name="UsedDiskSpace" Margin="10,0,10,0" Height="20"  Opacity="0.3">
                                 <Rectangle.RenderTransform>
                                     <ScaleTransform x:Name="UsedDiskSpaceScale" CenterX="0" CenterY="0"  ScaleX="{Binding DiskSpaceStats.UsedDiskspacePercentage}" />
                                 </Rectangle.RenderTransform>
                             </Rectangle>
-                            <TextBlock Grid.Row="1" Margin="10,5,10,0" Text="{Binding DiskSpaceStats.UsedDiskspaceString}" FontSize="{ThemeResource TextStyleMediumFontSize}" Opacity="0.9" Foreground="{ThemeResource PhoneAccentBrush}" HorizontalAlignment="Left"/>
-                            <TextBlock Grid.Row="1" Margin="10,5,10,0" Text="{Binding DiskSpaceStats.TotalDiskspaceString}" FontSize="{ThemeResource TextStyleMediumFontSize}" Opacity="0.6" Foreground="{ThemeResource PhoneAccentBrush}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Row="1" Margin="10,5,10,0" Text="{Binding DiskSpaceStats.FreeDiskspaceString}" FontSize="{ThemeResource TextStyleMediumFontSize}" Opacity="0.3"  Foreground="{ThemeResource PhoneAccentBrush}" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="1" Margin="10,5,10,0" Text="{Binding DiskSpaceStats.UsedDiskspaceString}"  Opacity="0.9" HorizontalAlignment="Left"/>
+                            <TextBlock Grid.Row="1" Margin="10,5,10,0" Text="{Binding DiskSpaceStats.TotalDiskspaceString}"  Opacity="0.6"  HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Margin="10,5,10,0" Text="{Binding DiskSpaceStats.FreeDiskspaceString}"  Opacity="0.3"   HorizontalAlignment="Right"/>
                             <!--<TextBlock Grid.Row="1" Margin="10,0,10,0" Text="85 GB" FontSize="{ThemeResource TextStyleLargeFontSize}"  HorizontalAlignment="Right"/>-->
                             <ProgressBar Grid.Row="2" Background="Transparent" IsIndeterminate="{Binding DiskSpaceStats.WaitingForUpdate, Mode=TwoWay}"/>
                         </Grid>

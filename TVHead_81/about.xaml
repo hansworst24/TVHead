@@ -70,7 +70,7 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Text="about..." FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
+                <TextBlock Grid.Row="0" Text="about..."/>
                 <TextBlock Grid.Row="1" Margin="0,20,0,30" TextAlignment="Justify" Text="This WP app is the result of pure hobbyism in spare time by a non-professional programmer. The lack of a WP app for TVHeadend has moved me to dive into writing this app with little extensive programming knowledge. Nevertheless I hope to be able to continue tuning and updating the app in my spare time and that other people might find it useful too ! Regards, Frank" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
                 <Image Grid.Row="3" Source="/Images/email.png" HorizontalAlignment="Left" Height="30"/>
                 <HyperlinkButton Grid.Row="3" HorizontalAlignment="Left" Margin="40,0,0,0" NavigateUri="mailto:tvhead@outlook.com" Content="tvhead@outlook.com" FontSize="{ThemeResource TextStyleLargeFontSize}"/>

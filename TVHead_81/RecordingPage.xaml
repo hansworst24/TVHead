@@ -33,117 +33,6 @@
 		<x:Double x:Key="PhoneButtonMinHeight">57.5</x:Double>
 		<x:Double x:Key="PhoneButtonMinWidth">109</x:Double>
 		<Thickness x:Key="PhoneTouchTargetOverhang">0,9.5</Thickness>
-
-        <Style x:Key="myToggleButtonStyle" TargetType="ToggleButton">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="{ThemeResource PhoneForegroundBrush}"/>
-            <Setter Property="Foreground" Value="{ThemeResource PhoneForegroundBrush}"/>
-            <Setter Property="BorderThickness" Value="{ThemeResource PhoneBorderThickness}"/>
-            <Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilyNormal}"/>
-            <Setter Property="FontWeight" Value="{ThemeResource PhoneButtonFontWeight}"/>
-            <Setter Property="FontSize" Value="{ThemeResource TextStyleLargeFontSize}"/>
-            <Setter Property="Padding" Value="{ThemeResource PhoneButtonContentPadding}"/>
-            <Setter Property="MinHeight" Value="{ThemeResource PhoneButtonMinHeight}"/>
-            <Setter Property="MinWidth" Value="{ThemeResource PhoneButtonMinWidth}"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Grid Background="Transparent">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal"/>
-                                    <VisualState x:Name="PointerOver"/>
-                                    <VisualState x:Name="Pressed"/>
-                                    <VisualState x:Name="Disabled">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="EnabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="DisabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Checked">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="EnabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneAccentBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="EnabledContent">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneButtonBasePressedForegroundBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="DisabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneDisabledBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="DisabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneDisabledBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="DisabledContent">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneBackgroundBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="CheckedPointerOver">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="EnabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneAccentBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="EnabledContent">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneButtonBasePressedForegroundBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="DisabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneDisabledBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="DisabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneDisabledBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="DisabledContent">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneBackgroundBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="CheckedPressed"/>
-                                    <VisualState x:Name="CheckedDisabled">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="EnabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneAccentBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="EnabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="0.4"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="EnabledContent">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource PhoneButtonBasePressedForegroundBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Indeterminate"/>
-                                    <VisualState x:Name="IndeterminatePointerOver"/>
-                                    <VisualState x:Name="IndeterminatePressed"/>
-                                    <VisualState x:Name="IndeterminateDisabled">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="EnabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="DisabledBackground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <Border x:Name="EnabledBackground" Width="90" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Margin="{ThemeResource PhoneTouchTargetOverhang}">
-                                <ContentPresenter x:Name="EnabledContent" AutomationProperties.AccessibilityView="Raw" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                            </Border>
-                            <Border x:Name="DisabledBackground" Width="90" BorderBrush="{ThemeResource ButtonDisabledBorderThemeBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="Transparent" IsHitTestVisible="False" Margin="{ThemeResource PhoneTouchTargetOverhang}" Visibility="Collapsed">
-                                <ContentPresenter x:Name="DisabledContent" AutomationProperties.AccessibilityView="Raw" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Foreground="{ThemeResource ButtonDisabledForegroundThemeBrush}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                            </Border>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </Page.Resources>
 
 
@@ -161,7 +50,7 @@
         <Pivot Grid.Row="1" x:Uid="Pivot" Margin="0,-10,0,0">
             <Pivot.HeaderTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" Height="50" FontSize="{ThemeResource TextStyleExtraExtraLargeFontSize}" 
+                    <TextBlock Text="{Binding}" Height="50"
                                FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>
                 </DataTemplate>
             </Pivot.HeaderTemplate>
@@ -204,7 +93,7 @@
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Text="Filter Channel..." FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
+                                    <TextBlock Grid.Row="0" Text="Filter Channel..."/>
                                     <TextBox Grid.Row="1" x:Name="tbChannelSearch" KeyUp="tbChannelSearch_KeyUp"/>
                                     <ScrollViewer Grid.Row="2">
                                         <ListView  x:Name="lstChannels" Height="500"  >
@@ -244,12 +133,12 @@
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Text="Select DVR Config..." FontSize="{ThemeResource TextStyleExtraLargeFontSize}"/>
+                                    <TextBlock Grid.Row="0" Text="Select DVR Config..."/>
                                     <ScrollViewer Grid.Row="2">
                                         <ListView  x:Name="lstDVRConfig" Height="500">
                                             <ListView.ItemTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock Text="{Binding name}" FontSize="{StaticResource TextStyleExtraLargeFontSize}"/>
+                                                    <TextBlock Text="{Binding name}"/>
                                                 </DataTemplate>
                                             </ListView.ItemTemplate>
                                             <Interactivity:Interaction.Behaviors>

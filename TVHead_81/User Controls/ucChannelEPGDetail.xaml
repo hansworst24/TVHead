@@ -165,12 +165,6 @@
         </Storyboard>
     </UserControl.Resources>
 
-    <UserControl.FontFamily>
-        <StaticResource ResourceKey="PhoneFontFamilyLight"/>
-    </UserControl.FontFamily>
-    <UserControl.Foreground>
-        <StaticResource ResourceKey="PhoneForegroundBrush"/>
-    </UserControl.Foreground>
 
     <Grid x:Name="mainGrid" Opacity="1">
         <Grid.RowDefinitions>
@@ -183,7 +177,7 @@
         </Grid.ColumnDefinitions>
 
         
-        <Rectangle x:Name="HeaderBackdrop" Fill="{ThemeResource PhoneBackgroundBrush}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Opacity="0"/>
+        <Rectangle x:Name="HeaderBackdrop" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Opacity="0"/>
         <Button x:Name="btnEPGChannelButton" Grid.Column="0" Grid.Row="0" Style="{StaticResource myTransparentButtonStyle}" 
 			Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="{Binding loadEPGButtonEnabled}"
 			Command="{Binding LoadChannelEPGItems}" CommandParameter="{Binding}" >
@@ -282,7 +276,7 @@
 
                 </Grid>
                 <TextBlock x:Name="tbTitle" Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="3" 
-					FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"
+					  Style="{ThemeResource BaseTextBlockStyle}"
 					TextWrapping="NoWrap" Text="{Binding currentEPGItem.title, Mode=TwoWay}"  TextTrimming="CharacterEllipsis">
                     <TextBlock.RenderTransform>
                         <TranslateTransform X="0"/>
@@ -290,10 +284,10 @@
                 </TextBlock>
                 <TextBlock x:Name="tbStartTime" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" TextAlignment="Left"
 					Text="{Binding currentEPGItem.startDateString, Mode=TwoWay}" HorizontalAlignment="Left" 
-					FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}"
+					 Style="{ThemeResource BaseTextBlockStyle}"
                                />
-                <Rectangle x:Name="progressbackgroundbar" Margin="10,0,10,0" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Height="5" Fill="{ThemeResource PhoneAccentBrush}" Opacity="0.2"/>
-                <Rectangle x:Name="progressbar" Margin="10,0,10,0" Grid.Row="3" Grid.Column="1"  Height="5" Fill="{ThemeResource PhoneAccentBrush}">
+                <Rectangle x:Name="progressbackgroundbar" Margin="10,0,10,0" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Height="5"  Opacity="0.2"/>
+                <Rectangle x:Name="progressbar" Margin="10,0,10,0" Grid.Row="3" Grid.Column="1"  Height="5" >
                     <Rectangle.RenderTransform>
                         <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0"  ScaleX="{Binding currentEPGItem.percentcompleted, Mode=TwoWay}" />
                     </Rectangle.RenderTransform>
@@ -301,7 +295,7 @@
 
                 <TextBlock x:Name="tbEndTime" Grid.Row="3" Grid.Column="2" TextAlignment="Right"
 					Text="{Binding currentEPGItem.endDateString, Mode=TwoWay}" 
-					FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}"
+					 Style="{ThemeResource BaseTextBlockStyle}"
 					HorizontalAlignment="Right" VerticalAlignment="Center"
                                />
             </Grid>

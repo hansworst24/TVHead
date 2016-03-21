@@ -27,8 +27,6 @@
                             Bounciness="2" />
                     </DoubleAnimation.EasingFunction>
                 </DoubleAnimation>
-                <ColorAnimation From="Transparent" To="{Binding Color, Source={StaticResource PhoneAccentBrush}}" Duration="0:0:0.5"
-                    Storyboard.TargetName="BackgroundDrop" Storyboard.TargetProperty="(UIElement.Background).(SolidColorBrush.Color)"/>
                 </Storyboard>
             <Storyboard x:Name="DetailsBounceOut">
                 <DoubleAnimation From="1" To="0" Duration="00:00:1" 
@@ -42,8 +40,6 @@
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="brBody">
                 <DiscreteObjectKeyFrame KeyTime="0:0:1" Value="Collapsed"/>
             </ObjectAnimationUsingKeyFrames>
-            <ColorAnimation From="{Binding Color, Source={StaticResource PhoneAccentBrush}}" To="Transparent" Duration="0:0:0.5"
-                Storyboard.TargetName="BackgroundDrop" Storyboard.TargetProperty="(UIElement.Background).(SolidColorBrush.Color)"/>
         </Storyboard>
     </UserControl.Resources>
 
@@ -92,22 +88,22 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="Multiplex :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="SID :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="LCN :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="Enabled :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="Created :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="Last Seen :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                <TextBlock Grid.Row="6" Grid.Column="1" Text="Network :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                <TextBlock Grid.Row="7" Grid.Column="1" Text="Streams :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Multiplex :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="SID :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="LCN :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="Enabled :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="Created :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="Last Seen :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="Network :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="Streams :"   Style="{ThemeResource BaseTextBlockStyle}"/>
 
-                <TextBlock Grid.Row="0" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding multiplex}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
-                <TextBlock Grid.Row="1" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding sid}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
-                <TextBlock Grid.Row="2" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding lcn}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
-                <TextBlock Grid.Row="3" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding enabled}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
-                <TextBlock Grid.Row="4" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding created}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
-                <TextBlock Grid.Row="5" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding last_seen}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
-                <TextBlock Grid.Row="6" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding network}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="0" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding multiplex}"  Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="1" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding sid}"  Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="2" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding lcn}"  Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="3" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding enabled}"  Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="4" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding created}"  Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="5" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding last_seen}"  Style="{ThemeResource BaseTextBlockStyle}" />
+                <TextBlock Grid.Row="6" Grid.Column="2" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding network}"  Style="{ThemeResource BaseTextBlockStyle}" />
                 
                 <Grid x:Name="grDetails" Grid.Row="8" Grid.Column="1" HorizontalAlignment="Stretch" 
                       Grid.ColumnSpan="3" Margin="0,10,0,0" RenderTransformOrigin="0.5,0.5">
@@ -122,10 +118,10 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="#"  FontSize="{StaticResource TextStyleMediumFontSize}"/>
-                    <TextBlock Grid.Column="1" Text="Pid"  FontSize="{StaticResource TextStyleMediumFontSize}"/>
-                    <TextBlock Grid.Column="2" Text="Type"  FontSize="{StaticResource TextStyleMediumFontSize}"/>
-                    <TextBlock Grid.Column="3" Text="Language"  FontSize="{StaticResource TextStyleMediumFontSize}"/>
+                    <TextBlock Grid.Column="0" Text="#"  />
+                    <TextBlock Grid.Column="1" Text="Pid"  />
+                    <TextBlock Grid.Column="2" Text="Type"  />
+                    <TextBlock Grid.Column="3" Text="Language"  />
                     <ProgressBar Grid.Row="1" Grid.Column="0" Height="5" Grid.ColumnSpan="4"  IsIndeterminate="{Binding IsLoadingSteams}" Background="Transparent" VerticalAlignment="Bottom"/>
                     <ListView ItemsSource="{Binding Source={StaticResource cvsServiceDetails}}"
                         ContinuumNavigationTransitionInfo.ExitElementContainer="True" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4">
@@ -146,10 +142,10 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding index}"  Margin="0,0,0,0" FontSize="{StaticResource TextStyleMediumFontSize}" />
-                                    <TextBlock Grid.Column="1" Text="{Binding pid}"  Margin="0,0,0,0" FontSize="{StaticResource TextStyleMediumFontSize}" />
-                                    <TextBlock Grid.Column="2" Text="{Binding type}"  Margin="0,0,0,0" FontSize="{StaticResource TextStyleMediumFontSize}" />
-                                    <TextBlock Grid.Column="3" Text="{Binding details}"  Margin="0,0,0,0" FontSize="{StaticResource TextStyleMediumFontSize}"/>
+                                    <TextBlock Grid.Column="0" Text="{Binding index}"  Margin="0,0,0,0"  />
+                                    <TextBlock Grid.Column="1" Text="{Binding pid}"  Margin="0,0,0,0"  />
+                                    <TextBlock Grid.Column="2" Text="{Binding type}"  Margin="0,0,0,0"  />
+                                    <TextBlock Grid.Column="3" Text="{Binding details}"  Margin="0,0,0,0" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>

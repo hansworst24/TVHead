@@ -51,8 +51,7 @@
                Margin="0,-10,0,0">
             <Pivot.HeaderTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" Height="50" FontSize="{ThemeResource TextStyleExtraExtraLargeFontSize}" 
-                               FontFamily="{ThemeResource  PhoneFontFamilyNormal}"/>
+                    <TextBlock Text="{Binding}" Height="50"/>
                 </DataTemplate>
             </Pivot.HeaderTemplate>
             <PivotItem x:Uid="pviChannelList" Header="Channels" Margin="10,0,10,0" >

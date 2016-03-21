@@ -46,13 +46,13 @@
                 <Image Grid.Column="0" Grid.Row="1" Source="/Images/mux.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="8" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding currentMux}" VerticalAlignment="Center" 
-						   FontSize="{StaticResource TextStyleMediumFontSize}" 
-                           Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+						    
+                            Style="{ThemeResource BaseTextBlockStyle}"/>
                 <Image Grid.Column="0" Grid.Row="2" Source="/Images/signalstrength.png" Height="20" Width="20"/>
                 <Rectangle x:Name="signalBackground" HorizontalAlignment="Stretch" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Height="5" 
 								Margin="10,0,10,0" Fill="DarkGray"/>
                 <Rectangle x:Name="signal" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Height="5" 
-								Margin="10,0,10,0" Stretch="Fill" Fill="{StaticResource PhoneAccentBrush}">
+								Margin="10,0,10,0" Stretch="Fill" >
                     <Rectangle.RenderTransform>
                         <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0" ScaleX="{Binding signal_percentage}" />
                     </Rectangle.RenderTransform>
@@ -61,7 +61,7 @@
                 <Rectangle x:Name="snrBackground" HorizontalAlignment="Stretch" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="3" Height="5" 
 								Margin="10,0,10,0" Fill="DarkGray"/>
                 <Rectangle x:Name="snr" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="3" Height="5" 
-								Margin="10,0,10,0" Stretch="Fill" Fill="{StaticResource PhoneAccentBrush}">
+								Margin="10,0,10,0" Stretch="Fill" >
                     <Rectangle.RenderTransform>
                         <ScaleTransform x:Name="snrScale" CenterX="0" CenterY="0" ScaleX="{Binding snr_percentage}" />
                     </Rectangle.RenderTransform>
@@ -69,24 +69,24 @@
                 <Image Grid.Column="0" Grid.Row="3" Source="/Images/bandwidth.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="3" TextWrapping="NoWrap" 
 				           Text="{Binding bandwidth_string}" VerticalAlignment="Center" 
-						   FontSize="{StaticResource TextStyleMediumFontSize}" 
-                           Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+						    
+                            Style="{ThemeResource BaseTextBlockStyle}"/>
                 <Image Grid.Column="2" Grid.Row="3" Source="/Images/weight.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="3" Grid.Row="3" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding weight}" VerticalAlignment="Center" 
-						   FontSize="{StaticResource TextStyleMediumFontSize}" 
-                           Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+						    
+                            Style="{ThemeResource BaseTextBlockStyle}"/>
                 <Image Grid.Column="4" Grid.Row="3" Source="/Images/transport_error.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="5" Grid.ColumnSpan="2" Grid.Row="3" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding errors_string}" VerticalAlignment="Center" 
-						   FontSize="{StaticResource TextStyleMediumFontSize}" 
-                           Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+						    
+                            Style="{ThemeResource BaseTextBlockStyle}"/>
 
 
                 <!--<TextBlock x:Name="tbSignalStrength" Margin="10,0,10,0" Grid.Column="4" Grid.Row="2"  
 					Text="{Binding snr_string}" 
-				    FontSize="{StaticResource TextStyleMediumFontSize}"
-                    Foreground="{ThemeResource PhoneAccentBrush}" 
+				    
+                     
                     Style="{ThemeResource BaseTextBlockStyle}"/>-->
 
             </Grid>

@@ -45,17 +45,17 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Name :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Constellation :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="SymbolRate :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="# Channels :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="# Services :" FontSize="{StaticResource TextStyleMediumFontSize}" Foreground="{ThemeResource PhoneAccentBrush}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Name :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Constellation :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="SymbolRate :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="# Channels :"   Style="{ThemeResource BaseTextBlockStyle}"/>
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="# Services :"   Style="{ThemeResource BaseTextBlockStyle}"/>
 
-                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding name}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
-                    <TextBlock Grid.Row="1" Grid.Column="1" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding constellation}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
-                    <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding symbolrate}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
-                    <TextBlock Grid.Row="3" Grid.Column="1" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding num_chn}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
-                    <TextBlock Grid.Row="4" Grid.Column="1" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding num_svc}" FontSize="{StaticResource TextStyleMediumFontSize}" Style="{ThemeResource BaseTextBlockStyle}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding name}"  Style="{ThemeResource BaseTextBlockStyle}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding constellation}"  Style="{ThemeResource BaseTextBlockStyle}" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding symbolrate}"  Style="{ThemeResource BaseTextBlockStyle}" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding num_chn}"  Style="{ThemeResource BaseTextBlockStyle}" />
+                    <TextBlock Grid.Row="4" Grid.Column="1" TextWrapping="NoWrap" HorizontalAlignment="Right" TextTrimming="WordEllipsis" Text="{Binding num_svc}"  Style="{ThemeResource BaseTextBlockStyle}" />
                 </Grid>
             </Grid>
         </Border>

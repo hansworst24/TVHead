@@ -9,9 +9,7 @@
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core"  
     xmlns:Media="using:Microsoft.Xaml.Interactions.Media"
     mc:Ignorable="d"
-    xmlns:local="using:TVHead_81" 
-    FontFamily="{StaticResource PhoneFontFamilyLight}"
-    Foreground="{StaticResource PhoneForegroundBrush}">
+    xmlns:local="using:TVHead_81">
     <UserControl.Resources>
         <!--<local:DateToTimeConverter x:Key="myDateTimeConvertor"/>-->
         <Storyboard x:Name="RecordingOn" RepeatBehavior="Forever">
@@ -137,7 +135,7 @@
             <ColumnDefinition Width="80"/>
             <ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-        <Rectangle x:Name="HeaderBackdrop" Fill="{ThemeResource PhoneBackgroundBrush}" Grid.Column="0" 
+        <Rectangle x:Name="HeaderBackdrop"  Grid.Column="0" 
                    Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Opacity="0"/>
 
         <Grid Grid.Column="0" Grid.Row="0">
@@ -207,8 +205,8 @@
                                VerticalAlignment="Center" TextAlignment="Left" 
                                Text="{Binding startDateString}" 
                                HorizontalAlignment="Left" Style="{ThemeResource SubTitle}"/>
-                    <Rectangle Margin="10,0,10,0" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Height="5" Fill="{ThemeResource PhoneAccentBrush}" Opacity="0.2"/>
-                    <Rectangle Margin="10,0,10,0" Grid.Row="3" Grid.Column="1"  Height="5"  Fill="{ThemeResource PhoneAccentBrush}">
+                    <Rectangle Margin="10,0,10,0" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Height="5"  Opacity="0.2"/>
+                    <Rectangle Margin="10,0,10,0" Grid.Row="3" Grid.Column="1"  Height="5"  >
 						<Rectangle.RenderTransform>
 							<ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0" ScaleX="{Binding percentcompleted}" />
 						</Rectangle.RenderTransform>
@@ -242,7 +240,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                 <Border Background="Transparent" VerticalAlignment="Stretch" Grid.Row="0"
-				        BorderThickness="0,2,0,2" BorderBrush="{ThemeResource PhoneAccentBrush}" Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
+				        BorderThickness="0,2,0,2"  Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
                     <TextBlock HorizontalAlignment="left" VerticalAlignment="Center" 
                                FontSize="20" Margin="10,5,0,5" Text="{Binding title}" Style="{StaticResource SubTitle}"/>
                 </Border>
