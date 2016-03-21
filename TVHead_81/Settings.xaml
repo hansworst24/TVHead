@@ -23,7 +23,6 @@
 
     <Page.Resources>
 
-        <!--<local:AppSettings x:Key="appSettings"/>-->
         <local:StringFormatConverter x:Key="myConvertor"/>
         
         <DataTemplate x:Key="ToggleSwitchHeaderTemplate">
