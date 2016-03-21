@@ -1,5 +1,6 @@
 ﻿Imports TVHead_81.Common
 Imports TVHead_81.ViewModels
+Imports Windows.UI.Core
 
 
 
@@ -84,7 +85,7 @@ Public NotInheritable Class HubPage
     ''' <param name="e">Event data that describes how this page was reached.</param>
     Protected Overrides Async Sub OnNavigatedTo(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedTo(e)
-        AddHandler HardwareButtons.BackPressed, AddressOf HubBackPressed
+        AddHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf HubBackPressed
         'Loading of data happens here
         Me.DataContext = app.DefaultViewModel
 
@@ -139,12 +140,12 @@ Public NotInheritable Class HubPage
 
     Protected Overrides Sub OnNavigatedFrom(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedFrom(e)
-        RemoveHandler HardwareButtons.BackPressed, AddressOf HubBackPressed
+        RemoveHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf HubBackPressed
     End Sub
 
 #End Region
 
-    Private Sub HubBackPressed(sender As Object, e As BackPressedEventArgs)
+    Private Sub HubBackPressed(sender As Object, e As BackRequestedEventArgs)
         ''Override certain BackKeyPresses
         WriteToDebug("HubPage.OnBackPressed()", "start")
 

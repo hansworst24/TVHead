@@ -1,4 +1,5 @@
 ﻿Imports TVHead_81.Common
+Imports Windows.UI.Core
 
 Public NotInheritable Class AutoRecordingPage
     Inherits Page
@@ -12,7 +13,7 @@ Public NotInheritable Class AutoRecordingPage
         lstDVRConfig.ItemsSource = app.DefaultViewModel.DVRConfigs.items
         lstChannelTag.ItemsSource = app.DefaultViewModel.ChannelTags.items
         lstGenre.ItemsSource = app.DefaultViewModel.Genres.items
-        AddHandler HardwareButtons.BackPressed, AddressOf AutoRecordingBackPressed
+        AddHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf AutoRecordingBackPressed
     End Sub
 
     ''' <summary>
@@ -84,7 +85,7 @@ Public NotInheritable Class AutoRecordingPage
 
     Protected Overrides Sub OnNavigatedFrom(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedFrom(e)
-        RemoveHandler HardwareButtons.BackPressed, AddressOf AutoRecordingBackPressed
+        RemoveHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf AutoRecordingBackPressed
     End Sub
 
 #End Region
@@ -107,7 +108,7 @@ Public NotInheritable Class AutoRecordingPage
 
     End Sub
 
-    Private Async Sub AutoRecordingBackPressed(sender As Object, e As BackPressedEventArgs)
+    Private Async Sub AutoRecordingBackPressed(sender As Object, e As BackRequestedEventArgs)
         Await app.DefaultViewModel.AutoRecordings.Reload()
         Dim content = Window.Current.Content
         Dim frame = CType(content, Frame)

@@ -1,5 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
+<Package
+    xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+    xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+    xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+    IgnorableNamespaces= "uap mp">
+   <Dependencies>
+      <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.10240.0" MaxVersionTested="10.0.10069.0" />
+   </Dependencies>
   <Identity Name="2521Hanhart.TVHead" Publisher="CN=4FCBAE9F-561E-460F-BAFA-ABC5776C5744" Version="3.0.1.0" />
   <mp:PhoneIdentity PhoneProductId="4d307179-0900-4fee-9b8d-ccc186abfd22" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
@@ -7,27 +14,27 @@
     <PublisherDisplayName>Hanhart</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
-  <Prerequisites>
-    <OSMinVersion>6.3.1</OSMinVersion>
-    <OSMaxVersionTested>6.3.1</OSMaxVersionTested>
-  </Prerequisites>
   <Resources>
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="TVHead_81.App">
-      <m3:VisualElements DisplayName="TV Head" Square150x150Logo="Assets\tvhead_medium.png" Square44x44Logo="Assets\tvhead_small.png" Description="TV Head" ForegroundText="light" BackgroundColor="transparent" ToastCapable="false">
-        <m3:DefaultTile Wide310x150Logo="Assets\tvhead.png" Square71x71Logo="Assets\Square71x71Logo.png">
-          <m3:ShowNameOnTiles>
-            <m3:ShowOn Tile="square150x150Logo" />
-            <m3:ShowOn Tile="wide310x150Logo" />
-          </m3:ShowNameOnTiles>
-        </m3:DefaultTile>
-        <m3:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="black" />
-        <m3:InitialRotationPreference>
-          <m3:Rotation Preference="portrait" />
-        </m3:InitialRotationPreference>
-      </m3:VisualElements>
+      <uap:VisualElements DisplayName="TV Head"
+          Square150x150Logo="Assets\tvhead_medium.png"
+          Square44x44Logo="Assets\tvhead_small.png"
+          Description="TV Head"
+          BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="Assets\tvhead.png" Square71x71Logo="Assets\Square71x71Logo.png">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo" />
+            <uap:ShowOn Tile="wide310x150Logo" />
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="black" />
+        <uap:InitialRotationPreference>
+          <uap:Rotation Preference="portrait" />
+        </uap:InitialRotationPreference>
+      </uap:VisualElements>
     </Application>
   </Applications>
   <Capabilities>

@@ -17,7 +17,6 @@ Public NotInheritable Class RecordingPage
         Dim app As App = CType(Application.Current, App)
         TopHeader.DataContext = app.DefaultViewModel.StatusBar
         lstDVRConfig.ItemsSource = app.DefaultViewModel.DVRConfigs.items
-        AddHandler HardwareButtons.BackPressed, AddressOf OnBackPressed
     End Sub
 
     ''' <summary>
@@ -109,13 +108,6 @@ Public NotInheritable Class RecordingPage
         End If
 
     End Sub
-
-    Private Sub OnBackPressed(sender As Object, e As BackPressedEventArgs)
-
-    End Sub
-
-
-
 
 
 End Class

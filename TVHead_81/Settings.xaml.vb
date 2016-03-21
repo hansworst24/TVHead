@@ -1,5 +1,6 @@
 ﻿Imports TVHead_81.Common
 Imports TVHead_81.ViewModels
+Imports Windows.UI.Core
 
 Partial Public Class AppSettings
 
@@ -389,7 +390,7 @@ Partial Public Class AppSettingsPage
 
     Public Sub New()
         InitializeComponent()
-        AddHandler HardwareButtons.BackPressed, AddressOf SettingsBackPressed
+        AddHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf SettingsBackPressed
     End Sub
 
     Public Function BindChannelTags() As String
@@ -458,7 +459,7 @@ Partial Public Class AppSettingsPage
         End If
     End Sub
 
-    Private Sub SettingsBackPressed(sender As Object, e As BackPressedEventArgs)
+    Private Sub SettingsBackPressed(sender As Object, e As BackRequestedEventArgs)
         Dim content = Window.Current.Content
         Dim frame = CType(content, Frame)
         If frame.CanGoBack Then frame.GoBack()

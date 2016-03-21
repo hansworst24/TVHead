@@ -1,4 +1,6 @@
-﻿Namespace Common
+﻿Imports Windows.UI.Core
+
+Namespace Common
     ''' <summary>
     ''' NavigationHelper aids in navigation between pages.  It provides commands used to 
     ''' navigate back and forward as well as registers for standard mouse and keyboard 
@@ -62,7 +64,7 @@
             AddHandler Me.Page.Loaded,
                 Sub(sender, e)
 #If WINDOWS_PHONE_APP Then
-                    AddHandler HardwareButtons.BackPressed, AddressOf HardwareButtons_BackPressed
+                    AddHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf HardwareButtons_BackPressed
 #Else
                     ' Keyboard and mouse navigation only apply when occupying the entire window
                     If Me.Page.ActualHeight = Window.Current.Bounds.Height AndAlso Me.Page.ActualWidth = Window.Current.Bounds.Width Then
@@ -77,7 +79,7 @@
             AddHandler Me.Page.Unloaded,
                 Sub(sender, e)
 #If WINDOWS_PHONE_APP Then
-                    RemoveHandler HardwareButtons.BackPressed, AddressOf HardwareButtons_BackPressed
+                    RemoveHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf HardwareButtons_BackPressed
 #Else
                     RemoveHandler Window.Current.CoreWindow.Dispatcher.AcceleratorKeyActivated, AddressOf CoreDispatcher_AcceleratorKeyActivated
                     RemoveHandler Window.Current.CoreWindow.PointerPressed, AddressOf Me.CoreWindow_PointerPressed
@@ -132,7 +134,7 @@
         '''<summary>
         ''' Handles the back button press and navigates through the history of the root frame.
         ''' </summary>
-        Private Sub HardwareButtons_BackPressed(sender As Object, e As BackPressedEventArgs)
+        Private Sub HardwareButtons_BackPressed(sender As Object, e As BackRequestedEventArgs)
             If (Me.GoBackCommand.CanExecute(Nothing) And Not e.Handled) Then
                 e.Handled = True
                 Me.GoBackCommand.Execute(Nothing)

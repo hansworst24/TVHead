@@ -21,7 +21,6 @@ Public NotInheritable Class AboutPage
     ''' </summary>
     Public Sub New()
         InitializeComponent()
-        AddHandler HardwareButtons.BackPressed, AddressOf OnBackPressed
 
         ' Hub is only supported in Portrait orientation
         DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait
@@ -105,11 +104,6 @@ Public NotInheritable Class AboutPage
     End Sub
 
 #End Region
-
-    Private Sub OnBackPressed(sender As Object, e As BackPressedEventArgs)
-
-    End Sub
-
 
 
 End Class
