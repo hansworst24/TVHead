@@ -1,5 +1,6 @@
 ﻿
 Imports GalaSoft.MvvmLight
+Imports GalaSoft.MvvmLight.Command
 Imports TVHead_81.Common
 Imports TVHead_81.ViewModels
 
@@ -152,11 +153,11 @@ Public Class RecordContentDialogViewModel
 
     Public Property selectDVRConfig As RelayCommand
         Get
-            Return New RelayCommand(Sub(x)
-                                        Dim i As DVRConfigViewModel = TryCast(x, DVRConfigViewModel)
-                                        If Not i Is Nothing Then
-                                            selectedDVRConfig = i
-                                        End If
+            Return New RelayCommand(Sub()
+                                        'Dim i As DVRConfigViewModel = TryCast(x, DVRConfigViewModel)
+                                        'If Not i Is Nothing Then
+                                        '    selectedDVRConfig = i
+                                        'End If
                                     End Sub)
         End Get
         Set(value As RelayCommand)

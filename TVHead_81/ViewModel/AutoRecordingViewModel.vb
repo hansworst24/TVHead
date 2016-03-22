@@ -1,4 +1,5 @@
 ﻿Imports GalaSoft.MvvmLight
+Imports GalaSoft.MvvmLight.Command
 Imports TVHead_81.Common
 Imports TVHead_81.ViewModels
 
@@ -80,14 +81,14 @@ Public Class AutoRecordingViewModel
 
     Public Property UpdateSelectedChannel As RelayCommand
         Get
-            Return New RelayCommand(Sub(x)
-                                        If TypeOf x Is ChannelViewModel Then
-                                            Dim selectedChannel As ChannelViewModel = CType(x, ChannelViewModel)
-                                            Me.channel = selectedChannel.channelUuid
-                                            Me.channelname = selectedChannel.name
-                                            ChannelSelectionFlyOutIsOpen = False
-                                            WriteToDebug("AutoRecordingViewModel.UpdateSelectedChannel()", "UpdateSelectedChannel Executed")
-                                        End If
+            Return New RelayCommand(Sub()
+                                        'If TypeOf x Is ChannelViewModel Then
+                                        '    Dim selectedChannel As ChannelViewModel = CType(x, ChannelViewModel)
+                                        '    Me.channel = selectedChannel.channelUuid
+                                        '    Me.channelname = selectedChannel.name
+                                        '    ChannelSelectionFlyOutIsOpen = False
+                                        '    WriteToDebug("AutoRecordingViewModel.UpdateSelectedChannel()", "UpdateSelectedChannel Executed")
+                                        'End If
                                     End Sub)
         End Get
         Set(value As RelayCommand)
@@ -96,15 +97,15 @@ Public Class AutoRecordingViewModel
 
     Public Property UpdateSelectedDVRConfig As RelayCommand
         Get
-            Return New RelayCommand(Sub(x)
-                                        If TypeOf x Is DVRConfigViewModel Then
-                                            Dim selectedDVRConfig As DVRConfigViewModel = CType(x, DVRConfigViewModel)
-                                            'Me.configName = selectedDVRConfig.name
-                                            Me.configUuid = selectedDVRConfig.identifier
-                                            Me.configName = selectedDVRConfig.name
-                                            DVRConfigSelectionFlyOutIsOpen = False
-                                            WriteToDebug("AutoRecordingViewModel.UpdateSelectedDVRConfig()", "UpdateSelectedDVRConfig Executed")
-                                        End If
+            Return New RelayCommand(Sub()
+                                        'If TypeOf x Is DVRConfigViewModel Then
+                                        '    Dim selectedDVRConfig As DVRConfigViewModel = CType(x, DVRConfigViewModel)
+                                        '    'Me.configName = selectedDVRConfig.name
+                                        '    Me.configUuid = selectedDVRConfig.identifier
+                                        '    Me.configName = selectedDVRConfig.name
+                                        '    DVRConfigSelectionFlyOutIsOpen = False
+                                        '    WriteToDebug("AutoRecordingViewModel.UpdateSelectedDVRConfig()", "UpdateSelectedDVRConfig Executed")
+                                        'End If
                                     End Sub)
         End Get
         Set(value As RelayCommand)
@@ -113,14 +114,14 @@ Public Class AutoRecordingViewModel
 
     Public Property UpdateSelectedChannelTag As RelayCommand
         Get
-            Return New RelayCommand(Sub(x)
-                                        If TypeOf x Is ChannelTagViewModel Then
-                                            Dim selectedChannelTag As ChannelTagViewModel = CType(x, ChannelTagViewModel)
-                                            Me.tagName = selectedChannelTag.name
-                                            Me.tagUuid = selectedChannelTag.uuid
-                                            ChannelTagSelectionFlyOutIsOpen = False
-                                            WriteToDebug("AutoRecordingViewModel.UpdateSelectedChannelTag()", "UpdateSelectedChannelTag Executed")
-                                        End If
+            Return New RelayCommand(Sub()
+                                        'If TypeOf x Is ChannelTagViewModel Then
+                                        '    Dim selectedChannelTag As ChannelTagViewModel = CType(x, ChannelTagViewModel)
+                                        '    Me.tagName = selectedChannelTag.name
+                                        '    Me.tagUuid = selectedChannelTag.uuid
+                                        '    ChannelTagSelectionFlyOutIsOpen = False
+                                        '    WriteToDebug("AutoRecordingViewModel.UpdateSelectedChannelTag()", "UpdateSelectedChannelTag Executed")
+                                        'End If
                                     End Sub)
         End Get
         Set(value As RelayCommand)
@@ -129,14 +130,14 @@ Public Class AutoRecordingViewModel
 
     Public Property UpdateSelectedGenre As RelayCommand
         Get
-            Return New RelayCommand(Sub(x)
-                                        If TypeOf x Is ContentTypeViewModel Then
-                                            Dim selectedGenre As ContentTypeViewModel = CType(x, ContentTypeViewModel)
-                                            Me.contenttypeName = selectedGenre.name
-                                            Me.contenttype = selectedGenre.uuid
-                                            GenreSelectionFlyOutIsOpen = False
-                                            WriteToDebug("AutoRecordingViewModel.UpdateSelectedGenre()", "UpdateSelectedGenre Executed")
-                                        End If
+            Return New RelayCommand(Sub()
+                                        'If TypeOf x Is ContentTypeViewModel Then
+                                        '    Dim selectedGenre As ContentTypeViewModel = CType(x, ContentTypeViewModel)
+                                        '    Me.contenttypeName = selectedGenre.name
+                                        '    Me.contenttype = selectedGenre.uuid
+                                        '    GenreSelectionFlyOutIsOpen = False
+                                        '    WriteToDebug("AutoRecordingViewModel.UpdateSelectedGenre()", "UpdateSelectedGenre Executed")
+                                        'End If
                                     End Sub)
         End Get
         Set(value As RelayCommand)

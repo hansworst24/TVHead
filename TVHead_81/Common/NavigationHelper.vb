@@ -1,4 +1,5 @@
-﻿Imports Windows.UI.Core
+﻿Imports GalaSoft.MvvmLight.Command
+Imports Windows.UI.Core
 
 Namespace Common
     ''' <summary>

@@ -85,6 +85,9 @@
     <Compile Include="about.xaml.vb">
       <DependentUpon>about.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EPG_WideView.xaml.vb">
+      <DependentUpon>EPG_WideView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="status.xaml.vb">
       <DependentUpon>status.xaml</DependentUpon>
     </Compile>
@@ -98,7 +101,6 @@
       <DependentUpon>AutoRecordingPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\NavigationHelper.vb" />
-    <Compile Include="Common\RelayCommand.vb" />
     <Compile Include="Common\SuspensionManager.vb" />
     <Compile Include="Common\tvh40_classes.vb" />
     <Compile Include="Common\TVHead_Classes.vb" />
@@ -169,7 +171,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="project.json"/>
+    <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\SmallLogo.scale-240.png" />
@@ -295,6 +297,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="about.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="EPG_WideView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

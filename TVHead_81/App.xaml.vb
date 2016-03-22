@@ -8,7 +8,8 @@ Imports Windows.Globalization
 ''' Provides application-specific behavior to supplement the default Application class.
 ''' </summary>
 Public NotInheritable Class App
-    Inherits Application
+    'Inherits Application
+    Inherits Windows.UI.Xaml.Application
 
     Private _transitions As TransitionCollection
     Public settings As New AppSettings
@@ -110,11 +111,20 @@ Public NotInheritable Class App
 
             rootFrame.ContentTransitions = Nothing
             AddHandler rootFrame.Navigated, AddressOf RootFrame_FirstNavigated
+            ApplicationView.GetForCurrentView.SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible)
+            ApplicationView.PreferredLaunchViewSize = New Size(800, 480)
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize
+            'If (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar")) Then
+            '    Dim sBar As StatusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView()
+            '    If Not sBar Is Nothing Then
+            '        sBar.HideAsync()
+            '    End If
+            'End If
 
             ' When the navigation stack isn't restored navigate to the first page,
             ' configuring the new page by passing required information as a navigation
             ' parameter
-            If Not rootFrame.Navigate(GetType(HubPage), e.Arguments) Then
+            If Not rootFrame.Navigate(GetType(EPG_WideView), e.Arguments) Then
                 Throw New Exception("Failed to create initial page")
             End If
         End If

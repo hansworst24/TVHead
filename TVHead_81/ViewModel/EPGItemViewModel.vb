@@ -4,6 +4,7 @@ Imports Windows.UI.Core
 Imports TVHead_81.Common
 Imports TVHead_81.ViewModels
 Imports Windows.UI.Popups
+Imports GalaSoft.MvvmLight.Command
 
 Public Class EPGItemViewModel
     Inherits ViewModelBase

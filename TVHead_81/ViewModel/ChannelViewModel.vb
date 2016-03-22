@@ -15,6 +15,15 @@ Public Class ChannelViewModel
     End Property
 
     Public Property name As String
+        Get
+            Return _name
+        End Get
+        Set(value As String)
+            _name = value
+            RaisePropertyChanged("name")
+        End Set
+    End Property
+    Private Property _name As String
     Public Property number As Integer
     Public Property genreName As String
     Public Property enabled As Boolean
@@ -32,7 +41,7 @@ Public Class ChannelViewModel
                                         WriteToDebug("ChannelViewModel.ExpanseCollapse", "stop")
                                         If Me.ExpandedView = "Collapsed" Then
                                             If Not vm.AllChannels Is Nothing Then
-                                                For Each c In vm.AllChannels.items
+                                                For Each c In vm.Channels.items
                                                     If Not c.ExpandedView = "Collapsed" Then c.ExpandedView = "Collapsed"
                                                 Next
                                             End If
@@ -114,10 +123,6 @@ Public Class ChannelViewModel
             Else
                 _currentEPGItem = value
                 RaisePropertyChanged("currentEPGItem")
-                Status = "Updated"
-                Status = "Existing"
-
-
             End If
         End Set
     End Property
@@ -171,19 +176,19 @@ Public Class ChannelViewModel
         End Set
     End Property
     Private Property _ExpandedView As String
-    Public Property Status As String
-        Get
-            Return _Status
-        End Get
-        Set(value As String)
+    'Public Property Status As String
+    '    Get
+    '        Return _Status
+    '    End Get
+    '    Set(value As String)
 
-            _Status = value
-            RaisePropertyChanged("Status")
+    '        _Status = value
+    '        RaisePropertyChanged("Status")
 
 
-        End Set
-    End Property
-    Private Property _Status As String
+    '    End Set
+    'End Property
+    'Private Property _Status As String
 
     Public Property ChannelNumberVisibility As String
         Get
@@ -332,7 +337,6 @@ Public Class ChannelViewModel
     Public Sub New()
         epgitems = New EPGItemListViewModel
         ExpandedView = "Collapsed"
-        Status = "Updated"
         epgItemsLoaded = False
         ChannelNumberVisibility = If((New AppSettings).ShowChannelNumbers, "Visible", "Collapsed")
     End Sub
@@ -352,7 +356,6 @@ Public Class ChannelViewModel
         dvr_pst_time = channel.dvr_pst_time
         tags = channel.tags
         ExpandedView = "Collapsed"
-        Status = "Existing"
         epgItemsLoaded = False
         ChannelNumberVisibility = If((New AppSettings).ShowChannelNumbers, "Visible", "Collapsed")
         loadEPGButtonEnabled = True

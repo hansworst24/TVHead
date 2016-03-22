@@ -204,30 +204,16 @@
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="ListViewHeaderTemplate">
-                <Grid Width="600">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" HorizontalAlignment="Stretch" Background="Transparent" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}" BorderThickness="0,0,0,2">
-                        <TextBlock Grid.Column="0" Text="{Binding KeyString}" HorizontalAlignment="Left" Padding="10"
-							   FontSize="20">
-                        </TextBlock>
-                    </Border>
-                </Grid>
+                <Border HorizontalAlignment="Stretch">
+                    <TextBlock Text="{Binding KeyString}" 
+                               HorizontalAlignment="Left" Style="{StaticResource BaseTextBlockStyle}"/>
+                </Border>
             </DataTemplate>
             <DataTemplate x:Key="ListViewJumpListTemplate">
-                <Grid Width="600">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" HorizontalAlignment="Stretch">
-                        <TextBlock Grid.Column="0" Text="{Binding Group.KeyString}" HorizontalAlignment="Left" Padding="10"
-							   FontSize="20" VerticalAlignment="Center">
-                        </TextBlock>
-                    </Border>
-                </Grid>
+                <Border  HorizontalAlignment="Stretch">
+                    <TextBlock Grid.Column="0" Text="{Binding Group.KeyString}" 
+                               Style="{StaticResource BaseTextBlockStyle}" VerticalAlignment="Center"/>
+                </Border>
             </DataTemplate>
         </ResourceDictionary>
   </Application.Resources>

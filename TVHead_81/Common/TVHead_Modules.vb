@@ -723,7 +723,6 @@ Module TVHead_Modules
                         foundChannel.channelUuid = c.channelUuid
                         foundChannel.name = c.name
                         foundChannel.number = c.number
-                        foundChannel.Status = c.Status
                         foundChannel.currentEPGItem = New EPGItemViewModel(entry)
                         foundChannel.currentEPGItem.ExpandedView = "Expanded"
                         result.Add(foundChannel)

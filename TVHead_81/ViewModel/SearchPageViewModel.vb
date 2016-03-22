@@ -1,4 +1,5 @@
 ﻿Imports GalaSoft.MvvmLight
+Imports GalaSoft.MvvmLight.Command
 Imports TVHead_81.Common
 
 Public Class SearchPageViewModel

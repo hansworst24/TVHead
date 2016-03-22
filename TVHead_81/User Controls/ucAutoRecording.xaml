@@ -48,7 +48,7 @@
                                 Text="{Binding displayName}" VerticalAlignment="Center"/>
                         <TextBlock x:Name="tbDisplay2"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"  Style="{ThemeResource SubTitleAccent}" 
                                 Text="{Binding title}" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding recordingDays}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Style="{ThemeResource SubTitleAccent}" FontSize="{StaticResource TextStyleSmallFontSize}"/>
+                        <TextBlock Text="{Binding recordingDays}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Style="{ThemeResource SubTitleAccent}"/>
                         <TextBlock Text="{Binding channelname}" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left"/>
 
                     </Grid>

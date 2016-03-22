@@ -1,4 +1,5 @@
 ﻿Imports GalaSoft.MvvmLight
+Imports GalaSoft.MvvmLight.Command
 Imports TVHead_81.Common
 Imports TVHead_81.ViewModels
 
@@ -42,15 +43,15 @@ Public Class RecordingViewModel
 
     Public Property UpdateSelectedChannel As RelayCommand
         Get
-            Return New RelayCommand(Sub(x)
-                                        WriteToDebug("RecordingViewModel.UpdateSelectedChannel", "start")
-                                        If TypeOf x Is ChannelViewModel Then
-                                            Dim selectedChannel As ChannelViewModel = CType(x, ChannelViewModel)
-                                            Me.channelUuid = selectedChannel.channelUuid
-                                            Me.channel = selectedChannel.name
-                                            ChannelSelectionFlyOutIsOpen = False
-                                            WriteToDebug("RecordingViewModel.UpdateSelectedChannel", "Stop")
-                                        End If
+            Return New RelayCommand(Sub()
+                                        'WriteToDebug("RecordingViewModel.UpdateSelectedChannel", "start")
+                                        'If TypeOf x Is ChannelViewModel Then
+                                        '    Dim selectedChannel As ChannelViewModel = CType(x, ChannelViewModel)
+                                        '    Me.channelUuid = selectedChannel.channelUuid
+                                        '    Me.channel = selectedChannel.name
+                                        '    ChannelSelectionFlyOutIsOpen = False
+                                        '    WriteToDebug("RecordingViewModel.UpdateSelectedChannel", "Stop")
+                                        'End If
                                     End Sub)
         End Get
         Set(value As RelayCommand)
@@ -59,15 +60,15 @@ Public Class RecordingViewModel
 
     Public Property UpdateSelectedDVRConfig As RelayCommand
         Get
-            Return New RelayCommand(Sub(x)
-                                        WriteToDebug("RecordingViewModel.UpdateSelectedDVRConfig", "start")
-                                        If TypeOf x Is DVRConfigViewModel Then
-                                            Dim selectedDVRConfig As DVRConfigViewModel = CType(x, DVRConfigViewModel)
-                                            Me.configName = selectedDVRConfig.name
-                                            Me.configUuid = selectedDVRConfig.identifier
-                                            DVRConfigSelectionFlyOutIsOpen = False
-                                            WriteToDebug("RecordingViewModel.UpdateSelectedDVRConfig", "Stop")
-                                        End If
+            Return New RelayCommand(Sub()
+                                        'WriteToDebug("RecordingViewModel.UpdateSelectedDVRConfig", "start")
+                                        'If TypeOf x Is DVRConfigViewModel Then
+                                        '    Dim selectedDVRConfig As DVRConfigViewModel = CType(x, DVRConfigViewModel)
+                                        '    Me.configName = selectedDVRConfig.name
+                                        '    Me.configUuid = selectedDVRConfig.identifier
+                                        '    DVRConfigSelectionFlyOutIsOpen = False
+                                        '    WriteToDebug("RecordingViewModel.UpdateSelectedDVRConfig", "Stop")
+                                        'End If
                                     End Sub)
         End Get
         Set(value As RelayCommand)

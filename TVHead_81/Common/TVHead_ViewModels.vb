@@ -8,8 +8,7 @@ Imports Windows.ApplicationModel.Core
 Imports Windows.UI.Core
 Imports Newtonsoft.Json
 Imports Windows.Web.Http
-Imports Windows.Globalization.DateTimeFormatting
-Imports System.Globalization
+Imports GalaSoft.MvvmLight.Command
 
 Namespace ViewModels
 
@@ -21,7 +20,7 @@ Namespace ViewModels
 
         Public myCultureInfoHelper As CultureInfoHelper = New CultureInfoHelper
 
-        Public Property DiskSpaceStats As New DiskspaceUpdateViewModel
+        Public Property DiskSpaceStats As New DiskSpaceUpdateViewModel
 
         Public Property hasEPGAccess As Boolean
         Public Property hasDVRAccess As Boolean
@@ -829,10 +828,6 @@ Namespace ViewModels
                             If Not Me.AppBar.ButtonEnabled.refreshButton = False And Not Channels Is Nothing And Not Channels.items.Count = 0 Then
                                 For Each c In Channels.items
                                     Await c.RefreshCurrentEPGItem()
-                                    Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                                     c.Status = "Existing"
-                                                                                                                                 End Sub)
-
                                 Next
                             End If
                             CometCatcherLastRun = Date.Now()
@@ -933,30 +928,27 @@ Namespace ViewModels
             End Get
             Set(value As ChannelTagViewModel)
                 _selectedChannelTag = value
-                'selectedChannelTagName = value.name
+                NotifyPropertyChanged()
             End Set
         End Property
         Public Property favouriteChannelTag As ChannelTagViewModel
 
-        'Public Property ChannelEPGItems As IEnumerable(Of EPGItemViewModel)
-
         Public Property AllGenres As New ContentTypeListViewModel
         Public Property Genres As New ContentTypeListViewModel
 
-        'Public Property ContentTypes As IEnumerable(Of ContentTypeViewModel)
         Public Property DVRConfigs As New DVRConfigListViewModel
 
 
-        Private Property _selectedChannelTagName As String
-        Public Property selectedChannelTagName As String
-            Get
-                Return _selectedChannelTagName
-            End Get
-            Set(value As String)
-                _selectedChannelTagName = value
-                NotifyPropertyChanged()
-            End Set
-        End Property
+        'Private Property _selectedChannelTagName As String
+        'Public Property selectedChannelTagName As String
+        '    Get
+        '        Return _selectedChannelTagName
+        '    End Get
+        '    Set(value As String)
+        '        _selectedChannelTagName = value
+        '        NotifyPropertyChanged()
+        '    End Set
+        'End Property
 
         Public Property AppBar As New ApplicationBar
 
@@ -1145,6 +1137,21 @@ Namespace ViewModels
 
 #Region "RelayCommands"
 
+        Public ReadOnly Property ChannelTagListSelectionChanged As RelayCommand(Of Object)
+            Get
+                Return New RelayCommand(Of Object)(Async Sub(x)
+                                                       WriteToDebug("TVHead_ViewModel.ChannelTagListSelectionChanged()", "start")
+                                                       Dim sChannelTag As ChannelTagViewModel = TryCast(x, ChannelTagViewModel)
+                                                       If Not sChannelTag Is Nothing Then
+                                                           selectedChannelTag = sChannelTag
+                                                           Await Channels.ReloadChannelList()
+                                                       End If
+                                                       WriteToDebug("TVHead_ViewModel.ChannelTagListSelectionChanged()", "end")
+                                                   End Sub)
+            End Get
+        End Property
+
+
         Public Property AddCommand As RelayCommand
             Get
                 Return New RelayCommand(Sub()
@@ -1290,7 +1297,7 @@ Namespace ViewModels
 
         Public Property DeleteSelectedRecordings As RelayCommand
             Get
-                Return New RelayCommand(Async Sub(x)
+                Return New RelayCommand(Async Sub()
                                             'Handle the deletion of Autorecording Entries
                                             If PivotSelectedIndex = 5 Then
                                                 Dim myList As New AutoRecordingListViewModel
@@ -1671,9 +1678,6 @@ Namespace ViewModels
 
                 Next
             End If
-            For Each c In Channels.items.Where(Function(x) x.Status = "Updated")
-                c.Status = "Existing"
-            Next
             WriteToDebug("ChannelViewModel.LoadCurrentEPGEventForChannels()", "stop")
             'Me.Channels = (From c In AllChannels Where c.tags.ToList.IndexOf(selectedChannelTag.uuid) > -1 Select c Order By c.number).ToObservableCollection()
         End Function
@@ -1804,58 +1808,58 @@ Namespace ViewModels
                     If Me.DVRConfigs.dataLoaded = False Then Await Me.DVRConfigs.Load()
                     If Me.AllGenres.dataLoaded = False Then Await LoadContentTypes(True)
                     If Me.Genres.dataLoaded = False Then Await LoadContentTypes(False)
-                    If Me.AllChannels.dataLoaded = False Then Await Me.AllChannels.LoadAll()
+                    'If Me.AllChannels.dataLoaded = False Then Await Me.AllChannels.LoadAll()
                     If Me.Channels.dataLoaded = False Then Await Me.Channels.LoadFavouriteTagChannels()
-
+                    If Not Me.Channels.dataLoaded Then Await Me.Channels.LoadAll()
                     'REFRESH EPG INFORMATION FOR THE SELECTED CHANNEL. REFRESH EPG INFORMATION IF THE CHANNELS HAVE ALREADY BEEN LOADED AND THE PIVOT IS ON THE CHANNELS PAGE
-                    If Me.PivotSelectedIndex = 0 And Not Me.Channels Is Nothing And Me.Channels.dataLoaded = True Then
-                        Await StatusBar.Update(loader.GetString("status_RefreshingChannels"), True, 0, True)
-                        Await Channels.RefreshCurrentEvents()
-                        'For Each c In Channels.items
-                        '    Await c.RefreshCurrentEPGItem()
-                        '    'Await Task.Delay(1000)
-                        'Next
+                    'If Me.PivotSelectedIndex = 0 And Not Me.Channels Is Nothing And Me.Channels.dataLoaded = True Then
+                    '    Await StatusBar.Update(loader.GetString("status_RefreshingChannels"), True, 0, True)
+                    '    Await Channels.RefreshCurrentEvents()
+                    '    'For Each c In Channels.items
+                    '    '    Await c.RefreshCurrentEPGItem()
+                    '    '    'Await Task.Delay(1000)
+                    '    'Next
 
-                    End If
-                    Me.Channels.dataLoaded = True
+                    'End If
+                    'Me.Channels.dataLoaded = True
 
-                    'REFRESH EPG INFORMATION FOR THE SELECTED CHANNEL. REFRESH EPG INFORMATION IF THE CHANNELS HAVE ALREADY BEEN LOADED AND THE PIVOT IS ON THE CHANNELS PAGE
-                    If Me.PivotSelectedIndex = 1 And Not Me.SelectedChannel Is Nothing Then
-                        Await StatusBar.Update(loader.GetString("status_RefreshingEPGEntries"), True, 0, True)
-                        Await Task.Run(Function() Me.SelectedChannel.RefreshEPG(False))
-                    End If
+                    ''REFRESH EPG INFORMATION FOR THE SELECTED CHANNEL. REFRESH EPG INFORMATION IF THE CHANNELS HAVE ALREADY BEEN LOADED AND THE PIVOT IS ON THE CHANNELS PAGE
+                    'If Me.PivotSelectedIndex = 1 And Not Me.SelectedChannel Is Nothing Then
+                    '    Await StatusBar.Update(loader.GetString("status_RefreshingEPGEntries"), True, 0, True)
+                    '    Await Task.Run(Function() Me.SelectedChannel.RefreshEPG(False))
+                    'End If
 
 
-                    If hasDVRAccess Then
-                        'LOAD UPCOMING RECORDINGS, OR REFRESH IF THE PIVOT ON THE UPCOMINGS RECORDINGS PAGE
-                        If UpcomingRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 2 Then
-                            Await Me.UpcomingRecordings.Load()
+                    'If hasDVRAccess Then
+                    '    'LOAD UPCOMING RECORDINGS, OR REFRESH IF THE PIVOT ON THE UPCOMINGS RECORDINGS PAGE
+                    '    If UpcomingRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 2 Then
+                    '        Await Me.UpcomingRecordings.Load()
 
-                        End If
-                        'LOAD FINISHED RECORDINGS, OR REFRESH IF THE PIVOT ON THE FINISHED RECORDINGS PAGE
-                        If FinishedRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 3 Then
-                            'Await StatusBar.Update(loader.GetString("status_RefreshingFinishedRecordings"), True, 0, True)
-                            'Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
-                            Await Me.FinishedRecordings.Load()
-                            'End Sub)
+                    '    End If
+                    '    'LOAD FINISHED RECORDINGS, OR REFRESH IF THE PIVOT ON THE FINISHED RECORDINGS PAGE
+                    '    If FinishedRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 3 Then
+                    '        'Await StatusBar.Update(loader.GetString("status_RefreshingFinishedRecordings"), True, 0, True)
+                    '        'Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
+                    '        Await Me.FinishedRecordings.Load()
+                    '        'End Sub)
 
-                        End If
+                    '    End If
 
-                        'LOAD FAILED RECORDINGS, OR REFRESH IF THE PIVOT ON THE FAILED RECORDINGS PAGE
-                        ''TODO : RE-ENABLE DVR STUFF
-                        If FailedRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 4 Then
-                            Await Me.FailedRecordings.Load()
-                        End If
-                        ''LOAD AUTO RECORDINGS, OR REFRESH IF THE PIVOT ON THE AUTO RECORDINGS PAGE
-                        If AutoRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 5 Then
-                            Await StatusBar.Update(loader.GetString("status_RefreshingAutoRecordings"), True, 0, True)
-                            Await Me.AutoRecordings.Load()
-                        End If
+                    '    'LOAD FAILED RECORDINGS, OR REFRESH IF THE PIVOT ON THE FAILED RECORDINGS PAGE
+                    '    ''TODO : RE-ENABLE DVR STUFF
+                    '    If FailedRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 4 Then
+                    '        Await Me.FailedRecordings.Load()
+                    '    End If
+                    '    ''LOAD AUTO RECORDINGS, OR REFRESH IF THE PIVOT ON THE AUTO RECORDINGS PAGE
+                    '    If AutoRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 5 Then
+                    '        Await StatusBar.Update(loader.GetString("status_RefreshingAutoRecordings"), True, 0, True)
+                    '        Await Me.AutoRecordings.Load()
+                    '    End If
 
-                    End If
+                    'End If
 
-                    Await checkCapabilities()
-                    Await StatusBar.Clean()
+                    'Await checkCapabilities()
+                    'Await StatusBar.Clean()
                 End If
 
 
@@ -3939,11 +3943,6 @@ Namespace ViewModels
 
 
 
-
-
-
-
-
     Public Class ChannelTagListViewModel
         Public Property items As New ObservableCollection(Of ChannelTagViewModel)
         Public Property dataLoaded As Boolean
@@ -3962,19 +3961,19 @@ Namespace ViewModels
 
         Public Property ChannelTagSelected As RelayCommand
             Get
-                Return New RelayCommand(Async Sub(x)
-                                            WriteToDebug("ChannelTagViewModel.ChannelTagSelected", "start")
-                                            While vm.AppBar.ButtonEnabled.refreshButton = False
-                                                WriteToDebug("ChanneltagViewModel.ChannelTagSelected()", "Waiting for refresh to finish...")
-                                                Await Task.Delay(100)
-                                            End While
-                                            vm.ChannelSelected = False
-                                            vm.SelectedChannel = Nothing
-                                            vm.EPGInformationAvailable = False
-                                            vm.ChannelTagFlyoutIsOpen = False
-                                            vm.selectedChannelTag = x
-                                            vm.Channels.dataLoaded = False
-                                            Task.Run(Function() vm.LoadDataAsync())
+                Return New RelayCommand(Async Sub()
+                                            'WriteToDebug("ChannelTagViewModel.ChannelTagSelected", "start")
+                                            'While vm.AppBar.ButtonEnabled.refreshButton = False
+                                            '    WriteToDebug("ChanneltagViewModel.ChannelTagSelected()", "Waiting for refresh to finish...")
+                                            '    Await Task.Delay(100)
+                                            'End While
+                                            'vm.ChannelSelected = False
+                                            'vm.SelectedChannel = Nothing
+                                            'vm.EPGInformationAvailable = False
+                                            'vm.ChannelTagFlyoutIsOpen = False
+                                            'vm.selectedChannelTag = x
+                                            'vm.Channels.dataLoaded = False
+                                            'Task.Run(Function() vm.LoadDataAsync())
                                             WriteToDebug("ChannelTagViewModel.ChannelTagSelected", "stop")
                                         End Sub)
 

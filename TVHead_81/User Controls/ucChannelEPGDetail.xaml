@@ -15,22 +15,6 @@
     >
     <UserControl.Resources>
         <!--<local:DateToTimeConverter x:Key="myDateTimeConvertor"/>-->
-
-        <Storyboard x:Name="SlideInChannel">
-            <DoubleAnimation From="500" To="0"  Duration="00:00:2" 
-                    Storyboard.TargetName="btnEPGItemButton" 
-                    Storyboard.TargetProperty="(Button.RenderTransform).(CompositeTransform.TranslateX)">
-                <DoubleAnimation.EasingFunction>
-                    <BounceEase Bounces="3" EasingMode="EaseOut" 
-                            Bounciness="3" />
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-        </Storyboard>
-        <Storyboard x:Name="StandardChannelStatus">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(Button.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="btnEPGItemButton">
-                <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
-        </Storyboard>
         
         <Storyboard x:Name="RecordingOn" RepeatBehavior="Forever">
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingErrorIcon">
@@ -166,7 +150,7 @@
     </UserControl.Resources>
 
 
-    <Grid x:Name="mainGrid" Opacity="1">
+    <Grid x:Name="mainGrid" Opacity="1" Background="{StaticResource SystemControlBackgroundListLowBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
             <RowDefinition Height="auto"/>
@@ -188,7 +172,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="80"/>
                 </Grid.ColumnDefinitions>
-                <Image x:Name="rowChannelIcon" Grid.Column="0" Grid.Row="0"  Width="60" Height="60" CacheMode="BitmapCache"
+                <Image x:Name="rowChannelIcon" Grid.Column="0" Grid.Row="0"  Width="60" Height="50" CacheMode="BitmapCache"
 					HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="99">
                     <Image.Source>
                         <BitmapImage UriSource="{Binding chicon}"/>
@@ -243,21 +227,7 @@
 
         <Button x:Name="btnEPGItemButton" IsEnabled="True" Grid.Column="1" Style="{StaticResource myTransparentButtonStyle}" 
 			Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-			Margin="0" Background="Transparent" Command="{Binding ExpandCollapse, Mode=OneWay}">
-            <Button.RenderTransform>
-                <CompositeTransform TranslateX="500"/>
-            </Button.RenderTransform>
-            <Button.Projection>
-                <PlaneProjection RotationX="0"/>
-            </Button.Projection>
-            <!--<Interactivity:Interaction.Behaviors>
-                <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.Status}" Value="Updated">
-                    <Core:GoToStateAction StateName="ProgramIsUpdated" />
-                </Core:DataTriggerBehavior>
-                <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.Status}" Value="Existing">
-                    <Core:GoToStateAction StateName="Steady" />
-                </Core:DataTriggerBehavior>
-            </Interactivity:Interaction.Behaviors>-->
+			Margin="0,0,10,0" Background="Transparent" Command="{Binding ExpandCollapse, Mode=OneWay}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
@@ -270,33 +240,31 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Row="0" Grid.Column="0"  Grid.ColumnSpan="3">
-                    <TextBlock x:Name="tbChannelName"  TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" 
-						Text="{Binding name}"
-						FontSize="{StaticResource TextStyleLargeFontSize}"/>
-
+                    <TextBlock x:Name="tbChannelName" TextTrimming="CharacterEllipsis" 
+						       Text="{Binding name}" Style="{ThemeResource BaseTextBlockStyle}"/>
                 </Grid>
                 <TextBlock x:Name="tbTitle" Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="3" 
-					  Style="{ThemeResource BaseTextBlockStyle}"
-					TextWrapping="NoWrap" Text="{Binding currentEPGItem.title, Mode=TwoWay}"  TextTrimming="CharacterEllipsis">
+					       Style="{ThemeResource BodyTextBlockStyle}" Foreground="{ThemeResource SystemControlForegroundAccentBrush}" Text="{Binding currentEPGItem.title, Mode=TwoWay}" 
+                           TextTrimming="CharacterEllipsis">
                     <TextBlock.RenderTransform>
                         <TranslateTransform X="0"/>
                         </TextBlock.RenderTransform>
                 </TextBlock>
                 <TextBlock x:Name="tbStartTime" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" TextAlignment="Left"
 					Text="{Binding currentEPGItem.startDateString, Mode=TwoWay}" HorizontalAlignment="Left" 
-					 Style="{ThemeResource BaseTextBlockStyle}"
+					 Style="{ThemeResource CaptionTextBlockStyle}"
                                />
-                <Rectangle x:Name="progressbackgroundbar" Margin="10,0,10,0" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Height="5"  Opacity="0.2"/>
-                <Rectangle x:Name="progressbar" Margin="10,0,10,0" Grid.Row="3" Grid.Column="1"  Height="5" >
+                <Rectangle x:Name="progressbackgroundbar" Margin="10,0,10,0" Grid.Row="3" Grid.Column="1" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}" HorizontalAlignment="Stretch" Height="5"  Opacity="0.2"/>
+                <Rectangle x:Name="progressbar" Margin="10,0,10,0" Grid.Row="3" Grid.Column="1"  Height="5" Fill="{ThemeResource SystemControlBackgroundAccentBrush}" >
                     <Rectangle.RenderTransform>
                         <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0"  ScaleX="{Binding currentEPGItem.percentcompleted, Mode=TwoWay}" />
                     </Rectangle.RenderTransform>
                 </Rectangle>
 
                 <TextBlock x:Name="tbEndTime" Grid.Row="3" Grid.Column="2" TextAlignment="Right"
-					Text="{Binding currentEPGItem.endDateString, Mode=TwoWay}" 
-					 Style="{ThemeResource BaseTextBlockStyle}"
-					HorizontalAlignment="Right" VerticalAlignment="Center"
+					        Text="{Binding currentEPGItem.endDateString, Mode=TwoWay}" 
+					        Style="{ThemeResource CaptionTextBlockStyle}"
+					        HorizontalAlignment="Right" VerticalAlignment="Center"
                                />
             </Grid>
         </Button>
@@ -322,16 +290,6 @@
             <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Visible">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource ExpandView}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding Status}" Value="Updated">
-                <Media:ControlStoryboardAction Storyboard="{StaticResource UpdateEPGEventForChannel}" />
-            </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding Status}" Value="New">
-                <Media:ControlStoryboardAction Storyboard="{StaticResource SlideInChannel}" />
-            </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding Status}" Value="Existing">
-                <Media:ControlStoryboardAction Storyboard="{StaticResource StandardChannelStatus}" />
-            </Core:DataTriggerBehavior>
-            
             <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.IsRecorded}" Value="1">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingOn}" />
             </Core:DataTriggerBehavior>

@@ -117,7 +117,7 @@
         <Border x:Name="brHeader" Background="Transparent" Grid.Column="0" >
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="1"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -142,7 +142,7 @@
                     </Button.Projection>
                 </Button>
             
-                <Grid x:Name="LeftInfo" Grid.Column="0" Grid.Row="0">
+                <Grid x:Name="LeftInfo" Grid.Column="0" Grid.Row="0" Visibility="Collapsed">
                     <TextBlock x:Name="tbDay" TextAlignment="Center" VerticalAlignment="Center"
 						    Text="{Binding startDateString}" 
 						    HorizontalAlignment="Center" 
@@ -184,19 +184,19 @@
                             </Grid.RowDefinitions>
                             <TextBlock x:Name="channelnumber" Grid.Column="0" Grid.Row="0" Visibility="Collapsed" Text="{Binding channelNumber}"/>
                             <TextBlock x:Name="tbTitle" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" TextWrapping="NoWrap" TextTrimming="WordEllipsis"  
-								    Text="{Binding title}" Margin="0,0,0,0" FontSize="{StaticResource TextStyleLargeFontSize}"/>
+								    Text="{Binding title}" Margin="0,0,0,0" Style="{StaticResource BaseTextBlockStyle}"/>
                             <TextBlock x:Name="tbDescription" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="NoWrap" 
 								   Style="{ThemeResource SubTitleAccent}" Visibility="{Binding DescriptionVisibility}"
                                     Text="{Binding description}" 
 								   Margin="0,0,0,0"/>
                             <TextBlock x:Name="tbSubtitle" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="NoWrap" 
-								   Style="{ThemeResource SubTitleAccent}"  Visibility="{Binding SubtitleVisibility}"
+								   Style="{StaticResource BodyTextBlockStyle}" Foreground="{StaticResource SystemControlForegroundAccentBrush}"  Visibility="{Binding SubtitleVisibility}"
                                     Text="{Binding subtitle}" 
 								   Margin="0,0,0,0"/>
                             <TextBlock x:Name="tbStartTime" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Left"
 								   Text="{Binding startDateString}" 
 								   HorizontalAlignment="Center"  Margin="0"
-                                    Style="{ThemeResource BaseTextBlockStyle}"/>
+                                    Style="{ThemeResource CaptionTextBlockStyle}"/>
                             <Rectangle x:Name="progressbackgroundbar" HorizontalAlignment="Stretch" Grid.Row="2" Grid.Column="1" Height="5" 
 								   Margin="10,0,10,0"  Opacity="0.2"/>
                             <Rectangle x:Name="progressbar" Grid.Row="2" Grid.Column="1" Height="5" 
@@ -208,7 +208,7 @@
                             <TextBlock x:Name="tbEndTime" Grid.Column="2" Grid.Row="2" TextAlignment="Right"
         						Text="{Binding endDateString}" 
         						HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                        Style="{ThemeResource BaseTextBlockStyle}"
+                                        Style="{ThemeResource CaptionTextBlockStyle}"
 								    Margin="0,0,0,0" />
 
                         </Grid>

@@ -4,6 +4,7 @@ Imports Windows.UI.Core
 Imports TVHead_81.ViewModels
 
 Public Class ChannelListViewModel
+    Private Property _allchannels As New List(Of ChannelViewModel)
     Public Property items As New ObservableCollection(Of ChannelViewModel)
     Public Property dataLoaded As Boolean
 
@@ -23,12 +24,14 @@ Public Class ChannelListViewModel
                 vm.StatusBar.Update(vm.loader.GetString("status_RefreshingChannels"), True, 0, True, True)
                 'Trigger an update for all channels. Do 1 query to TVH server to retrieve X number of most recent EPG entries, where X is the amount of total channels
                 'This should ensure we get the most recent EPG entry for each channel, and avoid hammering the server with individual requests
-                Dim updatedEvents As List(Of EPGItemViewModel) = (Await LoadEPGEntry(New ChannelViewModel, False, vm.AllChannels.items.Count)).ToList()
+                Dim updatedEvents As List(Of EPGItemViewModel) = (Await LoadEPGEntry(New ChannelViewModel, False, Me._allchannels.Count)).ToList()
                 If Not updatedEvents Is Nothing Then
-                    For Each channel In Me.items
+                    For Each channel In Me._allchannels
                         Dim updatedEPGEventForChannel = updatedEvents.Where(Function(x) x.channelUuid = channel.channelUuid).FirstOrDefault()
                         If Not updatedEPGEventForChannel Is Nothing Then
                             Await channel.RefreshCurrentEPGItem(updatedEPGEventForChannel)
+                        Else
+                            channel.currentEPGItem = New EPGItemViewModel
                         End If
                     Next
                 End If
@@ -45,11 +48,9 @@ Public Class ChannelListViewModel
     Public Async Function AddChannel(c As ChannelViewModel) As Task
         If Not items Is Nothing Then
             Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                             c.Status = "New"
                                                                                                              items.Add(c)
                                                                                                          End Sub)
         End If
-        Await Task.Delay(5)
     End Function
 
     Public Async Function ClearChannels() As Task
@@ -62,10 +63,34 @@ Public Class ChannelListViewModel
     End Function
 
     Public Async Function LoadAll() As Task
+        Dim vm As TVHead_ViewModel = TryCast(CType(Application.Current, App).DefaultViewModel, TVHead_ViewModel)
+        Dim selectedChannelTag As ChannelTagViewModel = vm.selectedChannelTag
         Await vm.StatusBar.Update(vm.loader.GetString("status_RefreshingChannels"), True, 0, True)
-        Me.items = (Await LoadAllChannels()).ToObservableCollection()
+        Me._allchannels = (Await LoadAllChannels()).ToList()
+        Await RefreshCurrentEvents()
+        Dim newChannels = _allchannels.OrderBy(Function(x) x.number).Where(Function(x) x.tags.Contains(selectedChannelTag.uuid)).ToList()
+        For Each channel In newChannels
+            Await AddChannel(channel)
+        Next
         Me.dataLoaded = True
         Await vm.StatusBar.Clean()
+    End Function
+
+    ''' <summary>
+    ''' Clear and reload the channel list based on the selected ChannelTag in the TVHead_ViewModel.
+    ''' </summary>
+    ''' <returns></returns>
+    Public Async Function ReloadChannelList() As Task
+        Me.items.Clear()
+        'Update the current EPG Event information for each channel, before adding the channels to the view
+        Await RefreshCurrentEvents()
+        Dim vm As TVHead_ViewModel = TryCast(CType(Application.Current, App).DefaultViewModel, TVHead_ViewModel)
+        Dim selectedChannelTag As ChannelTagViewModel = vm.selectedChannelTag
+
+        Dim newChannels = _allchannels.OrderBy(Function(x) x.number).Where(Function(x) x.tags.Contains(selectedChannelTag.uuid)).ToList()
+        For Each channel In newChannels
+            Await AddChannel(channel)
+        Next
     End Function
 
     Public Async Function LoadFavouriteTagChannels() As Task

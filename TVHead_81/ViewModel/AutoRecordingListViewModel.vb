@@ -3,6 +3,7 @@ Imports TVHead_81.ViewModels
 Imports GalaSoft.MvvmLight
 Imports Windows.ApplicationModel.Core
 Imports Windows.UI.Core
+Imports GalaSoft.MvvmLight.Command
 
 Public Class AutoRecordingListViewModel
     Inherits ViewModelBase
@@ -61,34 +62,34 @@ Public Class AutoRecordingListViewModel
 
     Public Property RecordingsSelectionChanged As RelayCommand
         Get
-            Return New RelayCommand(Sub(x)
-                                        '                                            Dim a = vm.
-                                        'WINRT APPARENTLY DOESNT SUPPORT SETTER PROPERTY ISSELECTED, SO WE HAVE TO CAPTURE EACH SELECT/DESELECT HERE
-                                        WriteToDebug("AutoRecordingListViewModel.RecordingSelectionChanged()", "start")
-                                        'If Not Me.items Is Nothing Then
-                                        For Each item In CType(x, SelectionChangedEventArgs).AddedItems
-                                            If TypeOf (item) Is AutoRecordingViewModel Then
-                                                Dim recording = CType(item, AutoRecordingViewModel)
-                                                recording.IsSelected = True
-                                            End If
-                                        Next
-                                        For Each item In CType(x, SelectionChangedEventArgs).RemovedItems
-                                            If TypeOf (item) Is AutoRecordingViewModel Then
-                                                Dim recording = CType(item, AutoRecordingViewModel)
-                                                recording.IsSelected = False
-                                            End If
-                                        Next
+            Return New RelayCommand(Sub()
+                                        ''                                            Dim a = vm.
+                                        ''WINRT APPARENTLY DOESNT SUPPORT SETTER PROPERTY ISSELECTED, SO WE HAVE TO CAPTURE EACH SELECT/DESELECT HERE
+                                        'WriteToDebug("AutoRecordingListViewModel.RecordingSelectionChanged()", "start")
+                                        ''If Not Me.items Is Nothing Then
+                                        'For Each item In CType(x, SelectionChangedEventArgs).AddedItems
+                                        '    If TypeOf (item) Is AutoRecordingViewModel Then
+                                        '        Dim recording = CType(item, AutoRecordingViewModel)
+                                        '        recording.IsSelected = True
+                                        '    End If
+                                        'Next
+                                        'For Each item In CType(x, SelectionChangedEventArgs).RemovedItems
+                                        '    If TypeOf (item) Is AutoRecordingViewModel Then
+                                        '        Dim recording = CType(item, AutoRecordingViewModel)
+                                        '        recording.IsSelected = False
+                                        '    End If
+                                        'Next
 
-                                        Dim amountSelected As Integer = 0
-                                        For Each item In items
-                                            If item.IsSelected Then
-                                                amountSelected += 1
-                                                If amountSelected > 0 Then vm.AppBar.ButtonEnabled.deleteButton = True
-                                            End If
-                                        Next
-                                        If amountSelected = 0 Then vm.AppBar.ButtonEnabled.deleteButton = False
-                                        WriteToDebug("AutoRecordingListViewModel.RecordingSelectionChanged()", String.Format("{0} recordings selected", amountSelected.ToString))
-                                        WriteToDebug("AutoRecordingListViewModel.RecordingSelectionChanged()", "Stop")
+                                        'Dim amountSelected As Integer = 0
+                                        'For Each item In items
+                                        '    If item.IsSelected Then
+                                        '        amountSelected += 1
+                                        '        If amountSelected > 0 Then vm.AppBar.ButtonEnabled.deleteButton = True
+                                        '    End If
+                                        'Next
+                                        'If amountSelected = 0 Then vm.AppBar.ButtonEnabled.deleteButton = False
+                                        'WriteToDebug("AutoRecordingListViewModel.RecordingSelectionChanged()", String.Format("{0} recordings selected", amountSelected.ToString))
+                                        'WriteToDebug("AutoRecordingListViewModel.RecordingSelectionChanged()", "Stop")
                                     End Sub)
 
         End Get

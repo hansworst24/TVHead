@@ -433,11 +433,11 @@ Public Class Downloader
             Using wc As New HttpClient(filter)
                 Dim cts As New CancellationTokenSource(5000)
                 Try
-                    WriteToDebug("Downloader.DownloadJSON", url)
+                    ' WriteToDebug("Downloader.DownloadJSON", url)
                     ''TODO FIX GETRSTRINGAYNSC
                     Dim response As HttpResponseMessage = Await wc.GetAsync(New Uri(url)).AsTask(cts.Token)
                     vm.totalBytesReceived += response.Content.ToString.Length
-                    WriteToDebug("Downloader.DownloadJSON", "Length :" & response.Content.ToString.Length.ToString & ",Size :" & Math.Round(response.Content.ToString.Length / 1024).ToString & "kb")
+                    ' WriteToDebug("Downloader.DownloadJSON", "Length :" & response.Content.ToString.Length.ToString & ",Size :" & Math.Round(response.Content.ToString.Length / 1024).ToString & "kb")
                     If vm.isConnected = False Then
                         vm.isConnected = True
                         Await vm.StatusBar.Clean()
@@ -446,7 +446,7 @@ Public Class Downloader
                 Catch ex As TaskCanceledException
                     Return New HttpResponseMessage With {.ReasonPhrase = "Connection timed out", .StatusCode = HttpStatusCode.RequestTimeout}
                 Catch ex As Exception
-                    WriteToDebug("Downloader.DownloadJSON", ex.Message.ToString)
+                    ' WriteToDebug("Downloader.DownloadJSON", ex.Message.ToString)
                     Return New HttpResponseMessage With {.ReasonPhrase = ex.Message, .StatusCode = HttpStatusCode.Unauthorized}
                 End Try
             End Using
@@ -467,13 +467,13 @@ Public Class Downloader
                 Dim response As New HttpResponseMessage
                 Try
                     response = Await wc.SendRequestAsync(request, HttpCompletionOption.ResponseHeadersRead).AsTask(cts.Token)
-                    WriteToDebug("Downloader.DownloadComet", "Length :" & response.Content.ToString.Length.ToString & ",Size :" & Math.Round(response.Content.ToString.Length / 1024).ToString & "kb")
+                    'WriteToDebug("Downloader.DownloadComet", "Length :" & response.Content.ToString.Length.ToString & ",Size :" & Math.Round(response.Content.ToString.Length / 1024).ToString & "kb")
                     vm.totalBytesReceived += response.Content.ToString.Length
                 Catch ex As TaskCanceledException
                     Return New HttpResponseMessage With {.ReasonPhrase = "Connection timed out", .StatusCode = HttpStatusCode.RequestTimeout}
                 Catch ex As Exception
                     response.StatusCode = Net.HttpStatusCode.NotFound
-                    WriteToDebug("Downloader.DownloadComet", "error")
+                    'WriteToDebug("Downloader.DownloadComet", "error")
                 End Try
                 'WriteToDebug("Downloader.DownloadComet", "end")
                 Return response
