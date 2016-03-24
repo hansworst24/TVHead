@@ -416,16 +416,13 @@ End Class
 
 Public Class Downloader
 
-    Public ReadOnly Property vm As TVHead_ViewModel
-        Get
-            Return CType(Application.Current, App).DefaultViewModel
-        End Get
-
-    End Property
+    Private vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
 
     Public Async Function DownloadJSON(url As String) As Task(Of HttpResponseMessage)
         Using filter As New HttpBaseProtocolFilter
-            filter.ServerCredential = New Windows.Security.Credentials.PasswordCredential With {.Password = vm.appSettings.PasswordSetting, .UserName = vm.appSettings.UsernameSetting}
+            If vm.TVHeadSettings.UsernameSetting <> "" And vm.TVHeadSettings.PasswordSetting <> "" Then
+                filter.ServerCredential = New Windows.Security.Credentials.PasswordCredential With {.Password = vm.TVHeadSettings.PasswordSetting, .UserName = vm.TVHeadSettings.UsernameSetting}
+            End If
             filter.CacheControl.ReadBehavior = HttpCacheReadBehavior.MostRecent
             filter.CacheControl.WriteBehavior = HttpCacheWriteBehavior.NoCache
             filter.AllowUI = False
@@ -433,15 +430,12 @@ Public Class Downloader
             Using wc As New HttpClient(filter)
                 Dim cts As New CancellationTokenSource(5000)
                 Try
-                    ' WriteToDebug("Downloader.DownloadJSON", url)
+                    WriteToDebug("Downloader.DownloadJSON", url)
                     ''TODO FIX GETRSTRINGAYNSC
                     Dim response As HttpResponseMessage = Await wc.GetAsync(New Uri(url)).AsTask(cts.Token)
                     vm.totalBytesReceived += response.Content.ToString.Length
                     ' WriteToDebug("Downloader.DownloadJSON", "Length :" & response.Content.ToString.Length.ToString & ",Size :" & Math.Round(response.Content.ToString.Length / 1024).ToString & "kb")
-                    If vm.isConnected = False Then
-                        vm.isConnected = True
-                        Await vm.StatusBar.Clean()
-                    End If
+                    'If Await vm.IsConnected Then Await vm.StatusBar.Clean()
                     Return response
                 Catch ex As TaskCanceledException
                     Return New HttpResponseMessage With {.ReasonPhrase = "Connection timed out", .StatusCode = HttpStatusCode.RequestTimeout}
@@ -484,13 +478,6 @@ End Class
 
 Public Class Group(Of T)
     Inherits ObservableCollection(Of T)
-
-    Public ReadOnly Property vm As TVHead_ViewModel
-        Get
-            Return CType(Application.Current, App).DefaultViewModel
-        End Get
-
-    End Property
 
     Public Sub New(name As Date, items As IEnumerable(Of T))
         Me.Key = name

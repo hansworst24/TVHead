@@ -1,18 +1,19 @@
 ﻿Imports TVHead_81.Common
+Imports TVHead_81.ViewModels
 Imports Windows.UI.Core
 
 Public NotInheritable Class AutoRecordingPage
     Inherits Page
-    Dim app As App = CType(Application.Current, App)
+    Private vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
 
     Private WithEvents _navigationHelper As New NavigationHelper(Me)
     Private ReadOnly _defaultViewModel As New ObservableDictionary
 
     Public Sub New()
         InitializeComponent()
-        lstDVRConfig.ItemsSource = app.DefaultViewModel.DVRConfigs.items
-        lstChannelTag.ItemsSource = app.DefaultViewModel.ChannelTags.items
-        lstGenre.ItemsSource = app.DefaultViewModel.Genres.items
+        lstDVRConfig.ItemsSource = vm.DVRConfigs.items
+        lstChannelTag.ItemsSource = vm.ChannelTags.items
+        lstGenre.ItemsSource = vm.Genres.items
         AddHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf AutoRecordingBackPressed
     End Sub
 
@@ -80,7 +81,7 @@ Public NotInheritable Class AutoRecordingPage
     ''' <param name="e">Event data that describes how this page was reached.</param>
     Protected Overrides Sub OnNavigatedTo(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedTo(e)
-        Me.DataContext = app.DefaultViewModel
+        Me.DataContext = vm
     End Sub
 
     Protected Overrides Sub OnNavigatedFrom(e As NavigationEventArgs)
@@ -101,15 +102,15 @@ Public NotInheritable Class AutoRecordingPage
     End Sub
 
     Private Sub tbChannelSearch_KeyUp(sender As Object, e As KeyRoutedEventArgs)
-        Dim app As App = CType(Application.Current, App)
+        Dim app As Application = CType(Application.Current, Application)
         If Not tbChannelSearch.Text = "" Then
-            lstChannels.ItemsSource = From c In app.DefaultViewModel.AllChannels.items Where c.name.ToUpper.StartsWith(tbChannelSearch.Text.ToUpper())
+            lstChannels.ItemsSource = From c In vm.AllChannels.items Where c.name.ToUpper.StartsWith(tbChannelSearch.Text.ToUpper())
         End If
 
     End Sub
 
     Private Async Sub AutoRecordingBackPressed(sender As Object, e As BackRequestedEventArgs)
-        Await app.DefaultViewModel.AutoRecordings.Reload()
+        Await vm.AutoRecordings.Reload()
         Dim content = Window.Current.Content
         Dim frame = CType(content, Frame)
         If frame.CanGoBack Then frame.GoBack()

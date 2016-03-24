@@ -105,7 +105,7 @@ Public Class RecordContentDialogViewModel
 
     Public ReadOnly Property vm As TVHead_ViewModel
         Get
-            Return CType(Application.Current, App).DefaultViewModel
+            Return CType(Application.Current, Application).DefaultViewModel
         End Get
 
     End Property

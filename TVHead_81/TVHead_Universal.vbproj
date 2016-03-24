@@ -146,15 +146,15 @@
     <Compile Include="User Controls\ucService.xaml.vb">
       <DependentUpon>ucService.xaml</DependentUpon>
     </Compile>
-    <Compile Include="User Controls\ucToastMessage.xaml.vb">
-      <DependentUpon>ucToastMessage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="User Controls\ucToastList.xaml.vb">
-      <DependentUpon>ucToastList.xaml</DependentUpon>
+    <Compile Include="User Controls\ucNotificationMessage.xaml.vb">
+      <DependentUpon>ucNotificationMessage.xaml</DependentUpon>
     </Compile>
     <Compile Include="User Controls\ucTopHeader.xaml.vb">
       <DependentUpon>ucTopHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\CometStatsViewModel.vb" />
+    <Compile Include="ViewModel\NotificationViewModel.vb" />
+    <Compile Include="ViewModel\TVHead_Settings.vb" />
     <Compile Include="ViewModel\AutoRecordingListViewModel.vb" />
     <Compile Include="ViewModel\AutoRecordingViewModel.vb" />
     <Compile Include="ViewModel\ChannelListViewModel.vb" />
@@ -166,6 +166,7 @@
     <Compile Include="ViewModel\RecordingListViewModel.vb" />
     <Compile Include="ViewModel\RecordingViewModel.vb" />
     <Compile Include="ViewModel\SearchPageViewModel.vb" />
+    <Compile Include="ViewModel\TVHead_ViewModel.vb" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -372,11 +373,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="User Controls\ucToastMessage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="User Controls\ucToastList.xaml">
+    <Page Include="User Controls\ucNotificationMessage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -398,7 +395,9 @@
       <Name>Behaviors SDK %28XAML%29</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

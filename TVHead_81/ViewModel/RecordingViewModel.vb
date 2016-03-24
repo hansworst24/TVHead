@@ -7,7 +7,7 @@ Public Class RecordingViewModel
     Inherits ViewModelBase
     Public ReadOnly Property vm As TVHead_ViewModel
         Get
-            Return CType(Application.Current, App).DefaultViewModel
+            Return CType(Application.Current, Application).DefaultViewModel
         End Get
 
     End Property
@@ -79,7 +79,7 @@ Public Class RecordingViewModel
         Get
             Return New RelayCommand(Async Sub()
                                         WriteToDebug("RecordingViewModel.SaveRecording()", "start")
-                                        'Dim app As App = CType(Application.Current, App)
+                                        'Dim app As App = CType(Application.Current, Application)
 
                                         Dim r As tvhCommandResponse
                                         If Me.recording_id = "" Then
@@ -173,7 +173,7 @@ Public Class RecordingViewModel
 
     Public Property chicon As String
         Get
-            'Dim app As App = CType(Application.Current, App)
+            'Dim app As App = CType(Application.Current, Application)
             Dim b = (From a In vm.AllChannels.items Where a.channelUuid = Me.channelUuid Select a).FirstOrDefault
             If Not b Is Nothing Then
                 Return b.chicon
@@ -407,16 +407,6 @@ Public Class RecordingViewModel
 
     Public Property EndDateVisibility As Visibility ' TVH3.4/3.5/3.6 do not used a End Date for a recording
 
-    'Public ReadOnly Property progressBarBackgroundBrush As SolidColorBrush
-    '    Get
-    '        If (CType(Application.Current.Resources("PhoneBackgroundColor"), Color).Equals(Colors.Black)) Then
-    '            Return New SolidColorBrush(Color.FromArgb(255, 33, 33, 33))
-    '        Else
-    '            Return New SolidColorBrush(Color.FromArgb(255, 230, 230, 230))
-    '        End If
-
-    '    End Get
-    'End Property
 
     Public Async Function RecordingAbort() As Task(Of RecordingReturnValue)
         'Initiates the deletion of a recording

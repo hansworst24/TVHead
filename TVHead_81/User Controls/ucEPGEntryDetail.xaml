@@ -9,6 +9,7 @@
 		
 	</UserControl.Resources>
 	<Grid x:Name="mainGrid">
+        
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto"/>
 			<RowDefinition Height="*"/>
@@ -36,7 +37,7 @@
                            VerticalAlignment="Center"/>
                 <TextBlock x:Uid="tbDescription" Grid.Row="2" Grid.Column="0" Margin="10,0,10,5" Text="Description" 
                            FontWeight="Bold" />
-                <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Justify"
+                <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Justify" Style="{ThemeResource CaptionTextBlockStyle}"
                            TextWrapping="Wrap" HorizontalAlignment="Left" Margin="10,0,10,10" Text="{Binding description}"
                             />
             </Grid>

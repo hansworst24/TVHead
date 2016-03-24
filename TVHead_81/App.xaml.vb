@@ -1,18 +1,14 @@
 ﻿Imports TVHead_81.Common
 Imports TVHead_81.ViewModels
-Imports Windows.Globalization
 
 ' The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
 ''' <summary>
 ''' Provides application-specific behavior to supplement the default Application class.
 ''' </summary>
-Public NotInheritable Class App
-    'Inherits Application
+NotInheritable Class Application
     Inherits Windows.UI.Xaml.Application
-
     Private _transitions As TransitionCollection
-    Public settings As New AppSettings
     Public DefaultViewModel As New TVHead_ViewModel
 
 
@@ -21,6 +17,9 @@ Public NotInheritable Class App
     ''' executed, and as such is the logical equivalent of main() or WinMain().
     ''' </summary>
     Public Sub New()
+        'Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
+        '    Microsoft.ApplicationInsights.WindowsCollectors.Metadata Or
+        '    Microsoft.ApplicationInsights.WindowsCollectors.Session)
         InitializeComponent()
         AddHandler Application.Current.Resuming, AddressOf App_Resuming
     End Sub
@@ -35,18 +34,18 @@ Public NotInheritable Class App
         'Check and set access flags to TVH server
         Await Me.DefaultViewModel.checkAccess()
 
-        If Me.DefaultViewModel.hasEPGAccess Then
+        If Await Me.DefaultViewModel.TVHeadSettings.hasEPGAccess Then
             If Not Me.DefaultViewModel.SelectedChannel Is Nothing Then Await Me.DefaultViewModel.SelectedChannel.RefreshEPG(True)
             Await Me.DefaultViewModel.Channels.RefreshCurrentEvents()
         End If
 
-        If Me.DefaultViewModel.hasDVRAccess Then
+        If Me.DefaultViewModel.TVHeadSettings.hasDVRAccess Then
             Await Me.DefaultViewModel.UpcomingRecordings.Reload(False)
             Await Me.DefaultViewModel.FinishedRecordings.Reload(False)
             Await Me.DefaultViewModel.FailedRecordings.Reload(False)
         End If
 
-        If Me.DefaultViewModel.hasAdminAccess Then
+        If Me.DefaultViewModel.TVHeadSettings.hasAdminAccess Then
             Await Me.DefaultViewModel.Streams.Reload()
             Await Me.DefaultViewModel.Subscriptions.Reload()
         End If
@@ -83,6 +82,9 @@ Public NotInheritable Class App
             ' TODO: change this value to a cache size that is appropriate for your application
             rootFrame.CacheSize = 1
 
+            'Set the Theme
+            If DefaultViewModel.TVHeadSettings.UseDarkTheme Then rootFrame.RequestedTheme = ElementTheme.Dark Else rootFrame.RequestedTheme = ElementTheme.Light
+
             ' Set the default language
             rootFrame.Language = Windows.Globalization.ApplicationLanguages.Languages(0)
 
@@ -98,9 +100,9 @@ Public NotInheritable Class App
 
             ' Place the frame in the current Window
             Window.Current.Content = rootFrame
-            End If
+        End If
 
-            If rootFrame.Content Is Nothing Then
+        If rootFrame.Content Is Nothing Then
             ' Removes the turnstile navigation for startup.
             If rootFrame.ContentTransitions IsNot Nothing Then
                 _transitions = New TransitionCollection()

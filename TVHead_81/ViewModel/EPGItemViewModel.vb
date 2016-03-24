@@ -1,60 +1,262 @@
 ﻿Imports GalaSoft.MvvmLight
 Imports Windows.ApplicationModel.Core
 Imports Windows.UI.Core
-Imports TVHead_81.Common
 Imports TVHead_81.ViewModels
 Imports Windows.UI.Popups
 Imports GalaSoft.MvvmLight.Command
 
 Public Class EPGItemViewModel
     Inherits ViewModelBase
+    Private _EPGItem As tvh40.EPGEvent
 
-    Private Property continueWithDeletion As Boolean
-
-
-    Public ReadOnly Property vm As TVHead_ViewModel
+#Region "Properties"
+    Private ReadOnly Property vm As TVHead_ViewModel
         Get
-            Return CType(Application.Current, App).DefaultViewModel
+            Return CType(Application.Current, Application).DefaultViewModel
         End Get
 
     End Property
+    Public ReadOnly Property channelName As String
+        Get
+            Return _EPGItem.channelName
+        End Get
+    End Property
+    Public ReadOnly Property channelNumber As Integer
+        Get
+            Return _EPGItem.channelNumber
+        End Get
+    End Property
+    Public ReadOnly Property channelUuid As String
+        Get
+            Return _EPGItem.channelUuid
+        End Get
+    End Property
+    Private Property continueWithDeletion As Boolean
+    Public ReadOnly Property description As String
+        Get
+            If Not _EPGItem.description Is Nothing Then Return _EPGItem.description.Replace(ChrW(10), "") Else Return ""
+        End Get
+    End Property
+    Public Property dvrState As String
+        Get
+            Return _EPGItem.dvrState
+        End Get
+        Set(value As String)
+            If (value <> _EPGItem.dvrState) Then
+                _EPGItem.dvrState = value
+                RaisePropertyChanged("dvrState")
+                RaisePropertyChanged("RecordingStatus")
+                RaisePropertyChanged("RecordingIcon")
+            End If
+        End Set
+    End Property
+    Public Property dvrUuid As String
+        Get
+            Return _EPGItem.dvrUuid
+        End Get
+        Set(value As String)
+            If _EPGItem.dvrUuid <> value Then
+                _EPGItem.dvrUuid = value
+                RaisePropertyChanged()
+            End If
+        End Set
+    End Property
+    Public ReadOnly Property endDate As DateTime
+        Get
+            Return UnixToDateTime(_EPGItem.stop).ToLocalTime
+        End Get
+    End Property
+    Public ReadOnly Property endDateString As String
+        Get
+            Return UnixToDateTime(_EPGItem.stop).ToLocalTime.ToString("t")
+        End Get
+    End Property
+    Public ReadOnly Property episodeId As Long
+        Get
+            Return _EPGItem.episodeId
+        End Get
+    End Property
+    Public ReadOnly Property episodeUri As String
+        Get
+            Return _EPGItem.episodeUri
+        End Get
+    End Property
+    Public ReadOnly Property eventId As Long
+        Get
+            Return _EPGItem.eventId
+        End Get
+    End Property
+    Public Property ExpandedView As String
+        Get
+            Return _ExpandedView
+        End Get
+        Set(value As String)
+            If value <> _ExpandedView Then
+                _ExpandedView = value
+                RaisePropertyChanged()
+            End If
+        End Set
+    End Property
+    Private Property _ExpandedView As String
+    Public ReadOnly Property genre As List(Of Integer)
+        Get
+            Return _EPGItem.genre
+        End Get
+    End Property
+    Public ReadOnly Property genreName As String
+        Get
+            If Not genre Is Nothing AndAlso Not genre.Count = 0 Then
+                Return (From g In vm.ContentTypes.allitems Where g.uuid = genre(0) Select g.name).FirstOrDefault
+            Else
+                Return ""
+            End If
+        End Get
+    End Property
+    Public ReadOnly Property info As String
+        Get
+            If _EPGItem.subtitle <> "" Then Return _EPGItem.subtitle Else Return _EPGItem.description
+        End Get
+    End Property
+    Public ReadOnly Property RecordingIcon As String
+        Get
+            If RecordingStatus = 1 Or RecordingStatus = 3 Then
+                Return "/images/player_record.png"
+            Else
+                Return "/images/player_record_off.png"
+            End If
+        End Get
+    End Property
+    Public ReadOnly Property RecordingStatus As Integer
+        Get
+            Select Case _EPGItem.dvrState
+                Case "recording" : Return 1
+                Case "scheduled" : Return 3
+                Case "recordingError" : Return 2
+                Case Else : Return 0
+            End Select
+        End Get
+    End Property
+    Private Property _IsRecorded As Integer
+    Public ReadOnly Property percentcompleted As Double
+        Get
+            If (endDate > Date.MinValue) And (startDate > Date.MinValue) And (Date.Now > startDate) Then
+                If Date.Now > endDate Then
+                    Return 1
+                Else
+                    Return Math.Round((Date.Now - startDate).TotalSeconds / (endDate - startDate).TotalSeconds, 2)
+                End If
+            Else
+                Return 0
+            End If
+        End Get
+    End Property
+    Public Property RecordButtonEnabled As Boolean
+        Get
+            Return _RecordButtonEnabled
+        End Get
+        Set(value As Boolean)
+            _RecordButtonEnabled = value
+            RaisePropertyChanged()
+        End Set
 
+    End Property
+    Private Property _RecordButtonEnabled As Boolean
+    Public Property selectedDVRConfig As DVRConfigViewModel
+    Public ReadOnly Property serieslinkId As Integer
+        Get
+            Return _EPGItem.serieslinkId
+        End Get
+    End Property
+    Public ReadOnly Property serieslinkUri As String
+        Get
+            Return _EPGItem.serieslinkUri
+        End Get
+    End Property
+    Public Property Status As String
+        'Defines 3 possible states in which the ViewModel can be in, which triggers transitions between states
+        ' New : Item is a new item (TODO : Insert transition effect with opactiy 0-->1, and visibilty 0-->1
+        ' Existing : Item is already present. Sets the visibility to 1
+        ' Remove : Item is (about to get) removed. 
+        Get
+            Return _Status
+        End Get
+        Set(value As String)
+            _Status = value
+            RaisePropertyChanged()
+        End Set
+    End Property
+    Private Property _Status As String
+    Public ReadOnly Property start As Integer
+        Get
+            Return _EPGItem.start
+        End Get
+    End Property
+    Public ReadOnly Property startDate As DateTime
+        Get
+            Return UnixToDateTime(_EPGItem.start).ToLocalTime
+        End Get
+    End Property
+    Public ReadOnly Property startDateString As String
+        Get
+            Return UnixToDateTime(_EPGItem.start).ToLocalTime.ToString("t")
+        End Get
+    End Property
+    Public ReadOnly Property [stop] As Integer
+        Get
+            Return _EPGItem.stop
+        End Get
+    End Property
+    Public ReadOnly Property subtitle As String
+        Get
+            Return _EPGItem.subtitle
+        End Get
+    End Property
+    Public Property title As String
+        Get
+            Return _EPGItem.title
+        End Get
+        Set(value As String)
+            _EPGItem.title = value
+            RaisePropertyChanged("title")
+        End Set
+    End Property
+#End Region
+
+#Region "RelayCommands"
     Public Property ExpandCollapseCommand As RelayCommand
         Get
             Return New RelayCommand(Sub()
                                         WriteToDebug("EPGItemViewModel.ExpanseCollapseCommand()", "start")
-                                        For Each group In vm.SelectedChannel.epgitems.groupeditems
-                                            For Each epgitem In group
-                                                If epgitem Is Me Then
-                                                    If (Me.ExpandedView = "Collapsed" Or Me.ExpandedView = "") Then
-                                                        Me.ExpandedView = "Expanded"
-                                                        Me.RecordButtonEnabled = True
+
+                                        Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
+                                        If rectie.Width > 720 Then
+                                            vm.selectedEPGItem = Me
+                                        Else
+                                            For Each group In vm.SelectedChannel.epgitems.groupeditems
+                                                For Each epgitem In group
+                                                    If epgitem Is Me Then
+                                                        If (Me.ExpandedView = "Collapsed" Or Me.ExpandedView = "") Then
+                                                            Me.ExpandedView = "Expanded"
+                                                            Me.RecordButtonEnabled = True
+                                                        Else
+                                                            Me.ExpandedView = "Collapsed"
+                                                            Me.RecordButtonEnabled = False
+                                                        End If
                                                     Else
-                                                        Me.ExpandedView = "Collapsed"
-                                                        Me.RecordButtonEnabled = False
+                                                        If epgitem.ExpandedView = "Expanded" Then
+                                                            epgitem.ExpandedView = "Collapsed"
+                                                            epgitem.RecordButtonEnabled = False
+                                                        End If
                                                     End If
-                                                Else
-                                                    If epgitem.ExpandedView = "Expanded" Then
-                                                        epgitem.ExpandedView = "Collapsed"
-                                                        epgitem.RecordButtonEnabled = False
-                                                    End If
-                                                End If
+                                                Next
                                             Next
-                                        Next
+                                        End If
                                         WriteToDebug("EPGItemViewModel.ExpanseCollapseCommand()", "stop")
                                     End Sub)
         End Get
         Set(value As RelayCommand)
         End Set
     End Property
-
-    Public Property howToRecord As Integer
-
-    Public Property selectedDVRConfig As DVRConfigViewModel
-
-
-
-
     Public Property RecordCommand As RelayCommand
         Get
             Return New RelayCommand(Async Sub()
@@ -64,7 +266,7 @@ Public Class EPGItemViewModel
                                         Me.continueWithDeletion = False
 
                                         WriteToDebug("EPGItemViewModel.RecordCommand()", "Executed")
-                                        If IsRecorded = 1 Or IsRecorded = 2 Or IsRecorded = 3 Then
+                                        If RecordingStatus = 1 Or RecordingStatus = 2 Or RecordingStatus = 3 Then
                                             If vm.appSettings.ConfirmDeletion Then
                                                 Await ShowConfirmDeletionPrompt()
                                             Else
@@ -76,7 +278,7 @@ Public Class EPGItemViewModel
                                             StartEventRecording()
                                         End If
 
-                                        If Not vm.appSettings.LongPollingEnabled And vm.hasDVRAccess Then
+                                        If Not vm.appSettings.LongPollingEnabled And vm.TVHeadSettings.hasDVRAccess Then
                                             vm.UpcomingRecordings.Reload(True)
                                             vm.FinishedRecordings.Reload(True)
                                             vm.FailedRecordings.Reload(True)
@@ -117,242 +319,14 @@ Public Class EPGItemViewModel
         Set(value As RelayCommand)
         End Set
     End Property
+#End Region
 
-
-    Public Property channelName As String
-    Public Property channelNumber As Integer
-    Public Property channelUuid As String
-    Public Property episodeId As Long
-    Public Property episodeUri As String
-    Public Property subtitle As String
-
-    Private Property _ShowSubtitles As Integer
-    Public ReadOnly Property SubtitleVisibility As String
-        Get
-            If subtitle <> "" Then Return "Visible" Else Return "Collapsed"
-        End Get
-    End Property
-
-    Private Property _ShowDescription As Integer
-    Public ReadOnly Property DescriptionVisibility As String
-        Get
-            If subtitle = "" Then Return "Visible" Else Return "Collapsed"
-        End Get
-    End Property
-
-
-
-    Public Property serieslinkId As Integer
-    Public Property serieslinkUri As String
-    Public Property eventId As Long
-    Public Property dvrUuid As String
-        Get
-            Return _dvrUuid
-        End Get
-        Set(value As String)
-            If _dvrUuid <> value Then
-                _dvrUuid = value
-                RaisePropertyChanged()
-            End If
-        End Set
-    End Property
-    Private Property _dvrUuid As String
-
-    Public Property dvrState As String
-        Get
-            Return _dvrState
-        End Get
-        Set(value As String)
-            _dvrState = value
-            Select Case value
-                Case "recording"
-                    IsRecorded = 1
-                Case "scheduled"
-                    IsRecorded = 3
-                Case "recordingError"
-                    IsRecorded = 2
-                Case Else
-                    IsRecorded = 0
-            End Select
-            RaisePropertyChanged()
-        End Set
-    End Property
-    Private Property _dvrState As String
-
-
-    Public Property genre As New List(Of Integer)
-    Public ReadOnly Property genreName As String
-        Get
-            'Dim app As App = CType(Application.Current, App)
-            If Not genre Is Nothing Then
-                If Not genre.Count = 0 Then
-                    Return (From g In vm.AllGenres.items Where g.uuid = genre(0) Select g.name).FirstOrDefault
-                Else
-                    Return ""
-                End If
-            Else
-                Return ""
-            End If
-        End Get
-    End Property
-    Public Property title As String
-        Get
-            Return _title
-        End Get
-        Set(value As String)
-            _title = value
-        End Set
-    End Property
-    Private Property _title As String
-    Private Property _description As String
-    Public Property description As String
-        Get
-            Return _description
-        End Get
-        Set(value As String)
-            If Not value Is Nothing Then
-                _description = value.Replace(ChrW(10), "")
-            Else
-                _description = ""
-            End If
-        End Set
-    End Property
-    Public Property start As Integer
-        Get
-            Return _start
-        End Get
-        Set(value As Integer)
-            startDate = UnixToDateTime(value).ToLocalTime
-
-            'TODO : Fix times
-            'Dim rs As String = Windows.System.UserProfile.GlobalizationPreferences.HomeGeographicRegion
-            'Dim dtFormatter As New DateTimeFormatter("shorttime", New String() {rs})
-            'startDateString = dtFormatter.Format(startDate)
-
-            _start = value
-        End Set
-    End Property
-    Private Property _start As Integer
-
-
-    Public Property [stop] As Integer
-        Get
-            Return _stop
-        End Get
-        Set(value As Integer)
-
-
-            _stop = value
-        End Set
-    End Property
-    Private Property _stop As Integer
-    Public Property startDate As DateTime
-    Public Property endDate As DateTime
-
-    Public ReadOnly Property startDateString As String
-        Get
-            Return startDate.ToString("t")
-        End Get
-    End Property
-
-
-    Public ReadOnly Property endDateString As String
-        Get
-            Return endDate.ToString("t")
-        End Get
-    End Property
-
-
-
-    Public Property percentcompleted As Double
-        Get
-            If (endDate > Date.MinValue) And (startDate > Date.MinValue) And (Date.Now > startDate) Then
-                If Date.Now > endDate Then
-                    Return 1
-                Else
-                    Return Math.Round((Date.Now - startDate).TotalSeconds / (endDate - startDate).TotalSeconds, 2)
-                End If
-            Else
-                Return 0
-            End If
-            Return _percentcompleted
-
-        End Get
-        Set(value As Double)
-            _percentcompleted = value
-            RaisePropertyChanged()
-
-        End Set
-    End Property
-    Private Property _percentcompleted As Double
-
-    'Public ReadOnly Property RecordingIconVisibility As String
-    '    Get
-    '        If IsRecorded Then Return "Visible" Else Return "Collapsed"
-    '    End Get
-    'End Property
-
-    Private Property _RecordButtonEnabled As Boolean
-    Public Property RecordButtonEnabled As Boolean
-        Get
-            Return _RecordButtonEnabled
-        End Get
-        Set(value As Boolean)
-            _RecordButtonEnabled = value
-            RaisePropertyChanged()
-        End Set
-
-    End Property
-
-    Private Property _IsRecorded As Integer
-    Public Property IsRecorded As Integer
-        Get
-            Return _IsRecorded
-        End Get
-        Set(value As Integer)
-            _IsRecorded = value
-            RaisePropertyChanged()
-        End Set
-
-    End Property
-
-    Public Property ExpandedView As String
-        Get
-            Return _ExpandedView
-        End Get
-        Set(value As String)
-            If value <> _ExpandedView Then
-                _ExpandedView = value
-                RaisePropertyChanged()
-            End If
-        End Set
-    End Property
-    Private Property _ExpandedView As String
-    'Defines 3 possible states in which the ViewModel can be in, which triggers transitions between states
-    ' New : Item is a new item (TODO : Insert transition effect with opactiy 0-->1, and visibilty 0-->1
-    ' Existing : Item is already present. Sets the visibility to 1
-    ' Remove : Item is (about to get) removed. 
-    Public Property Status As String
-        Get
-            Return _Status
-        End Get
-        Set(value As String)
-            _Status = value
-            RaisePropertyChanged()
-        End Set
-    End Property
-    Private Property _Status As String
-
-
-    Public ReadOnly Property progressBarBackgroundBrush
-
-
-
+#Region "Methods"
     Public Async Function StopEventRecording() As Task
-        If vm.hasDVRAccess = False Then
+        If vm.TVHeadSettings.hasDVRAccess = False Then
             Await vm.checkDVRAccess()
         End If
-        If vm.hasDVRAccess Then
+        If vm.TVHeadSettings.hasDVRAccess Then
             WriteToDebug("EPGItemViewModel.StopEventRecording()", "Executed")
             Dim RecordingCancelled As New tvhCommandResponse
             RecordingCancelled = (Await CancelRecording(dvrUuid)).tvhResponse
@@ -370,7 +344,6 @@ Public Class EPGItemViewModel
         End If
     End Function
 
-
     Private Async Function ShowConfirmDeletionPrompt() As Task
         'Get the language specific text strings
         Dim strMessage As String = vm.loader.GetString("RecordingAbortContent")
@@ -383,12 +356,11 @@ Public Class EPGItemViewModel
         Await msgBox.ShowAsync()
     End Function
 
-
     Private Async Function StartEventRecording() As Task
-        If vm.hasDVRAccess = False Then
+        If vm.TVHeadSettings.hasDVRAccess = False Then
             Await vm.checkDVRAccess()
         End If
-        If vm.hasDVRAccess Then
+        If vm.TVHeadSettings.hasDVRAccess Then
             Dim response As New RecordingReturnValue With {.tvhResponse = New tvhCommandResponse With {.success = 2}}
             If vm.appSettings.ProposeAutoRecording Then
                 'Provide Prompt to user to select single/auto recording and dvrconfig
@@ -427,51 +399,6 @@ Public Class EPGItemViewModel
 
     End Function
 
-
-    'Public Async Function StartEventRecording() As Task
-    'Dim response As New RecordingReturnValue With {.tvhResponse = New tvhCommandResponse With {.success = 2}}
-
-    'If createAutoRecording Then
-    '    WriteToDebug("EPGItemViewModel.StartEventRecording()", "StartRecording Executed, auto recording selected")
-    '    response = Await Task.Run(Function() RecordProgramBySeries(Me))
-    'End If
-    'If createSeriesRecording Then
-    '    WriteToDebug("EPGItemViewModel.StartEventRecording()", "StartRecording Executed, Series recording selected")
-    '    response = Await Task.Run(Function() RecordProgramBySeries(Me))
-    'End If
-    'If createSingleRecording Then
-    '    WriteToDebug("EPGItemViewModel.StartEventRecording()", "StartRecording Executed, single recording selected")
-    '    response = Await Task.Run(Function() RecordProgram(Me))
-    'End If
-
-    'Select Case response.tvhResponse.success
-
-
-    '    Case "0"
-    '        'Error during starting Recording 
-    '        Dim strMessage As String = vm.loader.GetString("RecordingStartErrorContent")
-    '        Dim strheader As String = vm.loader.GetString("RecordingStartErrorHeader")
-    '        Dim msgBox As New MessageDialog(strMessage, strheader)
-    '        msgBox.Commands.Add(New UICommand(vm.loader.GetString("OK")))
-    '        Await msgBox.ShowAsync()
-    '    Case "2"
-    '        'Recording command cancelled, do nothing
-    'End Select
-
-    'End Function
-
-
-    Public Sub New()
-        title = vm.loader.GetString("NoInformationAvailable")
-        Status = "Existing"
-        description = ""
-        dvrUuid = ""
-        dvrState = ""
-        IsRecorded = 0
-        eventId = 0
-        ExpandedView = "Collapsed"
-    End Sub
-
     ''' <summary>
     ''' 'Updates the EPGItemViewModel with new properties retrieved from a refreshed equivalent EPGItem
     ''' </summary>
@@ -482,9 +409,9 @@ Public Class EPGItemViewModel
                                                                                                          If Not epgitem Is Nothing Then
                                                                                                              dvrState = epgitem.dvrState
                                                                                                              dvrUuid = epgitem.dvrUuid
-                                                                                                             percentcompleted = epgitem.percentcompleted
+                                                                                                             RaisePropertyChanged("percentcompleted")
                                                                                                          Else
-                                                                                                             percentcompleted = 1 'Retriggers the iRaisePropertyChanged
+                                                                                                             RaisePropertyChanged("percentcompleted")
                                                                                                          End If
                                                                                                      End Sub)
 
@@ -497,43 +424,30 @@ Public Class EPGItemViewModel
     Public Sub Remove()
         Status = "Remove"
     End Sub
+#End Region
 
-
+#Region "Constructors"
+    Public Sub New()
+        If Not vm Is Nothing Then
+            _EPGItem = New tvh40.EPGEvent With {.title = vm.loader.GetString("NoInformationAvailable"), .description = "", .dvrUuid = "", .dvrState = "", .eventId = 0}
+            Status = "Existing"
+            ExpandedView = "Collapsed"
+        End If
+    End Sub
 
     ''' <summary>
-    ''' 'Create a new EPGViewModel from a TVH 3.9 JSON entry
+    ''' 'Create a new EPGViewModel from a TVH 3.9 / 4.X JSON entry
     ''' </summary>
     ''' <param name="epg_item"></param>
     ''' <remarks></remarks>
     Public Sub New(epg_item As tvh40.EPGEvent)
-        'Dim rs As String = Windows.System.UserProfile.GlobalizationPreferences.HomeGeographicRegion
-        'Dim dtFormatter As New DateTimeFormatter("shorttime", New String() {rs})
-        'Dim dtFormatter As New DateTimeFormatter("shorttime")
-
-        title = epg_item.title
-        description = epg_item.description
-        dvrState = epg_item.dvrState
-        dvrUuid = epg_item.dvrUuid
-        eventId = epg_item.eventId
-        episodeId = epg_item.episodeId
-        episodeUri = epg_item.episodeUri
-        serieslinkId = epg_item.serieslinkId
-        serieslinkUri = epg_item.serieslinkUri
-        subtitle = epg_item.subtitle
-        genre = epg_item.genre
-
-        start = epg_item.start
-        startDate = UnixToDateTime(epg_item.start).ToLocalTime
-
-        [stop] = epg_item.stop
-        endDate = UnixToDateTime(epg_item.stop).ToLocalTime
-        channelName = epg_item.channelName
-        channelUuid = epg_item.channelUuid
+        _EPGItem = epg_item
         ExpandedView = ""
+        'IsRecorded = 1
         RecordButtonEnabled = False
-
-
+        Status = "New"
     End Sub
+#End Region
 
 End Class
 

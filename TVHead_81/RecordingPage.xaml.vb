@@ -14,9 +14,9 @@ Public NotInheritable Class RecordingPage
 
     Public Sub New()
         InitializeComponent()
-        Dim app As App = CType(Application.Current, App)
-        TopHeader.DataContext = app.DefaultViewModel.StatusBar
-        lstDVRConfig.ItemsSource = app.DefaultViewModel.DVRConfigs.items
+        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
+        TopHeader.DataContext = vm.StatusBar
+        lstDVRConfig.ItemsSource = vm.DVRConfigs.items
     End Sub
 
     ''' <summary>
@@ -102,9 +102,9 @@ Public NotInheritable Class RecordingPage
     End Sub
 
     Private Sub tbChannelSearch_KeyUp(sender As Object, e As KeyRoutedEventArgs)
-        Dim app As App = CType(Application.Current, App)
+        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
         If Not tbChannelSearch.Text = "" Then
-            lstChannels.ItemsSource = From c In app.DefaultViewModel.AllChannels.items Where c.name.ToUpper.StartsWith(tbChannelSearch.Text.ToUpper())
+            lstChannels.ItemsSource = From c In vm.AllChannels.items Where c.name.ToUpper.StartsWith(tbChannelSearch.Text.ToUpper())
         End If
 
     End Sub

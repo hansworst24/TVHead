@@ -30,48 +30,14 @@ Module TVHead_Modules
         Return Await task
     End Function
 
+
+    Public Async Function RunOnUIThread(p As DispatchedHandler) As Task
+        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, p)
+    End Function
+
 #Region "Connectivity Validation"
 
-    ''' <summary>
-    ''' FUNCTION THAT TALKS TO THE TVHEADEND SERVER AND RETRIEVES THE SERVER INFORMATION
-    ''' </summary>
-    ''' <returns>SERVERINFOVIEWMODEL</returns>
-    ''' <remarks></remarks>
-    Public Async Function GetServerInfo() As Task(Of ServerInfoViewModel)
-        'WriteToDebug("Modules.GetServerInfo()", "start")
-        'Try to connect to TVH3.9 / TVH4.X API URI FIRST
-        Dim strURL = tvh40api.apiGetServerInfo()
-        Dim response As New HttpResponseMessage
-        Dim json_result As String
-        Try
-            response = Await (New Downloader).DownloadJSON(strURL)
-            If response.IsSuccessStatusCode Then
-                json_result = Await response.Content.ReadAsStringAsync
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.ServerInfo)(json_result)
-                Return New ServerInfoViewModel(deserialized)
-            Else
-                'If Not response.StatusCode = HttpStatusCode.RequestTimeout Then
-                '    strURL = tvh34api.apiGetChannels()
-                '    response = Await (New Downloader).DownloadJSON(strURL)
-                '    If response.IsSuccessStatusCode Then
-                '        'We're a 3.4 server
-                '        Return New ServerInfoViewModel With {.name = "Legacy TVHeadend", .sw_version = "3.4", .sw_versionlong = "3.4"}
-                '    Else
-                '        Throw New ArgumentException(response.ReasonPhrase)
-                '    End If
-                'Else
-                Throw New ArgumentException(response.ReasonPhrase)
-                'End If
 
-
-            End If
-
-        Catch ex As Exception
-            Throw New ArgumentException(response.ReasonPhrase)
-        End Try
-
-        'WriteToDebug("Modules.GetServerInfo()", "stop")
-    End Function
 
 #End Region
 
@@ -140,7 +106,7 @@ Module TVHead_Modules
     ''' <remarks></remarks>
     Public Async Function LoadUpcomingRecordings() As Task(Of IEnumerable(Of RecordingViewModel))
         WriteToDebug("Modules.LoadUpcomingRecordings()", "start")
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         Dim result As New List(Of RecordingViewModel)
         Dim json_result As String
         Try
@@ -167,7 +133,7 @@ Module TVHead_Modules
     ''' <returns>LIST OF RecordingViewModel</returns>
     ''' <remarks></remarks>
     Public Async Function LoadFinishedRecordings() As Task(Of IEnumerable(Of RecordingViewModel))
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         WriteToDebug("Modules.LoadFinishedRecordings()", "start")
         Dim result As New List(Of RecordingViewModel)
         Dim json_result As String
@@ -194,7 +160,7 @@ Module TVHead_Modules
     ''' <returns>LIST OF TVHRECORDING</returns>
     ''' <remarks></remarks>
     Public Async Function LoadFailedRecordings() As Task(Of IEnumerable(Of RecordingViewModel))
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         WriteToDebug("Modules.LoadFailedRecordings()", "start")
         Dim result As New List(Of RecordingViewModel)
         Dim json_result As String
@@ -222,7 +188,7 @@ Module TVHead_Modules
     ''' <returns>LIST OF TVHRECORDING</returns>
     ''' <remarks></remarks>
     Public Async Function LoadAutoRecordings() As Task(Of IEnumerable(Of AutoRecordingViewModel))
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         WriteToDebug("Modules.LoadAutoRecordings()", "start")
         Dim result As New List(Of AutoRecordingViewModel)
         Dim json_result As String
@@ -250,7 +216,7 @@ Module TVHead_Modules
     ''' <returns>LIST OF STREAMS</returns>
     ''' <remarks></remarks>
     Public Async Function LoadStreams() As Task(Of List(Of StreamViewModel))
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         Dim response As New List(Of StreamViewModel)
         Dim json_result As String
         Try
@@ -269,7 +235,7 @@ Module TVHead_Modules
 
 
     Public Async Function GetBoxID() As Task(Of String)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         Dim response As String = ""
         Dim json_result As String
         Try
@@ -315,7 +281,7 @@ Module TVHead_Modules
     ''' <returns>LIST OF TVHSUBSCRIPTION</returns>
     ''' <remarks></remarks>
     Public Async Function LoadServices() As Task(Of List(Of ServiceViewModel))
-        Dim settings As New AppSettings
+        Dim settings As New TVHead_Settings
         Dim response As New List(Of ServiceViewModel)
         Dim json_result As String
         Try
@@ -340,7 +306,7 @@ Module TVHead_Modules
     ''' <returns>LIST OF TVHCONNECTIONS</returns>
     ''' <remarks></remarks>
     Public Async Function LoadConnections() As Task(Of List(Of ConnectionViewModel))
-        Dim settings As New AppSettings
+        Dim settings As New TVHead_Settings
         Dim response As New List(Of ConnectionViewModel)
         Try
             Dim json_result As String = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetConnections())).Content.ReadAsStringAsync
@@ -386,8 +352,8 @@ Module TVHead_Modules
     ''' <returns>LIST OF TVHSUBSCRIPTION</returns>
     ''' <remarks></remarks>
     Public Async Function LoadSubscriptions() As Task(Of List(Of SubscriptionViewModel))
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
-        Dim settings As New AppSettings
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+        Dim settings As New TVHead_Settings
         Dim response As New List(Of SubscriptionViewModel)
         Try
             Dim json_result As String = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetSubscriptions())).Content.ReadAsStringAsync
@@ -404,7 +370,7 @@ Module TVHead_Modules
     End Function
 
     Public Async Function RecordProgramBySeries(epgEntry As EPGItemViewModel, Optional dvrConfig As DVRConfigViewModel = Nothing) As Task(Of RecordingReturnValue)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         'Dim tvhResponse As New tvhCommandResponse
         Dim result As New RecordingReturnValue
         Try
@@ -429,7 +395,7 @@ Module TVHead_Modules
 
 
     Public Async Function RecordProgram(epgEntry As EPGItemViewModel, Optional dvrConfig As DVRConfigViewModel = Nothing) As Task(Of RecordingReturnValue)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         'Dim tvhResponse As New tvhCommandResponse
         Dim result As New RecordingReturnValue
         Try
@@ -467,7 +433,7 @@ Module TVHead_Modules
 
 
     Public Async Function CancelRecording(uuid As String) As Task(Of RecordingReturnValue)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         Dim result As New RecordingReturnValue
         Try
             Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiAbortRecording(uuid))).Content.ReadAsStringAsync
@@ -481,7 +447,7 @@ Module TVHead_Modules
 
 
     Public Async Function AbortRecording(uuid As String) As Task(Of RecordingReturnValue)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         Dim result As New RecordingReturnValue
         Try
             Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiAbortRecording(uuid))).Content.ReadAsStringAsync
@@ -495,8 +461,8 @@ Module TVHead_Modules
 
 
     Public Async Function DeleteAutoRecording(uuid As String) As Task(Of RecordingReturnValue)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
-        Dim settings As New AppSettings
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+        Dim settings As New TVHead_Settings
 
         Dim result As New RecordingReturnValue
         Try
@@ -516,8 +482,8 @@ Module TVHead_Modules
     ''' <returns></returns>
     ''' <remarks></remarks>
     Public Async Function AddAutoRecording(newAutoRecording As AutoRecordingViewModel) As Task(Of tvhCommandResponse)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
-        Dim settings As New AppSettings
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+        Dim settings As New TVHead_Settings
         'Make the autorecording ready for saving, by making adjustments to how the values look. Depends on 3.4 / 3.9 differences
         newAutoRecording.ReadyForSaving()
         Dim response As New tvhCommandResponse
@@ -529,16 +495,16 @@ Module TVHead_Modules
             End If
         Catch ex As Exception
             WriteToDebug("TVHead_Modules.AddAutoRecording()", ex.InnerException.ToString)
-                response.success = 0
-            End Try
+            response.success = 0
+        End Try
 
         Return response
     End Function
 
 
     Public Async Function UpdateAutoRecording(updatedAutoRecording As AutoRecordingViewModel) As Task(Of tvhCommandResponse)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
-        Dim settings As New AppSettings
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+        Dim settings As New TVHead_Settings
         updatedAutoRecording.ReadyForSaving()
         Dim response As New tvhCommandResponse
         Try
@@ -549,32 +515,32 @@ Module TVHead_Modules
             End If
         Catch ex As Exception
             WriteToDebug("TVHead_Modules.UpdateAutoRecording()", ex.InnerException.ToString)
-                response.success = 0
-            End Try
+            response.success = 0
+        End Try
         Return response
     End Function
 
     Public Async Function AddManualRecording(manualRecording As RecordingViewModel) As Task(Of tvhCommandResponse)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         Dim strManualRecording As String = "/dvr/addentry?"
-        Dim settings As New AppSettings
+        Dim settings As New TVHead_Settings
         Dim tvhResponse As New tvhCommandResponse
         Try
-                Dim json_result As String = Await (Await (New Downloader).DownloadJSON(tvh40api.apiAddManualRecording(manualRecording))).Content.ReadAsStringAsync
-                If Not (json_result Is Nothing) Then
-                    tvhResponse = New tvhCommandResponse With {.success = 1}
-                End If
-            Catch ex As Exception
-                WriteToDebug("TVHead_Modules.AddManualRecording()", ex.InnerException.ToString)
-                tvhResponse.success = 0
-            End Try
+            Dim json_result As String = Await (Await (New Downloader).DownloadJSON(tvh40api.apiAddManualRecording(manualRecording))).Content.ReadAsStringAsync
+            If Not (json_result Is Nothing) Then
+                tvhResponse = New tvhCommandResponse With {.success = 1}
+            End If
+        Catch ex As Exception
+            WriteToDebug("TVHead_Modules.AddManualRecording()", ex.InnerException.ToString)
+            tvhResponse.success = 0
+        End Try
         Return tvhResponse
     End Function
 
 
     Public Async Function UpdateManualRecording(manualRecording As RecordingViewModel) As Task(Of tvhCommandResponse)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
-        Dim settings As New AppSettings
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+        Dim settings As New TVHead_Settings
         Dim strURL As String = ""
         Dim tvhResponse As New tvhCommandResponse
         If Not strURL = "" Then
@@ -595,8 +561,8 @@ Module TVHead_Modules
 
 
     Public Async Function LoadAllChannels() As Task(Of IEnumerable(Of ChannelViewModel))
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
-        Dim settings As New AppSettings
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+        Dim settings As New TVHead_Settings
         Dim strUrl As String = ""
         Dim result As New List(Of ChannelViewModel)
         Dim json_result As String
@@ -705,8 +671,8 @@ Module TVHead_Modules
 
 
     Public Async Function SearchEPGEntry(searchString As String, Optional UseFulltext As Boolean = False) As Task(Of IEnumerable(Of ChannelViewModel))
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
-        Dim settings As New AppSettings
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+        Dim settings As New TVHead_Settings
         Dim result As New List(Of ChannelViewModel)
         Try
             Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiSearchEPGEvents(searchString, UseFulltext))).Content.ReadAsStringAsync
@@ -741,65 +707,65 @@ Module TVHead_Modules
 
     Public Async Function LoadIDNode(uuid As String, type As Object) As Task(Of Object)
         WriteToDebug("Modules.LoadIDNode()", "Loading ID Node : " & uuid)
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         'WriteToDebug("Modules.LoadEPGEventByID()", "Loading EPG Entry for channel :" & selectedChannel.name)
-        Dim settings As New AppSettings
+        Dim settings As New TVHead_Settings
         Dim result As New List(Of RecordingViewModel)
         Dim json_result As String
         Try
-                Dim response As HttpResponseMessage = Await (New Downloader).DownloadJSON(tvh40api.apiLoadIDNode(uuid))
-                If response.IsSuccessStatusCode Then
-                    json_result = Await response.Content.ReadAsStringAsync
-                Else
-                    'Error (access ?)
-                    Return Nothing
-                End If
-            Catch ex As Exception
-                WriteToDebug("Modules.LoadEPGEntry()", ex.InnerException.ToString)
+            Dim response As HttpResponseMessage = Await (New Downloader).DownloadJSON(tvh40api.apiLoadIDNode(uuid))
+            If response.IsSuccessStatusCode Then
+                json_result = Await response.Content.ReadAsStringAsync
+            Else
+                'Error (access ?)
                 Return Nothing
-            End Try
-            If Not json_result = "" Then
-                If TypeOf (type) Is RecordingViewModel Then
-                    Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.RecordingList)(json_result)
-                    If Not deserialized.entries.Count = 0 Then
-                        'Hack to test if the cast resulted in anything sensible
-                        If Not deserialized.entries(0).start = 0 Then
-                            vm.CapableOfLoadingRecordingIDNode = True
-                            Return New RecordingViewModel(deserialized.entries(0))
-                        Else
-                            vm.CapableOfLoadingRecordingIDNode = False
-                            Return Nothing
-                        End If
-                    End If
-                End If
-                If TypeOf (type) Is AutoRecordingViewModel Then
-                    Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.AutoRecordingList)(json_result)
-                    If Not deserialized.entries.Count = 0 Then
-                        'Hack to test if the cast resulted in anything sensible
-                        If Not deserialized.entries(0).title = "" Then
-                            vm.CapableOfLoadingAutoRecordingIDNode = True
-                            Return New AutoRecordingViewModel(deserialized.entries(0))
-                        Else
-                            vm.CapableOfLoadingAutoRecordingIDNode = False
-                            Return Nothing
-                        End If
-                    End If
-                End If
-
-                If TypeOf (type) Is ChannelViewModel Then
-                    Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.ChannelList)(json_result)
-                    If Not deserialized.entries.Count = 0 Then
-                        'Hack to test if the cast resulted in anything sensible
-                        If Not deserialized.entries(0).name = "" Then
-                            vm.CapableOfLoadingChannelIDNode = True
-                            Return New ChannelViewModel(deserialized.entries(0))
-                        Else
-                            vm.CapableOfLoadingChannelIDNode = False
-                            Return Nothing
-                        End If
+            End If
+        Catch ex As Exception
+            WriteToDebug("Modules.LoadEPGEntry()", ex.InnerException.ToString)
+            Return Nothing
+        End Try
+        If Not json_result = "" Then
+            If TypeOf (type) Is RecordingViewModel Then
+                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.RecordingList)(json_result)
+                If Not deserialized.entries.Count = 0 Then
+                    'Hack to test if the cast resulted in anything sensible
+                    If Not deserialized.entries(0).start = 0 Then
+                        vm.TVHeadSettings.CapableOfLoadingRecordingIDNode = True
+                        Return New RecordingViewModel(deserialized.entries(0))
+                    Else
+                        vm.TVHeadSettings.CapableOfLoadingRecordingIDNode = False
+                        Return Nothing
                     End If
                 End If
             End If
+            If TypeOf (type) Is AutoRecordingViewModel Then
+                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.AutoRecordingList)(json_result)
+                If Not deserialized.entries.Count = 0 Then
+                    'Hack to test if the cast resulted in anything sensible
+                    If Not deserialized.entries(0).title = "" Then
+                        vm.TVHeadSettings.CapableOfLoadingAutoRecordingIDNode = True
+                        Return New AutoRecordingViewModel(deserialized.entries(0))
+                    Else
+                        vm.TVHeadSettings.CapableOfLoadingAutoRecordingIDNode = False
+                        Return Nothing
+                    End If
+                End If
+            End If
+
+            If TypeOf (type) Is ChannelViewModel Then
+                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.ChannelList)(json_result)
+                If Not deserialized.entries.Count = 0 Then
+                    'Hack to test if the cast resulted in anything sensible
+                    If Not deserialized.entries(0).name = "" Then
+                        vm.TVHeadSettings.CapableOfLoadingChannelIDNode = True
+                        Return New ChannelViewModel(deserialized.entries(0))
+                    Else
+                        vm.TVHeadSettings.CapableOfLoadingChannelIDNode = False
+                        Return Nothing
+                    End If
+                End If
+            End If
+        End If
         WriteToDebug("Modules.LoadIDNode()", "Completed Loading ID Node : " & uuid)
         'Return result.OrderBy(Function(x) x.recording_id)
     End Function
@@ -807,36 +773,36 @@ Module TVHead_Modules
 
 
     Public Async Function LoadEPGEventByID(eventids As List(Of Integer)) As Task(Of IEnumerable(Of EPGItemViewModel))
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         'WriteToDebug("Modules.LoadEPGEventByID()", "Loading EPG Entry for channel :" & selectedChannel.name)
-        Dim settings As New AppSettings
+        Dim settings As New TVHead_Settings
 
         'If vm.TVHVersion = "3.4" Then strURL = tvh34api.apiGetEPGEvents(selectedChannel.name, loadAll)
         Dim result As New List(Of EPGItemViewModel)
         Dim json_result As String
         Try
-                json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetEPGEvent(eventids))).Content.ReadAsStringAsync
-            Catch ex As Exception
-                WriteToDebug("Modules.LoadEPGEntry()", ex.InnerException.ToString)
-                Return result
-            End Try
-            If Not json_result = "" Then
+            json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetEPGEvent(eventids))).Content.ReadAsStringAsync
+        Catch ex As Exception
+            WriteToDebug("Modules.LoadEPGEntry()", ex.InnerException.ToString)
+            Return result
+        End Try
+        If Not json_result = "" Then
 
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.EPGEventList)(json_result)
-                For Each entry In deserialized.entries
-                    result.Add(New EPGItemViewModel(entry))
-                Next
+            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.EPGEventList)(json_result)
+            For Each entry In deserialized.entries
+                result.Add(New EPGItemViewModel(entry))
+            Next
 
-            End If
+        End If
 
         WriteToDebug("Modules.LoadEPGEntry()", "Completed Loading EPG Entries. : " & result.Count.ToString & "item(s)")
         Return result.OrderBy(Function(x) x.channelNumber)
     End Function
 
     Public Async Function LoadEPGEventIDs(selectedChannel As ChannelViewModel, Optional loadAll As Boolean = True, Optional maxItems As Integer = 300) As Task(Of List(Of Integer))
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         WriteToDebug("Modules.LoadEPGEventIDs()", "Loading EPG EPGEventIDs for channel :" & selectedChannel.name)
-        Dim settings As New AppSettings
+        Dim settings As New TVHead_Settings
         Dim result As New List(Of Integer)
         Dim json_result As String
         Try
@@ -844,7 +810,7 @@ Module TVHead_Modules
         Catch ex As Exception
             'WriteToDebug("Modules.LoadEPGEntry()", ex.InnerException.ToString)
             Return result
-            End Try
+        End Try
         If Not json_result = "" Then
             Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.EPGEventList)(json_result)
             For Each entry In deserialized.entries
@@ -858,7 +824,7 @@ Module TVHead_Modules
 
 
     Public Async Function LoadEPGEntry(selectedChannel As ChannelViewModel, Optional loadAll As Boolean = True, Optional maxItems As Integer = 300) As Task(Of IEnumerable(Of EPGItemViewModel))
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         WriteToDebug("Modules.LoadEPGEntry()", "Loading EPG Entry for channel :" & selectedChannel.name)
         Dim result As New List(Of EPGItemViewModel)
         Dim json_result As String
@@ -903,46 +869,46 @@ Module TVHead_Modules
         Return (result.OrderBy(Function(x) x.name)).ToList()
     End Function
 
-    Public Async Function LoadContentTypes(Optional all As Boolean = False) As Task
-        WriteToDebug("Modules.LoadContentTypes()", "start")
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
-        Dim settings As New AppSettings
-        Dim response As New List(Of ContentTypeViewModel)
-        Dim json_result As String
-        Try
-            json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetContentTypes(all))).Content.ReadAsStringAsync
-        Catch ex As Exception
-            WriteToDebug("Modules.LoadContentTypes()", "stop-error")
-            Return
-        End Try
-        If Not json_result = "" Then
+    'Public Async Function LoadContentTypes(Optional all As Boolean = False) As Task
+    '    WriteToDebug("Modules.LoadContentTypes()", "start")
+    '    Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+    '    Dim settings As New TVHead_Settings
+    '    Dim response As New List(Of ContentTypeViewModel)
+    '    Dim json_result As String
+    '    Try
+    '        json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetContentTypes(all))).Content.ReadAsStringAsync
+    '    Catch ex As Exception
+    '        WriteToDebug("Modules.LoadContentTypes()", "stop-error")
+    '        Return
+    '    End Try
+    '    If Not json_result = "" Then
 
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.GenreList)(json_result)
-            For Each f In deserialized.entries
-                'Small hack to ensure we avoid having ContentType 0 in the list
-                If f.key <> 0 Then
-                    response.Add(New ContentTypeViewModel(f))
-                End If
+    '        Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.GenreList)(json_result)
+    '        For Each f In deserialized.entries
+    '            'Small hack to ensure we avoid having ContentType 0 in the list
+    '            If f.key <> 0 Then
+    '                response.Add(New ContentTypeViewModel(f))
+    '            End If
 
-            Next
-        End If
-        For Each i In response.OrderBy(Function(x) x.uuid)
-            If all = True Then
-                vm.AllGenres.items.Add(i)
-            Else
-                vm.Genres.items.Add(i)
-            End If
-        Next
-        If all = True Then vm.AllGenres.dataLoaded = True
-        If all = False Then vm.Genres.dataLoaded = True
-        WriteToDebug("Modules.LoadContentTypes()", "stop")
-    End Function
+    '        Next
+    '    End If
+    '    For Each i In response.OrderBy(Function(x) x.uuid)
+    '        If all = True Then
+    '            vm.ContentTypes.items.Add(i)
+    '        Else
+    '            vm.Genres.items.Add(i)
+    '        End If
+    '    Next
+    '    If all = True Then vm.ContentTypes.dataLoaded = True
+    '    If all = False Then vm.Genres.dataLoaded = True
+    '    WriteToDebug("Modules.LoadContentTypes()", "stop")
+    'End Function
 
 
     Public Async Function LoadChannelTags() As Task
         WriteToDebug("Modules.LoadChannelTags()", "start")
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, App)).DefaultViewModel
-        Dim settings As New AppSettings
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+        Dim settings As New TVHead_Settings
         Dim chTags As New List(Of ChannelTagViewModel)
         Dim json_result As String
         Try

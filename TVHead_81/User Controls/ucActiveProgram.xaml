@@ -9,11 +9,8 @@
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core"  
     xmlns:Media="using:Microsoft.Xaml.Interactions.Media"
     mc:Ignorable="d"
-    xmlns:local="using:TVHead_81" 
->
+    xmlns:local="using:TVHead_81" >
     <UserControl.Resources>
-        <!--<local:DateToTimeConverter x:Key="myDateTimeConvertor"/>-->
-
         <Storyboard x:Name="RecordingOn" RepeatBehavior="Forever">
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingErrorIcon">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="0"/>
@@ -106,60 +103,69 @@
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="Collapsed"/>
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
-
     </UserControl.Resources>
-    <Grid x:Name="MainGrid" Margin="5" RenderTransformOrigin="0.5,0.5">
+    <Grid x:Name="MainGrid" RenderTransformOrigin="0.5,0.5">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="720"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="btnRecord.Visibility" Value="Collapsed"/>
+                        <Setter Target="LeftInfo.Visibility" Value="Collapsed"/>
+                        <Setter Target="RecordingStatusIcon.(Grid.Column)" Value="1"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="80"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Rectangle x:Name="HeaderBackdrop"  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Opacity="0"/>
-        <Border x:Name="brHeader" Background="Transparent" Grid.Column="0" >
-        <Grid>
+        <Border x:Name="brHeader" Background="Transparent" Grid.Row="0" >
+        <Grid  Margin="5" VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1"/>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
                 <!-- THE FIRST COLUMN ONLY SHOWS THE STARTTIME, OR A BUTTON TO RECORD THE PROGRAMME WHEN THE ITEM IS EXPANDED -->
-                <Button x:Name="btnRecord" Visibility="Collapsed"
-                    Command="{Binding RecordCommand}" BorderBrush="Transparent" Grid.Column="0" Grid.Row="0" IsEnabled="{Binding RecordButtonEnabled}"
-                    Margin="0" Padding="0" BorderThickness="0" Style="{StaticResource myTransparentButtonStyle}"
+                <Button x:Name="btnRecord" Visibility="Visible" Width="60"
+                        Command="{Binding RecordCommand}" BorderBrush="Transparent" Grid.Column="0" Grid.Row="0" IsEnabled="{Binding RecordButtonEnabled}"
+                        Margin="0" Padding="0" BorderThickness="0" Style="{StaticResource myTransparentButtonStyle}"
                         HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Button.Content>
+                    <Button.Content>
                         <Grid>
-                            <Image x:Name="btnRecord_Icon_Off" Source="/Images/player_record_off.png" Canvas.ZIndex="99" 
-                                   Height="50" Opacity="1"/>
-                            <Image x:Name="btnRecord_Icon" Source="/Images/player_record.png" 
-                                   Canvas.ZIndex="100" Height="50" Visibility="Visible" Opacity="{Binding IsRecorded}">
-                               </Image>
+                            <Image x:Name="btnRecord_Icon" Source="{Binding RecordingIcon}" Canvas.ZIndex="99" Height="50" Opacity="1"/>
                         </Grid>
                     </Button.Content>
                     <Button.Projection>
                         <PlaneProjection RotationX="-90"/>
                     </Button.Projection>
                 </Button>
-            
-                <Grid x:Name="LeftInfo" Grid.Column="0" Grid.Row="0" Visibility="Collapsed">
+      
+                <Grid x:Name="LeftInfo" Grid.Column="0" Grid.Row="0" Visibility="Visible" Width="60">
                     <TextBlock x:Name="tbDay" TextAlignment="Center" VerticalAlignment="Center"
-						    Text="{Binding startDateString}" 
-						    HorizontalAlignment="Center" 
-						    Style="{StaticResource BaseTextBlockStyle}" Margin="0" />
-                    <Image x:Name="RecordingIcon" Source="/Images/player_record_small.png" 
-                        Height="20" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" 
-                        Opacity="0"/>
-                    <Image x:Name="RecordingErrorIcon" Source="/Images/player_record_small_error.png" 
-				        Height="20" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Right" Opacity="0"
-				        Visibility="Visible"/>
-                    <Image x:Name="RecordingScheduledIcon" Source="/Images/player_record_small_scheduled.png" 
-				        Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
-				        Visibility="Visible"/>
-                    <!--<TextBlock Text="{Binding eventId}" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>-->
+						       Text="{Binding startDateString}" HorizontalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Margin="0" />
+
                     <Grid.Projection>
                         <PlaneProjection RotationX="0"/>
                     </Grid.Projection>
+                </Grid>
+
+                <Grid x:Name="RecordingStatusIcon" Grid.Column="0" Grid.Row="0" Visibility="Visible">
+                    <Image x:Name="RecordingIcon" Source="/Images/player_record_small.png" 
+                           Height="20" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Opacity="0"/>
+                    <Image x:Name="RecordingErrorIcon" Source="/Images/player_record_small_error.png" 
+				           Height="20" Margin="0" VerticalAlignment="Top" HorizontalAlignment="Right" Opacity="0"
+				           Visibility="Visible"/>
+                    <Image x:Name="RecordingScheduledIcon" Source="/Images/player_record_small_scheduled.png" 
+				           Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
+				           Visibility="Visible"/>
                 </Grid>
 
 
@@ -183,23 +189,17 @@
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
                             <TextBlock x:Name="channelnumber" Grid.Column="0" Grid.Row="0" Visibility="Collapsed" Text="{Binding channelNumber}"/>
-                            <TextBlock x:Name="tbTitle" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" TextWrapping="NoWrap" TextTrimming="WordEllipsis"  
-								    Text="{Binding title}" Margin="0,0,0,0" Style="{StaticResource BaseTextBlockStyle}"/>
+                            <TextBlock x:Name="tbTitle" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" TextWrapping="NoWrap" TextTrimming="WordEllipsis" 
+                                       Text="{Binding title}" Margin="0,0,0,0" Style="{StaticResource BaseTextBlockStyle}"/>
                             <TextBlock x:Name="tbDescription" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="NoWrap" 
-								   Style="{ThemeResource SubTitleAccent}" Visibility="{Binding DescriptionVisibility}"
-                                    Text="{Binding description}" 
-								   Margin="0,0,0,0"/>
-                            <TextBlock x:Name="tbSubtitle" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="NoWrap" 
-								   Style="{StaticResource BodyTextBlockStyle}" Foreground="{StaticResource SystemControlForegroundAccentBrush}"  Visibility="{Binding SubtitleVisibility}"
-                                    Text="{Binding subtitle}" 
-								   Margin="0,0,0,0"/>
+								       Style="{ThemeResource SubTitleAccent}" Text="{Binding info}"/>
                             <TextBlock x:Name="tbStartTime" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Left"
 								   Text="{Binding startDateString}" 
 								   HorizontalAlignment="Center"  Margin="0"
                                     Style="{ThemeResource CaptionTextBlockStyle}"/>
                             <Rectangle x:Name="progressbackgroundbar" HorizontalAlignment="Stretch" Grid.Row="2" Grid.Column="1" Height="5" 
-								   Margin="10,0,10,0"  Opacity="0.2"/>
-                            <Rectangle x:Name="progressbar" Grid.Row="2" Grid.Column="1" Height="5" 
+								   Margin="10,0,10,0"  Opacity="0.2" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}"/>
+                            <Rectangle x:Name="progressbar" Grid.Row="2" Grid.Column="1" Height="5"  Fill="{ThemeResource SystemControlBackgroundAccentBrush}"
 								   Margin="10,0,10,0" Stretch="Fill" >
                                 <Rectangle.RenderTransform>
                                     <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0" ScaleX="{Binding percentcompleted}" />
@@ -230,16 +230,16 @@
             <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Collapsed">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource CollapseView}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding IsRecorded}" Value="1">
+            <Core:DataTriggerBehavior Binding="{Binding RecordingStatus}" Value="1">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingOn}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding IsRecorded}" Value="0">
+            <Core:DataTriggerBehavior Binding="{Binding RecordingStatus}" Value="0">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingOff}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding IsRecorded}" Value="2">
+            <Core:DataTriggerBehavior Binding="{Binding RecordingStatus}" Value="2">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingError}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding IsRecorded}" Value="3">
+            <Core:DataTriggerBehavior Binding="{Binding RecordingStatus}" Value="3">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingScheduled}" />
             </Core:DataTriggerBehavior>
         </Interactivity:Interaction.Behaviors>

@@ -10,6 +10,7 @@
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core" 
     NavigationCacheMode="Required"
+    RequestedTheme="Light"
     d:DesignHeight="480"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -37,115 +38,165 @@
 
 
     <!--<Grid x:Name="LayoutRoot" Background="{ThemeResource HubBackgroundImageBrush}">-->
-    <Grid x:Name="LayoutRoot">
+    <Grid x:Name="LayoutRoot" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="720"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="EPGItemView.Visibility" Value="Visible"/>
+                        <Setter Target="ChannelsColumn.Width" Value="2*"/>
+                        <Setter Target="EPGItemsColumn.Width" Value="2*"/>
+                        <Setter Target="EPGItemColumn.Width" Value="3*"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="auto"/>
+            <!--<RowDefinition Height="30"/>-->
             <RowDefinition Height="*"/>
+            <!--<RowDefinition Height="*"/>-->
         </Grid.RowDefinitions>
         <!-- THE TOP HEADER OF TV HEAD-->
-        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="20,0,0,0" VerticalAlignment="Top" Canvas.ZIndex="100">
+        <!--<Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="20,0,0,0" VerticalAlignment="Top" Canvas.ZIndex="100">
         		<local:ucTopHeader Canvas.ZIndex="100" VerticalAlignment="Bottom" DataContext="{Binding}"/>
-        </Border>
+        </Border>-->
         <!-- THE BOTTOM NOTIFICATION BAR-->
-        <Border Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,0" VerticalAlignment="Top" Canvas.ZIndex="100">
-            <local:ucToastList Canvas.ZIndex="100" VerticalAlignment="Bottom" DataContext="{Binding ToastMessages}"/>
+        <Border Grid.Row="0" VerticalAlignment="Bottom" Height="48" Canvas.ZIndex="100">
+            <local:ucNotificationMessage DataContext="{Binding Notify}"/>
         </Border>
         
         <!-- THE SUB HEADER -->
-        <Grid Grid.Row="1" Background="{StaticResource SystemControlBackgroundChromeMediumBrush}" BorderThickness="0,0,0,2" BorderBrush="{StaticResource SystemControlBackgroundChromeBlackHighBrush}">
+        <!--<Grid Grid.Row="0" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" BorderThickness="0,1,0,1" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="300"/>
                 <ColumnDefinition Width="300"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ComboBox x:Name="ChannelTagList" Grid.Column="0" ItemsSource="{Binding ChannelTags.items}" 
-                      HorizontalAlignment="Stretch" Background="{StaticResource SystemControlBackgroundChromeMediumBrush}" 
-                      BorderThickness="0" SelectedItem="{Binding selectedChannelTag}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding name}"  Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-                <Interactivity:Interaction.Behaviors>
-                    <Core:EventTriggerBehavior EventName="SelectionChanged" SourceObject="{Binding ElementName=ChannelTagList}">
-                        <Core:InvokeCommandAction Command="{Binding ChannelTagListSelectionChanged}" CommandParameter="{Binding ElementName=ChannelTagList, Path=SelectedItem}"/>
-                    </Core:EventTriggerBehavior>
-                </Interactivity:Interaction.Behaviors>
-            </ComboBox>
-
-            <TextBlock Grid.Column="1" Text="{Binding SelectedChannel.name}" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
-            <TextBlock Grid.Column="2" Text="Programme" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
-        </Grid>
+        </Grid>-->
         <!-- THE CONTENT AREA -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="0" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" Canvas.ZIndex="99">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300"/>
-                <ColumnDefinition Width="300"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition x:Name="ChannelsColumn" Width="*"/>
+                <ColumnDefinition x:Name="EPGItemsColumn" Width="*"/>
+                <ColumnDefinition x:Name="EPGItemColumn" Width="0"/>
             </Grid.ColumnDefinitions>
             <!-- THIS IS THE LEFT COLUMN WHERE THE CHANNEL LIST APPEARS-->
-            <ListView Grid.Column="0" ItemsSource="{Binding Channels.items}">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="Padding" Value="0"/>
-                        <Setter Property="Margin" Value="0,0,0,0" />
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <local:ucChannelEPGDetail />
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <!-- THIS IS THE MIDDLE COLUMN WHERE THE EPG APPEARS FOR THE SELECTED CHANNEL-->
-            <SemanticZoom Grid.Column="1">
-                <SemanticZoom.ZoomedInView>
-                    <ListView ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Mode=TwoWay}" 
-                                    ContinuumNavigationTransitionInfo.ExitElementContainer="True"
-                                    Style="{StaticResource myListViewStyle}">
-
-                        <ListView.GroupStyle>
-                            <GroupStyle HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
-                        </ListView.GroupStyle>
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                <Setter Property="Padding" Value="0"/>
-                                <Setter Property="Margin" Value="0,0,10,0" />
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <local:ucActiveProgram />
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </SemanticZoom.ZoomedInView>
-                <SemanticZoom.ZoomedOutView>
-                    <ListView Background="Black" ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Path=CollectionGroups}"
-                                    ItemTemplate="{StaticResource ListViewJumpListTemplate}">
-                    </ListView>
-                </SemanticZoom.ZoomedOutView>
-            </SemanticZoom>
-            <!-- THIS IS THE RIGHT COLUMN WHERE THE SELECTED EPGITEM DETAILS AND ACTIONS (REC, ABORT REC, ETC) APPEAR-->
-            <Grid Grid.Column="2">
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="40"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <local:ucEPGEntryDetail Grid.Row="0"/>
-                <StackPanel Grid.Row="1" Orientation="Horizontal">
-                    <Button Content="Record" Margin="20,0,20,0"/>
-                    <Button Content="Abort Recording" Margin="20,0,20,0"/>
-                    <Button Content="Search" Margin="20,0,20,0"/>
-                    <Button Content="Delete" Margin="20,0,20,0"/>
-                </StackPanel>
+                <ComboBox x:Name="ChannelTagList" Grid.Column="0" Grid.Row="0" Height="40" ItemsSource="{Binding ChannelTags.items}" 
+                      HorizontalAlignment="Stretch" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" 
+                      BorderThickness="0" SelectedItem="{Binding ChannelTags.selectedChannelTag}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding name}"  Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    <Interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="SelectionChanged" SourceObject="{Binding ElementName=ChannelTagList}">
+                            <Core:InvokeCommandAction Command="{Binding ChannelTagListSelectionChanged}" CommandParameter="{Binding ElementName=ChannelTagList, Path=SelectedItem}"/>
+                        </Core:EventTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+                </ComboBox>
+                <!--<ComboBox Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Channels.items}" Width="300" HorizontalAlignment="Stretch" Height="90">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0,0,0,0" />
+                            <Setter Property="Width" Value="300"/>
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <local:ucChannelEPGDetail />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>-->
+                <ListView Grid.Column="0" Visibility="Visible" Grid.Row="1" ItemsSource="{Binding Channels.items}" BorderThickness="0,1,1,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0,0,0,0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <local:ucChannelEPGDetail />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+            
+            <!-- THIS IS THE MIDDLE COLUMN WHERE THE EPG APPEARS FOR THE SELECTED CHANNEL-->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Height="40" Text="{Binding SelectedChannel.name}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap" HorizontalAlignment="Center"/>
+                <SemanticZoom Grid.Row="1">
+                    <SemanticZoom.ZoomedInView>
+                        <ListView ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Mode=TwoWay}"  BorderThickness="0,1,0,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+                                    ContinuumNavigationTransitionInfo.ExitElementContainer="True" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+
+                            <ListView.GroupStyle>
+                                <GroupStyle HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
+                            </ListView.GroupStyle>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <local:ucActiveProgram />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </SemanticZoom.ZoomedInView>
+                    <SemanticZoom.ZoomedOutView>
+                        <ListView ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Path=CollectionGroups}"
+                              ItemTemplate="{StaticResource ListViewJumpListTemplate}">
+                        </ListView>
+                    </SemanticZoom.ZoomedOutView>
+                </SemanticZoom>
+            </Grid>
+            <!-- THIS IS THE RIGHT COLUMN WHERE THE SELECTED EPGITEM DETAILS AND ACTIONS (REC, ABORT REC, ETC) APPEAR-->
+            <Grid x:Name="EPGItemView" Grid.Column="2" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Height="40" HorizontalAlignment="Stretch" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" >
+                    <TextBlock Height="40" HorizontalAlignment="Center" Text="Programme" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap"/>
+                </Border>
+                <Grid Grid.Row="1" BorderThickness="1,1,0,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <local:ucEPGEntryDetail Grid.Row="0" DataContext="{Binding selectedEPGItem}"/>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,48" >
+                        <Button Content="Record" Margin="20,0,20,0"/>
+                        <Button Content="Abort Recording" Margin="20,0,20,0"/>
+                        <Button Content="Search" Margin="20,0,20,0"/>
+                        <Button Content="Delete" Margin="20,0,20,0"/>
+                    </StackPanel>
+                </Grid>
+
             </Grid>
         </Grid>
 
@@ -396,6 +447,30 @@
         </Pivot>-->
     </Grid>
     <Page.BottomAppBar>
+        <CommandBar IsOpen="False" IsSticky="False" ClosedDisplayMode="Compact" HorizontalContentAlignment="Stretch" Width="{Binding ElementName=RootSplitView, Path=ActualWidth}">
+            <CommandBar.Content>
+                <Grid HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal">
+                        <AppBarButton Width="48" HorizontalAlignment="Left" VerticalAlignment="Center" Height="48" Command="{Binding TiczMenu.OpenMenuCommand}">
+                            <AppBarButton.Icon>
+                                <FontIcon FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE700;"/>
+                            </AppBarButton.Icon>
+                        </AppBarButton>
+                        <AppBarButton x:Name="AppBarBackButton" Width="48" HorizontalAlignment="Left" Visibility="{Binding BackButtonVisibility}" VerticalAlignment="Center" Height="48" Command="{Binding GoBackCommand}">
+                            <AppBarButton.Icon>
+                                <FontIcon FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE112;"/>
+                            </AppBarButton.Icon>
+                        </AppBarButton>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <AppBarButton Name="abbRefresh" Icon="Refresh" HorizontalAlignment="Right" VerticalAlignment="Center" Height="48" Width="48" Command="{Binding RefreshCommand}"/>
+                    </StackPanel>
+                </Grid>
+            </CommandBar.Content>
+        </CommandBar>
+    </Page.BottomAppBar>
+    
+    <!--<Page.BottomAppBar>
         <CommandBar Visibility="{Binding AppBar.CommandBarVisibility}">
             <AppBarButton x:Uid="abbRefresh" Label="refresh" IsEnabled="{Binding AppBar.ButtonEnabled.refreshButton, Mode=TwoWay}" Visibility="{Binding AppBar.ButtonVisibility.refreshButton}" Command="{Binding RefreshCommand}">
                 <AppBarButton.Icon>
@@ -463,5 +538,10 @@
                 <AppBarButton x:Uid="appBarAbout" Label="about" Command="{Binding AboutCommand}"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
-    </Page.BottomAppBar>
+    </Page.BottomAppBar>-->
+    <Interactivity:Interaction.Behaviors>
+        <Core:EventTriggerBehavior EventName="Loaded">
+            <Core:InvokeCommandAction Command="{Binding PageLoadedCommand}"/>
+        </Core:EventTriggerBehavior>
+    </Interactivity:Interaction.Behaviors>
 </Page>

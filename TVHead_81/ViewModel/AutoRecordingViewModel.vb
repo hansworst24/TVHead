@@ -9,7 +9,7 @@ Public Class AutoRecordingViewModel
 
     Public ReadOnly Property vm As TVHead_ViewModel
         Get
-            Return CType(Application.Current, App).DefaultViewModel
+            Return CType(Application.Current, Application).DefaultViewModel
         End Get
 
     End Property
@@ -149,7 +149,7 @@ Public Class AutoRecordingViewModel
         Get
             Return New RelayCommand(Async Sub()
                                         WriteToDebug("AutoRecordingViewModel.SaveAutoRecording()", "start")
-                                        'Dim app As App = CType(Application.Current, App)
+                                        'Dim app As App = CType(Application.Current, Application)
                                         'Trigger update of chicon property by setting it to a bogus value (NotifyPropertyChanged will kick in)
                                         Me.chicon = "Updated"
                                         Dim r As tvhCommandResponse

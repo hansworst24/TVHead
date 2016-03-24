@@ -13,8 +13,7 @@ Public NotInheritable Class HubPage
     Private ReadOnly _defaultViewModel As New ObservableDictionary
     Private ReadOnly _resourceLoader As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
 
-    Dim app As App = CType(Application.Current, App)
-    Dim vm As TVHead_ViewModel = app.DefaultViewModel
+    Private vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
 
     ''' <summary>
     ''' A page that displays a grouped collection of items.
@@ -87,7 +86,7 @@ Public NotInheritable Class HubPage
         _navigationHelper.OnNavigatedTo(e)
         AddHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf HubBackPressed
         'Loading of data happens here
-        Me.DataContext = app.DefaultViewModel
+        Me.DataContext = vm
 
         'Redirect to Settings page immediately when IP address or port are not set
         If vm.appSettings.ServerIPSetting = "" Or vm.appSettings.ServerPortSetting = "" Then
@@ -99,31 +98,31 @@ Public NotInheritable Class HubPage
         End If
 
         If e.NavigationMode = NavigationMode.New Then
-            app.DefaultViewModel.TVHIPAddress = vm.appSettings.ServerIPSetting
-            app.DefaultViewModel.TVHPort = vm.appSettings.ServerPortSetting
-            app.DefaultViewModel.TVHVersion = vm.appSettings.TVHVersion
-            app.DefaultViewModel.TVHUser = vm.appSettings.UsernameSetting
-            app.DefaultViewModel.TVHPass = vm.appSettings.PasswordSetting
+            vm.TVHIPAddress = vm.appSettings.ServerIPSetting
+            vm.TVHPort = vm.appSettings.ServerPortSetting
+            vm.TVHVersion = vm.appSettings.TVHVersion
+            vm.TVHUser = vm.appSettings.UsernameSetting
+            vm.TVHPass = vm.appSettings.PasswordSetting
             Await Task.Run(Function() vm.LoadDataAsync())
         End If
 
         If e.NavigationMode = NavigationMode.Back Then
-            If (app.DefaultViewModel.TVHIPAddress <> vm.appSettings.ServerIPSetting) Or
-                   (app.DefaultViewModel.TVHPort <> vm.appSettings.ServerPortSetting) Or
-                   (app.DefaultViewModel.TVHUser <> vm.appSettings.UsernameSetting) Or
-                   (app.DefaultViewModel.TVHPass <> vm.appSettings.PasswordSetting) Then
+            If (vm.TVHIPAddress <> vm.appSettings.ServerIPSetting) Or
+                   (vm.TVHPort <> vm.appSettings.ServerPortSetting) Or
+                   (vm.TVHUser <> vm.appSettings.UsernameSetting) Or
+                   (vm.TVHPass <> vm.appSettings.PasswordSetting) Then
                 'Set the apps variables to reflect the new app settings. Used to detect setting changes
-                app.DefaultViewModel.TVHIPAddress = vm.appSettings.ServerIPSetting
-                app.DefaultViewModel.TVHPort = vm.appSettings.ServerPortSetting
-                app.DefaultViewModel.TVHUser = vm.appSettings.UsernameSetting
-                app.DefaultViewModel.TVHPass = vm.appSettings.PasswordSetting
+                vm.TVHIPAddress = vm.appSettings.ServerIPSetting
+                vm.TVHPort = vm.appSettings.ServerPortSetting
+                vm.TVHUser = vm.appSettings.UsernameSetting
+                vm.TVHPass = vm.appSettings.PasswordSetting
                 'Retrigger the loading of data by setting the dataLoaded property of each list to False. LoadDataSync() will then reload the data
                 vm.logmessages.entries.Clear()
                 vm.DVRConfigs.dataLoaded = False
                 vm.AllChannels.dataLoaded = False
                 vm.Channels.dataLoaded = False
                 vm.Genres.dataLoaded = False
-                vm.AllGenres.dataLoaded = False
+                vm.ContentTypes.dataLoaded = False
                 vm.ChannelTags.dataLoaded = False
                 vm.UpcomingRecordings.dataLoaded = False
                 vm.FinishedRecordings.dataLoaded = False

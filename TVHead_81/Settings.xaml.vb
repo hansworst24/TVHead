@@ -2,297 +2,297 @@
 Imports TVHead_81.ViewModels
 Imports Windows.UI.Core
 
-Partial Public Class AppSettings
+'Partial Public Class AppSettings
 
 
-    Dim settings As Windows.Storage.ApplicationDataContainer
-    Const strLanguageKeyName As String = "strLanguage"
-    Const strProposeAutoRecordingKeyName As String = "strProposeAutoRecording"
-    Const blAskConfirmationWhenDeletingKeyName As String = "blAskConfirmationWhenDeleting"
-    Const blLongPollingEnabledKeyName As String = "blLongPollingEnabled"
-    Const strServerIPKeyName As String = "strServerIP"
-    Const strServerPortKeyName As String = "strServerPort"
-    Const strUsernameKeyName As String = "strUserName"
-    Const strUserPasswordKeyName As String = "strUserPassword"
-    Const strTVHVersionKeyName As String = "strTVHVersion"
-    Const strTVHVersionLongKeyName As String = "strTVHVersionLong"
-    Const strConnectionStatusKeyName As String = "blConnected"
-    Const strFavouriteChannelTagKeyName As String = "strFavouriteChannelTag"
-    Const blHideNumberlessChannelsKeyName As String = "blHideNumberlessChannels"
-    Const blShowChannelNumbersKeyName As String = "ShowChannelNumbers"
-    Const blHideDisabledServicesKeyName As String = "blHideDisabledServices"
-    Const blHideNamelessServicesKeyName As String = "blHideNamelessServices"
-    Const blEasyOnBandwidthKeyName As String = "blEasyOnBandwidth"
+'    Dim settings As Windows.Storage.ApplicationDataContainer
+'    Const strLanguageKeyName As String = "strLanguage"
+'    Const strProposeAutoRecordingKeyName As String = "strProposeAutoRecording"
+'    Const blAskConfirmationWhenDeletingKeyName As String = "blAskConfirmationWhenDeleting"
+'    Const blLongPollingEnabledKeyName As String = "blLongPollingEnabled"
+'    Const strServerIPKeyName As String = "strServerIP"
+'    Const strServerPortKeyName As String = "strServerPort"
+'    Const strUsernameKeyName As String = "strUserName"
+'    Const strUserPasswordKeyName As String = "strUserPassword"
+'    Const strTVHVersionKeyName As String = "strTVHVersion"
+'    Const strTVHVersionLongKeyName As String = "strTVHVersionLong"
+'    Const strConnectionStatusKeyName As String = "blConnected"
+'    Const strFavouriteChannelTagKeyName As String = "strFavouriteChannelTag"
+'    Const blHideNumberlessChannelsKeyName As String = "blHideNumberlessChannels"
+'    Const blShowChannelNumbersKeyName As String = "ShowChannelNumbers"
+'    Const blHideDisabledServicesKeyName As String = "blHideDisabledServices"
+'    Const blHideNamelessServicesKeyName As String = "blHideNamelessServices"
+'    Const blEasyOnBandwidthKeyName As String = "blEasyOnBandwidth"
 
-    Const strLanguageDefault = ""
-    Const strProposeAutoRecordingDefault As Boolean = True
-    Const blAskConfirmationWhenDeletingDefault As Boolean = True
-    Const blHideDisabledServicesDefault = True
-    Const blLongPollingEnabledDefault = False
-    Const strTVHVersionDefault As String = "3.9"
-    Const strTVHVersionLongDefault As String = ""
-    Const blShowChannelNumbersDefault As Boolean = True
-    Const blEasyOnBandwidthDefault As Boolean = False
-    Const blShowChannelCountPerChannelTagDefault As Boolean = False
-    Const intEPGHoursPerViewDefault As Integer = 24
-    Const intEPGHoursPerPageDefault As Integer = 1
-    Const intChannelsPerEPGGridViewDefault As Integer = 10
-    Const strFavouriteChannelTagDefault = ""
-    Const blHideNumberlessChannelsDefault = True
-    Const blHideNamelessServicesDefault = True
-
-
-
-#If DEBUG Then
-    'TEST SETTINGS
-    Const strServerIPDefault = ""
-    Const strServerPortDefault = ""
-    Const strUsernameDefault = ""
-    Const strUserPasswordDefault = ""
-    Const intMaxEPGEntries = 30000
-#Else
-    'PROD SETTINGS
-    Const strServerIPDefault = ""
-    Const strServerPortDefault = ""
-    Const strUsernameDefault = ""
-    Const strUserPasswordDefault = ""
-    Const intMaxEPGEntries = 30000
-#End If
-
-    Const strConnectionStatusDefault = False
-
-    Public Sub New()
-        settings = Windows.Storage.ApplicationData.Current.LocalSettings
-    End Sub
+'    Const strLanguageDefault = ""
+'    Const strProposeAutoRecordingDefault As Boolean = True
+'    Const blAskConfirmationWhenDeletingDefault As Boolean = True
+'    Const blHideDisabledServicesDefault = True
+'    Const blLongPollingEnabledDefault = False
+'    Const strTVHVersionDefault As String = "3.9"
+'    Const strTVHVersionLongDefault As String = ""
+'    Const blShowChannelNumbersDefault As Boolean = True
+'    Const blEasyOnBandwidthDefault As Boolean = False
+'    Const blShowChannelCountPerChannelTagDefault As Boolean = False
+'    Const intEPGHoursPerViewDefault As Integer = 24
+'    Const intEPGHoursPerPageDefault As Integer = 1
+'    Const intChannelsPerEPGGridViewDefault As Integer = 10
+'    Const strFavouriteChannelTagDefault = ""
+'    Const blHideNumberlessChannelsDefault = True
+'    Const blHideNamelessServicesDefault = True
 
 
 
-    Public Function GetFullURL() As String
-        Return "http://" + ServerIPSetting + ":" + ServerPortSetting
-    End Function
+'#If DEBUG Then
+'    'TEST SETTINGS
+'    Const strServerIPDefault = ""
+'    Const strServerPortDefault = ""
+'    Const strUsernameDefault = ""
+'    Const strUserPasswordDefault = ""
+'    Const intMaxEPGEntries = 30000
+'#Else
+'    'PROD SETTINGS
+'    Const strServerIPDefault = ""
+'    Const strServerPortDefault = ""
+'    Const strUsernameDefault = ""
+'    Const strUserPasswordDefault = ""
+'    Const intMaxEPGEntries = 30000
+'#End If
 
-    Public Function AddOrUpdateValue(Key As String, value As Object)
-        Dim valueChanged As Boolean = False
+'    Const strConnectionStatusDefault = False
 
-        If value Is Nothing Then Return False
-        If settings.Values.ContainsKey(Key) Then
-            settings.Values(Key) = value
-            valueChanged = True
-
-        Else
-            settings.Values.Add(Key, value)
-            valueChanged = True
-        End If
-        Return valueChanged
-    End Function
-
-    Public Function GetValueOrDefault(Of T)(Key As String, defaultValue As T) As T
-        Dim value As T
-        ' If the key exists, retrieve the value.
-        If Not settings.Values(Key) Is Nothing Then
-            value = DirectCast(settings.Values(Key), T)
-        Else
-            ' Otherwise, use the default value.
-            value = defaultValue
-        End If
-        Return value
-    End Function
-
-    Public Sub Save()
-        'settings.Save()
-    End Sub
-
-
-    Public Property PreferredLanguage As String
-        'DEFINES IF LONG POLLING SHOULD BE ENABLED
-        Get
-            Return GetValueOrDefault(Of String)(strLanguageKeyName, strLanguageDefault)
-        End Get
-        Set(value As String)
-            If AddOrUpdateValue(strLanguageKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
-
-    Public Property LongPollingEnabled As Boolean
-        'DEFINES IF LONG POLLING SHOULD BE ENABLED
-        Get
-            Return GetValueOrDefault(Of Boolean)(blLongPollingEnabledKeyName, blLongPollingEnabledDefault)
-        End Get
-        Set(value As Boolean)
-            If AddOrUpdateValue(blLongPollingEnabledKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
-    Public Property ProposeAutoRecording As Boolean
-        'DEFINES IF WHEN A RECORDING IS STARTED, A POPUP WILL APPEAR ASKING TO MAKE A SINGLE OR AUTORECORDING OF THE RECORDING
-        Get
-            Return GetValueOrDefault(Of Boolean)(strProposeAutoRecordingKeyName, strProposeAutoRecordingDefault)
-        End Get
-        Set(value As Boolean)
-            If AddOrUpdateValue(strProposeAutoRecordingKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
-
-    Public Property HideDisabledServices As Boolean
-        Get
-            Return GetValueOrDefault(Of Boolean)(blHideDisabledServicesKeyName, blHideDisabledServicesDefault)
-        End Get
-        Set(value As Boolean)
-            If AddOrUpdateValue(blHideDisabledServicesKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
-    Public Property HideNamelessServices As Boolean
-        Get
-            Return GetValueOrDefault(Of Boolean)(blHideNamelessServicesKeyName, blHideNamelessServicesDefault)
-        End Get
-        Set(value As Boolean)
-            If AddOrUpdateValue(blHideNamelessServicesKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
+'    Public Sub New()
+'        settings = Windows.Storage.ApplicationData.Current.LocalSettings
+'    End Sub
 
 
 
-    Public Property ConfirmDeletion As Boolean
-        Get
-            Return GetValueOrDefault(Of Boolean)(blAskConfirmationWhenDeletingKeyName, blAskConfirmationWhenDeletingDefault)
-        End Get
-        Set(value As Boolean)
-            If AddOrUpdateValue(blAskConfirmationWhenDeletingKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
+'    Public Function GetFullURL() As String
+'        Return "http://" + ServerIPSetting + ":" + ServerPortSetting
+'    End Function
 
-    Public Property TVHVersionLong As String
-        Get
-            Return GetValueOrDefault(Of String)(strTVHVersionLongKeyName, strTVHVersionLongDefault)
-        End Get
-        Set(value As String)
-            If AddOrUpdateValue(strTVHVersionLongKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
+'    Public Function AddOrUpdateValue(Key As String, value As Object)
+'        Dim valueChanged As Boolean = False
 
-    Public Property TVHVersion As String
-        Get
-            Return GetValueOrDefault(Of String)(strTVHVersionKeyName, strTVHVersionDefault)
-        End Get
-        Set(value As String)
-            If AddOrUpdateValue(strTVHVersionKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
+'        If value Is Nothing Then Return False
+'        If settings.Values.ContainsKey(Key) Then
+'            settings.Values(Key) = value
+'            valueChanged = True
 
-    Public Property EasyOnBandwidth As Boolean
-        Get
-            Return GetValueOrDefault(Of Boolean)(blEasyOnBandwidthKeyName, blEasyOnBandwidthDefault)
-        End Get
-        Set(value As Boolean)
-            If AddOrUpdateValue(blEasyOnBandwidthKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
+'        Else
+'            settings.Values.Add(Key, value)
+'            valueChanged = True
+'        End If
+'        Return valueChanged
+'    End Function
 
-    Public Property ShowChannelNumbers As Boolean
-        Get
-            Return GetValueOrDefault(Of Boolean)(blShowChannelNumbersKeyName, blShowChannelNumbersDefault)
-        End Get
-        Set(value As Boolean)
-            AddOrUpdateValue(blShowChannelNumbersKeyName, value)
-            Save()
-        End Set
-    End Property
+'    Public Function GetValueOrDefault(Of T)(Key As String, defaultValue As T) As T
+'        Dim value As T
+'        ' If the key exists, retrieve the value.
+'        If Not settings.Values(Key) Is Nothing Then
+'            value = DirectCast(settings.Values(Key), T)
+'        Else
+'            ' Otherwise, use the default value.
+'            value = defaultValue
+'        End If
+'        Return value
+'    End Function
+
+'    Public Sub Save()
+'        'settings.Save()
+'    End Sub
 
 
-    Public Property FavouriteChannelTag As String
-        Get
-            Return GetValueOrDefault(Of String)(strFavouriteChannelTagKeyName, Nothing)
-        End Get
-        Set(value As String)
-            If AddOrUpdateValue(strFavouriteChannelTagKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
-    Public Property HideNumberlessChannels As Boolean
-        Get
-            Return GetValueOrDefault(Of Boolean)(blHideNumberlessChannelsKeyName, blHideNumberlessChannelsDefault)
-        End Get
-        Set(value As Boolean)
-            If AddOrUpdateValue(blHideNumberlessChannelsKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-
-    Public Property ServerPortSetting As String
-        Get
-            Return GetValueOrDefault(Of String)(strServerPortKeyName, strServerPortDefault)
-        End Get
-        Set(value As String)
-            If AddOrUpdateValue(strServerPortKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
+'    Public Property PreferredLanguage As String
+'        'DEFINES IF LONG POLLING SHOULD BE ENABLED
+'        Get
+'            Return GetValueOrDefault(Of String)(strLanguageKeyName, strLanguageDefault)
+'        End Get
+'        Set(value As String)
+'            If AddOrUpdateValue(strLanguageKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
 
 
-    Public Property ServerIPSetting As String
-        Get
-            Return GetValueOrDefault(Of String)(strServerIPKeyName, strServerIPDefault)
-        End Get
-        Set(value As String)
-            If AddOrUpdateValue(strServerIPKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
+'    Public Property LongPollingEnabled As Boolean
+'        'DEFINES IF LONG POLLING SHOULD BE ENABLED
+'        Get
+'            Return GetValueOrDefault(Of Boolean)(blLongPollingEnabledKeyName, blLongPollingEnabledDefault)
+'        End Get
+'        Set(value As Boolean)
+'            If AddOrUpdateValue(blLongPollingEnabledKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
 
-    Public Property PasswordSetting As String
-        Get
-            Return GetValueOrDefault(Of String)(strUserPasswordKeyName, strUserPasswordDefault)
-        End Get
-        Set(value As String)
-            If AddOrUpdateValue(strUserPasswordKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
+'    Public Property ProposeAutoRecording As Boolean
+'        'DEFINES IF WHEN A RECORDING IS STARTED, A POPUP WILL APPEAR ASKING TO MAKE A SINGLE OR AUTORECORDING OF THE RECORDING
+'        Get
+'            Return GetValueOrDefault(Of Boolean)(strProposeAutoRecordingKeyName, strProposeAutoRecordingDefault)
+'        End Get
+'        Set(value As Boolean)
+'            If AddOrUpdateValue(strProposeAutoRecordingKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
 
-    Public Property UsernameSetting As String
-        Get
-            Return GetValueOrDefault(Of String)(strUsernameKeyName, strUsernameDefault)
-        End Get
-        Set(value As String)
-            If AddOrUpdateValue(strUsernameKeyName, value) Then
-                Save()
-            End If
-        End Set
-    End Property
-End Class
+
+'    Public Property HideDisabledServices As Boolean
+'        Get
+'            Return GetValueOrDefault(Of Boolean)(blHideDisabledServicesKeyName, blHideDisabledServicesDefault)
+'        End Get
+'        Set(value As Boolean)
+'            If AddOrUpdateValue(blHideDisabledServicesKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+'    Public Property HideNamelessServices As Boolean
+'        Get
+'            Return GetValueOrDefault(Of Boolean)(blHideNamelessServicesKeyName, blHideNamelessServicesDefault)
+'        End Get
+'        Set(value As Boolean)
+'            If AddOrUpdateValue(blHideNamelessServicesKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+
+
+'    Public Property ConfirmDeletion As Boolean
+'        Get
+'            Return GetValueOrDefault(Of Boolean)(blAskConfirmationWhenDeletingKeyName, blAskConfirmationWhenDeletingDefault)
+'        End Get
+'        Set(value As Boolean)
+'            If AddOrUpdateValue(blAskConfirmationWhenDeletingKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+'    Public Property TVHVersionLong As String
+'        Get
+'            Return GetValueOrDefault(Of String)(strTVHVersionLongKeyName, strTVHVersionLongDefault)
+'        End Get
+'        Set(value As String)
+'            If AddOrUpdateValue(strTVHVersionLongKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+'    Public Property TVHVersion As String
+'        Get
+'            Return GetValueOrDefault(Of String)(strTVHVersionKeyName, strTVHVersionDefault)
+'        End Get
+'        Set(value As String)
+'            If AddOrUpdateValue(strTVHVersionKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+'    Public Property EasyOnBandwidth As Boolean
+'        Get
+'            Return GetValueOrDefault(Of Boolean)(blEasyOnBandwidthKeyName, blEasyOnBandwidthDefault)
+'        End Get
+'        Set(value As Boolean)
+'            If AddOrUpdateValue(blEasyOnBandwidthKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+'    Public Property ShowChannelNumbers As Boolean
+'        Get
+'            Return GetValueOrDefault(Of Boolean)(blShowChannelNumbersKeyName, blShowChannelNumbersDefault)
+'        End Get
+'        Set(value As Boolean)
+'            AddOrUpdateValue(blShowChannelNumbersKeyName, value)
+'            Save()
+'        End Set
+'    End Property
+
+
+'    Public Property FavouriteChannelTag As String
+'        Get
+'            Return GetValueOrDefault(Of String)(strFavouriteChannelTagKeyName, Nothing)
+'        End Get
+'        Set(value As String)
+'            If AddOrUpdateValue(strFavouriteChannelTagKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+'    Public Property HideNumberlessChannels As Boolean
+'        Get
+'            Return GetValueOrDefault(Of Boolean)(blHideNumberlessChannelsKeyName, blHideNumberlessChannelsDefault)
+'        End Get
+'        Set(value As Boolean)
+'            If AddOrUpdateValue(blHideNumberlessChannelsKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+'    Public Property ServerPortSetting As String
+'        Get
+'            Return GetValueOrDefault(Of String)(strServerPortKeyName, strServerPortDefault)
+'        End Get
+'        Set(value As String)
+'            If AddOrUpdateValue(strServerPortKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+
+'    Public Property ServerIPSetting As String
+'        Get
+'            Return GetValueOrDefault(Of String)(strServerIPKeyName, strServerIPDefault)
+'        End Get
+'        Set(value As String)
+'            If AddOrUpdateValue(strServerIPKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+'    Public Property PasswordSetting As String
+'        Get
+'            Return GetValueOrDefault(Of String)(strUserPasswordKeyName, strUserPasswordDefault)
+'        End Get
+'        Set(value As String)
+'            If AddOrUpdateValue(strUserPasswordKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+
+'    Public Property UsernameSetting As String
+'        Get
+'            Return GetValueOrDefault(Of String)(strUsernameKeyName, strUsernameDefault)
+'        End Get
+'        Set(value As String)
+'            If AddOrUpdateValue(strUsernameKeyName, value) Then
+'                Save()
+'            End If
+'        End Set
+'    End Property
+'End Class
 
 Partial Public Class AppSettingsPage
     Inherits Page
 
-    Dim app As App = CType(Application.Current, App)
-    Dim vm As TVHead_ViewModel = app.DefaultViewModel
+    Dim app As Application = CType(Application.Current, Application)
+    Dim vm As TVHead_ViewModel = vm
 
     Private WithEvents _navigationHelper As New NavigationHelper(Me)
     Private ReadOnly _defaultViewModel As New ObservableDictionary
@@ -362,10 +362,10 @@ Partial Public Class AppSettingsPage
     ''' <param name="e">Event data that describes how this page was reached.</param>
     Protected Overrides Sub OnNavigatedTo(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedTo(e)
-        app.DefaultViewModel.StopRefresh()
-        Me.DataContext = app.DefaultViewModel
+        vm.StopRefresh()
+        Me.DataContext = vm
         'Dim myRegion = New Windows.Globalization.GeographicRegion
-        app.DefaultViewModel.supportedLanguages.languages(0).val = app.DefaultViewModel.loader.GetString("usePhoneLanguage")
+        vm.supportedLanguages.languages(0).val = vm.loader.GetString("usePhoneLanguage")
         BindChannelTags()
         Dim a = CType(cbLanguage.ItemsSource, LanguageList)
         cbLanguage.ItemsSource = vm.supportedLanguages.languages
@@ -420,31 +420,31 @@ Partial Public Class AppSettingsPage
     End Function
 
     Private Async Sub btnTestConnection_Click(sender As Object, e As RoutedEventArgs)
-        Dim app As App = CType(Application.Current, App)
+        Dim app As Application = CType(Application.Current, Application)
         pbTestResult.IsIndeterminate = True
         tbTestResult.Text = "Testing connection..."
         Dim sInfo As ServerInfoViewModel
 
         Try
-            sInfo = Await GetServerInfo()
-            vm.TVHVersionLong = String.Format("{0} {1}", sInfo.name, sInfo.sw_versionlong)
-            vm.TVHVersion = sInfo.sw_version
-            tbTestResult.Text = vm.TVHVersionLong
-            vm.isConnected = True
+            If Await vm.IsConnected Then
+                sInfo = Await vm.GetServerInfo()
+                vm.TVHVersionLong = String.Format("{0} {1}", sInfo.name, sInfo.sw_versionlong)
+                vm.TVHVersion = sInfo.sw_version
+                tbTestResult.Text = vm.TVHVersionLong
+            End If
             Await vm.checkAccess(True)
         Catch ex As Exception
             WriteToDebug("Downloader.DownloadJSON", ex.Message.ToString)
             tbTestResult.Text = ex.Message
-            vm.isConnected = False
         End Try
 
         pbTestResult.IsIndeterminate = False
 
         'If successful connection has been made, load the channeltags and set the first as favourite
-        If vm.isConnected Then
+        If Await vm.IsConnected Then
             Await LoadChannelTags()
-            cbChannelTags.ItemsSource = app.DefaultViewModel.ChannelTags.items.ToList()
-            If Not app.DefaultViewModel.ChannelTags.items.Count = 0 Then
+            cbChannelTags.ItemsSource = vm.ChannelTags.items.ToList()
+            If Not vm.ChannelTags.items.Count = 0 Then
                 cbChannelTags.SelectedIndex = 0
                 cbChannelTags.IsEnabled = True
             Else

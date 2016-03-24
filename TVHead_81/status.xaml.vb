@@ -12,7 +12,7 @@ Public NotInheritable Class StatusPage
     Private ReadOnly _resourceLoader As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
 
     ' Set a reference to the Public objects in app.xaml.vb
-    Dim app As App = CType(Application.Current, App)
+    Private vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
 
     ''' <summary>
     ''' A page that displays a grouped collection of items.
@@ -67,7 +67,7 @@ Public NotInheritable Class StatusPage
     ''' serializable state.</param>
     Private Sub NavigationHelper_SaveState(sender As Object, e As SaveStateEventArgs) Handles _navigationHelper.SaveState
         ' TODO: Save the unique state of the page here.
-        ' app.DefaultViewModel.StopRefresh()
+        ' vm.StopRefresh()
     End Sub
 
 
@@ -89,20 +89,20 @@ Public NotInheritable Class StatusPage
     Protected Overrides Async Sub OnNavigatedTo(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedTo(e)
         'Loading of data happens here
-        DataContext = app.DefaultViewModel
-        If Not app.DefaultViewModel.hasAdminAccess Then
-            Await app.DefaultViewModel.checkAdminAccess()
+        DataContext = vm
+        If Not vm.TVHeadSettings.hasAdminAccess Then
+            Await vm.checkAdminAccess()
         End If
-        If app.DefaultViewModel.hasAdminAccess Then
-            app.DefaultViewModel.Streams.items = (Await LoadStreams()).ToObservableCollection()
-            app.DefaultViewModel.Subscriptions.items = (Await LoadSubscriptions()).ToObservableCollection()
-            app.DefaultViewModel.Services.items = Await LoadServices()
-            app.DefaultViewModel.Muxes.items = Await LoadMuxes()
+        If vm.TVHeadSettings.hasAdminAccess Then
+            vm.Streams.items = (Await LoadStreams()).ToObservableCollection()
+            vm.Subscriptions.items = (Await LoadSubscriptions()).ToObservableCollection()
+            vm.Services.items = Await LoadServices()
+            vm.Muxes.items = Await LoadMuxes()
         Else
-            app.DefaultViewModel.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "You don't have Admin access to the TVH server with this account. Therefore you won't see Subscriptions / Stream updates."})
+            vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "You don't have Admin access to the TVH server with this account. Therefore you won't see Subscriptions / Stream updates."})
         End If
-        If app.DefaultViewModel.FreeDiskSpace = "" Then app.DefaultViewModel.WaitingForDiskspaceUpdate = True Else app.DefaultViewModel.WaitingForDiskspaceUpdate = False
-        If Not app.DefaultViewModel.appSettings.LongPollingEnabled Then app.DefaultViewModel.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "Auto Refresh is not enabled. Enable Auto Refresh to receive continuous updates for streams/subscriptions and log."})
+        If vm.FreeDiskSpace = "" Then vm.WaitingForDiskspaceUpdate = True Else vm.WaitingForDiskspaceUpdate = False
+        If Not vm.appSettings.LongPollingEnabled Then vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "Auto Refresh is not enabled. Enable Auto Refresh to receive continuous updates for streams/subscriptions and log."})
     End Sub
 
     Protected Overrides Sub OnNavigatedFrom(e As NavigationEventArgs)

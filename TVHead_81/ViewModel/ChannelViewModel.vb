@@ -7,9 +7,9 @@ Imports GalaSoft.MvvmLight.Command
 Public Class ChannelViewModel
     Inherits ViewModelBase
 
-    Public ReadOnly Property vm As TVHead_ViewModel
+    Private ReadOnly Property vm As TVHead_ViewModel
         Get
-            Return CType(Application.Current, App).DefaultViewModel
+            Return CType(Application.Current, Application).DefaultViewModel
         End Get
 
     End Property
@@ -38,16 +38,21 @@ Public Class ChannelViewModel
     Public Property ExpandCollapse As RelayCommand
         Get
             Return New RelayCommand(Sub()
-                                        WriteToDebug("ChannelViewModel.ExpanseCollapse", "stop")
-                                        If Me.ExpandedView = "Collapsed" Then
-                                            If Not vm.AllChannels Is Nothing Then
-                                                For Each c In vm.Channels.items
-                                                    If Not c.ExpandedView = "Collapsed" Then c.ExpandedView = "Collapsed"
-                                                Next
-                                            End If
-                                            Me.ExpandedView = "Visible"
+                                        WriteToDebug("ChannelViewModel.ExpanseCollapse", "start")
+                                        Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
+                                        If rectie.Width > 720 Then
+                                            vm.selectedEPGItem = Me.currentEPGItem
                                         Else
-                                            Me.ExpandedView = "Collapsed"
+                                            If Me.ExpandedView = "Collapsed" Then
+                                                If Not vm.AllChannels Is Nothing Then
+                                                    For Each c In vm.Channels.items
+                                                        If Not c.ExpandedView = "Collapsed" Then c.ExpandedView = "Collapsed"
+                                                    Next
+                                                End If
+                                                Me.ExpandedView = "Visible"
+                                            Else
+                                                Me.ExpandedView = "Collapsed"
+                                            End If
                                         End If
                                         WriteToDebug("ChannelViewModel.ExpanseCollapse", "stop")
                                     End Sub)
@@ -59,10 +64,7 @@ Public Class ChannelViewModel
     Public Property LoadChannelEPGItems As RelayCommand
         Get
             Return New RelayCommand(Async Sub()
-                                        If Not vm.hasEPGAccess Then
-                                            Await vm.checkEPGAccess()
-                                        End If
-                                        If vm.hasEPGAccess Then
+                                        If Await vm.TVHeadSettings.hasEPGAccess Then
                                             WriteToDebug("ChannelViewModel.LoadChannelEPGItems", "start")
                                             Await vm.StatusBar.Update("Loading EPG entries...", True, 0, True)
                                             Await Me.LoadEPG()
@@ -81,6 +83,10 @@ Public Class ChannelViewModel
                                             vm.PivotSelectedIndex = 1
                                             vm.ChannelSelected = True
                                             WriteToDebug("ChannelViewModel.LoadChannelEPGItems", "stop")
+
+                                            Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
+                                            If rectie.Width > 720 Then vm.selectedEPGItem = Me.currentEPGItem
+
                                         End If
                                     End Sub)
 
@@ -150,7 +156,7 @@ Public Class ChannelViewModel
                 ElseIf value = "ms-appx:///Images/tvheadend.png" Then
                     _chicon = "ms-appx:///Images/tvheadend.png"
                 ElseIf value.StartsWith("imagecache/") Then
-                    _chicon = (New AppSettings).GetFullURL() & "/" & value
+                    _chicon = vm.TVHeadSettings.GetFullURL() & "/" & value
                 Else
                     _chicon = "ms-appx:///Images/tvheadend.png"
                 End If
@@ -207,10 +213,7 @@ Public Class ChannelViewModel
     Private Property _ChannelNumberVisibility As String
 
     Public Async Function LoadEPG() As Task
-        If Not vm.hasEPGAccess Then
-            Await vm.checkEPGAccess()
-        End If
-        If vm.hasEPGAccess Then
+        If Await vm.TVHeadSettings.hasEPGAccess Then
             Dim newEPGItems As List(Of EPGItemViewModel) = (Await LoadEPGEntry(Me, True)).ToList()
             Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
                                                                                                              epgitems.groupeditems = (From epgevent In newEPGItems
@@ -226,10 +229,7 @@ Public Class ChannelViewModel
     ''' </summary>
     ''' <returns>Task</returns>
     Public Async Function RefreshEPG(fromServer As Boolean) As Task
-        If Not vm.hasEPGAccess Then
-            Await vm.checkEPGAccess()
-        End If
-        If vm.hasEPGAccess Then
+        If Await vm.TVHeadSettings.hasEPGAccess Then
             WriteToDebug("ChannelViewModel.RefreshEPG()", "start")
             vm.StatusBar.Update(vm.loader.GetString("status_RefreshingEPGEntries"), True, 0, True, True)
             Dim epgitemsToRemove, epgitemsToAdd, epgItemsToUpdate As List(Of EPGItemViewModel)
@@ -267,13 +267,8 @@ Public Class ChannelViewModel
     End Function
 
     Public Async Function RefreshCurrentEPGItem(Optional newitem As EPGItemViewModel = Nothing, Optional fromServer As Boolean = False) As Task
-        If Not vm.hasEPGAccess Then
-            Await vm.checkEPGAccess()
-        End If
-        If vm.hasEPGAccess Then
-
-
-            If newitem Is Nothing Then
+        'If Await vm.TVHeadSettings.hasEPGAccess Then
+        If newitem Is Nothing Then
                 If Not currentEPGItem Is Nothing Then
                     If currentEPGItem.percentcompleted = 1 Then
                         'Update
@@ -320,7 +315,7 @@ Public Class ChannelViewModel
                                                                                                                          If currentEPGItem.eventId = newitem.eventId Then
                                                                                                                              currentEPGItem.dvrState = newitem.dvrState
                                                                                                                              currentEPGItem.dvrUuid = newitem.dvrUuid
-                                                                                                                             currentEPGItem.percentcompleted = newitem.percentcompleted
+                                                                                                                             RaisePropertyChanged("percentcompleted")
                                                                                                                          Else
                                                                                                                              currentEPGItem = newitem
                                                                                                                          End If
@@ -331,14 +326,14 @@ Public Class ChannelViewModel
                                                                                                              End Sub)
 
             End If
-        End If
+        'End If
     End Function
 
     Public Sub New()
         epgitems = New EPGItemListViewModel
         ExpandedView = "Collapsed"
         epgItemsLoaded = False
-        ChannelNumberVisibility = If((New AppSettings).ShowChannelNumbers, "Visible", "Collapsed")
+        ChannelNumberVisibility = If((New TVHead_Settings).ShowChannelNumbers, "Visible", "Collapsed")
     End Sub
 
 
@@ -357,7 +352,7 @@ Public Class ChannelViewModel
         tags = channel.tags
         ExpandedView = "Collapsed"
         epgItemsLoaded = False
-        ChannelNumberVisibility = If((New AppSettings).ShowChannelNumbers, "Visible", "Collapsed")
+        ChannelNumberVisibility = If((New TVHead_Settings).ShowChannelNumbers, "Visible", "Collapsed")
         loadEPGButtonEnabled = True
     End Sub
 End Class

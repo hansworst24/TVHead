@@ -19,12 +19,12 @@ Public Class RecordingListViewModel
     Public Sub New()
         SortingOrder = Descending
         groupeditems = New ObservableCollection(Of Group(Of RecordingViewModel))
-        'vm = app.DefaultViewModel
+        'vm = vm
     End Sub
 
     Public ReadOnly Property vm As TVHead_ViewModel
         Get
-            Return CType(Application.Current, App).DefaultViewModel
+            Return CType(Application.Current, Application).DefaultViewModel
         End Get
 
     End Property
@@ -83,7 +83,7 @@ Public Class RecordingListViewModel
             Return New RelayCommand(Sub()
                                         ''WINRT APPARENTLY DOESNT SUPPORT SETTER PROPERTY ISSELECTED, SO WE HAVE TO CAPTURE EACH SELECT/DESELECT HERE
                                         'WriteToDebug("RecordingListViewModel.RecordingSelectionChanged()", "start")
-                                        ''Dim app As App = CType(Application.Current, App)
+                                        ''Dim app As App = CType(Application.Current, Application)
                                         ''If Not Me.items Is Nothing Then
                                         'For Each item In CType(x, SelectionChangedEventArgs).AddedItems
                                         '    If TypeOf (item) Is RecordingViewModel Then
@@ -313,16 +313,16 @@ Public Class RecordingListViewModel
         'First check if the account has access. If not, retrigger checking authentication
         Dim hasProperAccess As Boolean = False
         If Me.RecordingType = upcomingRecordings Or Me.RecordingType = finishedRecordings Then
-            If vm.hasDVRAccess = False Then
+            If vm.TVHeadSettings.hasDVRAccess = False Then
                 Await vm.checkDVRAccess()
             End If
-            hasProperAccess = vm.hasDVRAccess
+            hasProperAccess = vm.TVHeadSettings.hasDVRAccess
         End If
         If Me.RecordingType = failedRecordings Then
-            If vm.hasFailedDVRAccess = False Then
+            If vm.TVHeadSettings.hasFailedDVRAccess = False Then
                 Await vm.checkFailedDVRAccess()
             End If
-            hasProperAccess = vm.hasFailedDVRAccess
+            hasProperAccess = vm.TVHeadSettings.hasFailedDVRAccess
         End If
 
         If hasProperAccess Then
@@ -350,17 +350,17 @@ Public Class RecordingListViewModel
     Public Async Function Reload(produceStatusUpdates As Boolean) As Task
         Dim hasProperAccess As Boolean = False
         If Me.RecordingType = upcomingRecordings Or Me.RecordingType = finishedRecordings Then
-            If vm.hasDVRAccess = False Then
+            If vm.TVHeadSettings.hasDVRAccess = False Then
                 Await vm.checkDVRAccess()
             End If
 
-            hasProperAccess = vm.hasDVRAccess
+            hasProperAccess = vm.TVHeadSettings.hasDVRAccess
         End If
         If Me.RecordingType = failedRecordings Then
-            If vm.hasFailedDVRAccess = False Then
+            If vm.TVHeadSettings.hasFailedDVRAccess = False Then
                 Await vm.checkFailedDVRAccess()
             End If
-            hasProperAccess = vm.hasFailedDVRAccess
+            hasProperAccess = vm.TVHeadSettings.hasFailedDVRAccess
         End If
 
         If hasProperAccess Then
@@ -409,7 +409,7 @@ Public Class RecordingListViewModel
         'Dim settings As New AppSettings
         Dim ContinueWithDeletion As Boolean = False
         Dim succesfulDeletions As Integer = 0
-        'Dim app As App = CType(Application.Current, App)
+        'Dim app As App = CType(Application.Current, Application)
 
         If Not Me Is Nothing Then
             If vm.appSettings.ConfirmDeletion Then

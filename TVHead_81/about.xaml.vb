@@ -14,7 +14,7 @@ Public NotInheritable Class AboutPage
     Private ReadOnly _resourceLoader As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
 
     ' Set a reference to the Public objects in app.xaml.vb
-    Dim app As App = CType(Application.Current, App)
+    Private vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
 
     ''' <summary>
     ''' A page that displays a grouped collection of items.
@@ -70,7 +70,7 @@ Public NotInheritable Class AboutPage
     ''' serializable state.</param>
     Private Sub NavigationHelper_SaveState(sender As Object, e As SaveStateEventArgs) Handles _navigationHelper.SaveState
         ' TODO: Save the unique state of the page here.
-        ' app.DefaultViewModel.StopRefresh()
+        ' vm.StopRefresh()
     End Sub
 
 
@@ -92,7 +92,7 @@ Public NotInheritable Class AboutPage
     Protected Overrides Async Sub OnNavigatedTo(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedTo(e)
         'Loading of data happens here
-        Me.DataContext = app.DefaultViewModel
+        Me.DataContext = vm
 
     End Sub
 

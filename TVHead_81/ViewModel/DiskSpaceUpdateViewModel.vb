@@ -1,15 +1,9 @@
 ﻿Imports GalaSoft.MvvmLight
-Imports TVHead_81.ViewModels
 
 Public Class DiskSpaceUpdateViewModel
     Inherits ViewModelBase
 
-    Public ReadOnly Property vm As TVHead_ViewModel
-        Get
-            Return CType(Application.Current, App).DefaultViewModel
-        End Get
-
-    End Property
+    Private _diskspaceupdate As CometMessages.diskspaceUpdate
 
     Public Property WaitingForUpdate As Boolean
         Get
@@ -24,66 +18,59 @@ Public Class DiskSpaceUpdateViewModel
 
     Public Property FreeDiskspace As Long
         Get
-            Return _FreeDiskspace
+            Return _diskspaceupdate.freediskspace
         End Get
         Set(value As Long)
-            _FreeDiskspace = value
+            _diskspaceupdate.freediskspace = value
             RaisePropertyChanged("FreeDiskspace")
             RaisePropertyChanged("FreeDiskspaceString")
             RaisePropertyChanged("FreeDiskspacePercentage")
         End Set
     End Property
     Private Property _FreeDiskspace As Long
-
     Public Property UsedDiskspace As Long
         Get
-            Return _UsedDiskspace
+            Return _diskspaceupdate.useddiskspace
         End Get
         Set(value As Long)
-            _UsedDiskspace = value
+            _diskspaceupdate.useddiskspace = value
             RaisePropertyChanged("UsedDiskspace")
             RaisePropertyChanged("UsedDiskspaceString")
             RaisePropertyChanged("UsedDiskspacePercentage")
         End Set
     End Property
     Private Property _UsedDiskspace As Long
-
-
-
-
     Public Property TotalDiskspace As Long
         Get
-            Return _TotalDiskspace
+            Return _diskspaceupdate.totaldiskspace
         End Get
         Set(value As Long)
-            _TotalDiskspace = value
+            _diskspaceupdate.totaldiskspace = value
             RaisePropertyChanged("TotalDiskspace")
             RaisePropertyChanged("TotalDiskspaceString")
         End Set
     End Property
     Private Property _TotalDiskspace As Long
-
     Public ReadOnly Property UsedDiskspaceString As String
         Get
+            Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
             Dim sizes As String() = {"B", "KiB", "MiB", "GiB", "TiB", "PiB"}
             Dim order As Integer = 0
-            Dim len As Long = UsedDiskspace
+            Dim len As Long = _diskspaceupdate.useddiskspace
             While len > 1024 AndAlso order + 1 < sizes.Length
                 order = order + 1
                 len = len / 1024
             End While
             Return String.Format(vm.loader.GetString("UsedDiskSpace"), len, sizes(order))
-            'Return String.Format("{0:0.##} {1}", len, sizes(order))
         End Get
 
     End Property
-
-
     Public ReadOnly Property FreeDiskspaceString As String
         Get
+            Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
             Dim sizes As String() = {"B", "KiB", "MiB", "GiB", "TiB", "PiB"}
             Dim order As Integer = 0
-            Dim len As Long = FreeDiskspace
+            Dim len As Long = _diskspaceupdate.freediskspace
             While len > 1024 AndAlso order + 1 < sizes.Length
                 order = order + 1
                 len = len / 1024
@@ -92,12 +79,12 @@ Public Class DiskSpaceUpdateViewModel
         End Get
 
     End Property
-
     Public ReadOnly Property TotalDiskspaceString As String
         Get
+            Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
             Dim sizes As String() = {"B", "KiB", "MiB", "GiB", "TiB", "PiB"}
             Dim order As Integer = 0
-            Dim len As Long = TotalDiskspace
+            Dim len As Long = _diskspaceupdate.totaldiskspace
             While len > 1024 AndAlso order + 1 < sizes.Length
                 order = order + 1
                 len = len / 1024
@@ -106,36 +93,26 @@ Public Class DiskSpaceUpdateViewModel
         End Get
 
     End Property
-
     Public ReadOnly Property UsedDiskspacePercentage As Double
         Get
-            Return (Math.Round(UsedDiskspace / TotalDiskspace, 2))
+            Return (Math.Round(_diskspaceupdate.useddiskspace / _diskspaceupdate.totaldiskspace, 2))
         End Get
     End Property
-
     Public ReadOnly Property FreeDiskspacePercentage As Double
         Get
-            Return (Math.Round((TotalDiskspace - FreeDiskspace) / TotalDiskspace, 2))
+            Return (Math.Round((_diskspaceupdate.totaldiskspace - _diskspaceupdate.freediskspace) / _diskspaceupdate.totaldiskspace, 2))
         End Get
     End Property
 
-
     Public Sub New(diskupdatemessage As CometMessages.diskspaceUpdate)
-        TotalDiskspace = diskupdatemessage.totaldiskspace
-        FreeDiskspace = diskupdatemessage.freediskspace
-        UsedDiskspace = diskupdatemessage.useddiskspace
-        WaitingForUpdate = False
+        _diskspaceupdate = diskupdatemessage
     End Sub
-
     Public Sub New()
         WaitingForUpdate = True
     End Sub
-
     Public Sub Update(diskupdate As CometMessages.diskspaceUpdate)
         WriteToDebug("DiskSpaceUpdateViewModel.Update()", "Updated")
-        TotalDiskspace = diskupdate.totaldiskspace
-        FreeDiskspace = diskupdate.freediskspace
-        UsedDiskspace = diskupdate.useddiskspace
+        _diskspaceupdate = diskupdate
         WaitingForUpdate = False
     End Sub
 End Class

@@ -120,7 +120,7 @@ Public Class EPGItemListViewModel
                 Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
                                                                                                                  oldEvent.dvrState = e.dvrState
                                                                                                                  oldEvent.dvrUuid = e.dvrUuid
-                                                                                                                 oldEvent.percentcompleted = e.percentcompleted
+                                                                                                                 'oldEvent.percentcompleted = e.percentcompleted
                                                                                                              End Sub)
             Else
                 Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()

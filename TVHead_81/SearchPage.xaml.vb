@@ -1,4 +1,5 @@
 ﻿Imports TVHead_81.Common
+Imports TVHead_81.ViewModels
 
 
 ' The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
@@ -8,15 +9,16 @@ Public NotInheritable Class SearchPage
 
     Private WithEvents _navigationHelper As New NavigationHelper(Me)
     Private ReadOnly _defaultViewModel As New ObservableDictionary
+    Private vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
 
     'Public backupAutoRecording As AutoRecordingViewModel
     'Public originalAutoRecording As AutoRecordingViewModel
 
     Public Sub New()
         InitializeComponent()
-        Dim app As App = CType(Application.Current, App)
-        TopHeader.DataContext = app.DefaultViewModel
-        ToastMessages.DataContext = app.DefaultViewModel.ToastMessages
+        Dim app As Application = CType(Application.Current, Application)
+        TopHeader.DataContext = vm
+        'ToastMessages.DataContext = vm.ToastMessages
     End Sub
 
     ''' <summary>
