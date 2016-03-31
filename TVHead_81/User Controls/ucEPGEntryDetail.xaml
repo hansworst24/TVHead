@@ -8,20 +8,8 @@
 	<UserControl.Resources>
 		
 	</UserControl.Resources>
-	<Grid x:Name="mainGrid">
-        
-		<Grid.RowDefinitions>
-			<RowDefinition Height="auto"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
-		<!-- THE SUB HEADER, INCLUDING THE DATE, STARTTIME AND AND TIME-->
-        <Border Background="Transparent" VerticalAlignment="Stretch" Grid.Row="0" 
-				BorderThickness="0,2,0,2" >
-            <TextBlock HorizontalAlignment="left" VerticalAlignment="Center" 
-                       FontSize="20" Margin="10,5,0,5" Text="{Binding title}" Style="{StaticResource SubTitle}"/>
-        </Border>
-
-        <Border BorderThickness="0" Grid.Row="1">
+	<Grid x:Name="mainGrid" >
+        <Border BorderThickness="0" Grid.Row="1" Margin="5,0,5,0">
             <Grid x:Name="epgDetails">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
@@ -30,15 +18,15 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <TextBlock x:Uid="tbGenre" Grid.Row="0"  Text="Genre" 
-                           FontWeight="Bold" Margin="10,0,10,5"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,10,0" x:Name="tbGenreName"
+                           FontWeight="Bold" Margin="0,0,10,5"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,10,0" x:Name="tbGenreName"
                            HorizontalAlignment="Left" Text="{Binding genreName}"
                             
                            VerticalAlignment="Center"/>
-                <TextBlock x:Uid="tbDescription" Grid.Row="2" Grid.Column="0" Margin="10,0,10,5" Text="Description" 
+                <TextBlock x:Uid="tbDescription" Grid.Row="2" Grid.Column="0" Margin="0,0,10,5" Text="Description" 
                            FontWeight="Bold" />
                 <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Justify" Style="{ThemeResource CaptionTextBlockStyle}"
-                           TextWrapping="Wrap" HorizontalAlignment="Left" Margin="10,0,10,10" Text="{Binding description}"
+                           TextWrapping="Wrap" HorizontalAlignment="Left" Margin="0,0,10,10" Text="{Binding description}"
                             />
             </Grid>
         </Border>

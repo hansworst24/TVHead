@@ -17,9 +17,30 @@ Public Class TVHead_ViewModel
     Public Property Notify As New NotificationViewModel
     Public Property DiskSpaceStats As New DiskSpaceUpdateViewModel
 
+
+    'Properties for running the background task that handles updating the current EPG event of each channel, and the EPG info if a channel is selected
+    Public Property EPGRefresher As New BackgroundEPGRefresher
+
+    'Properties for running a background task that performs long polling towards TVH server to catch any updates it sends out
+    Public Property CometCatcher As New CometCatcher
+    'Public CatchCometsBoxID As String
+    'Public ct As CancellationToken
+    'Public tokenSource As New CancellationTokenSource()
+    'Public CometCatcher As Task
+
+
     Public myCultureInfoHelper As CultureInfoHelper = New CultureInfoHelper
 
-
+    Public Property MenuIsOpen As Boolean
+        Get
+            Return _MenuIsOpen
+        End Get
+        Set(value As Boolean)
+            _MenuIsOpen = value
+            RaisePropertyChanged("MenuIsOpen")
+        End Set
+    End Property
+    Private Property _MenuIsOpen As Boolean
 
     Public Property selectedEPGItem As EPGItemViewModel
         Get
@@ -41,12 +62,8 @@ Public Class TVHead_ViewModel
 
     Public doCatchComents As Boolean
 
-    Public CatchCometsBoxID As String
 
-    Public ct As CancellationToken
-    Public tokenSource As New CancellationTokenSource()
 
-    Public CometCatcher As Task
 
 #Region "Properties"
 
@@ -108,18 +125,6 @@ Public Class TVHead_ViewModel
     End Property
     Private Property _WaitingForDiskspaceUpdate As Boolean
 
-
-
-    'Public Property isConnected As Boolean
-    '    Get
-    '        Return _isConnected
-    '    End Get
-    '    Set(value As Boolean)
-    '        _isConnected = value
-    '        RaisePropertyChanged("isConnected")
-    '    End Set
-    'End Property
-    'Private Property _isConnected As Boolean
 
     Public Property ConnectedRotation As Integer
         Get
@@ -252,410 +257,10 @@ Public Class TVHead_ViewModel
 
     Public Property supportedLanguages As New LanguageList
 
-    Public Async Function CatchComets(ct As CancellationToken) As Task
-        While Not ct.IsCancellationRequested
-            '                CometCatcherLastRun = Date.Now
-            Dim CometCatcherTaskID As String
-            If Not CometCatcher Is Nothing Then CometCatcherTaskID = CometCatcher.Id.ToString
-            'WriteToDebug("TVHead_ViewModel.CatchComets()", "Catching..." + CometCatcherTaskID)
-            If CatchCometsBoxID = "" Then
-                WriteToDebug("TVHead_ViewModel.CatchComets()", "Catching new boxid...")
-                CatchCometsBoxID = Await GetBoxID()
-            End If
-            If Not CatchCometsBoxID = "" Then
-                Try
-                    'isTimeOut = False
-                    Dim response As HttpResponseMessage = Await (New Downloader).DownloadComet(CatchCometsBoxID)
-                    If Not response.IsSuccessStatusCode Then
-                        ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .msg = response.ReasonPhrase, .secondsToShow = 5})
-                        WriteToDebug("TVHead_ViewModel.CatchComets()", "HTTP request error")
-                        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                         'isConnected = False
-                                                                                                                     End Sub)
-                        Await Task.Delay(2000)
-                        doCatchComents = True
-                        CatchCometsBoxID = ""
-                    Else
-                        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                         'isConnected = True
-                                                                                                                     End Sub)
-                        Dim body As String = Await response.Content.ReadAsStringAsync()
-                        'Dim reader = New StreamReader(body)
-                        ' While Not reader.EndOfStream
-                        Dim comet = JsonConvert.DeserializeObject(Of CometMessages.CometMessage)(body)
-                        For Each message In comet.messages
-                            ' tvh40 : subscriptions,input_status,dvrentry,logmessage,servicemapper,service_raw,service,caclient,connections
-                            ' TVH41 : epg,dvrentry,subscriptions,input_status,logmessage,mpegts_mux,mpegts_network,diskspaceUpdate,servicemapper,service_raw
-                            ' TVH34 : dvrdb
-                            'WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Notification Class : {0}", message("notificationClass")))
-                            Select Case message("notificationClass")
-                                Case "input_status"
-                                    Dim input_message As CometMessages.input_status = JsonConvert.DeserializeObject(Of CometMessages.input_status)(message.ToString())
-                                    If input_message.reload = 1 Then
-                                        Await Streams.Reload()
-                                    Else
-                                        Await Streams.Update(input_message)
-                                    End If
-
-                                Case "subscriptions"
-                                    Dim subscription_message As CometMessages.subscription = JsonConvert.DeserializeObject(Of CometMessages.subscription)(message.ToString())
-                                    If subscription_message.reload = 1 Then
-
-                                        Await Subscriptions.Reload()
-                                    Else
-                                        Await Subscriptions.Update(subscription_message)
-                                    End If
-                                Case "dvrdb" 'Only used in legacy 3.4-ish 
-                                    Dim dvr_message As CometMessages.dvrdb = JsonConvert.DeserializeObject(Of CometMessages.dvrdb)(message.ToString())
-                                    If dvr_message.reload = 1 Then
-                                        'TVH server tells us to reload the recordings
-                                    End If
-
-                                Case "dvrentry"
-                                    Dim dvrEntry_message As CometMessages.dvrentry = JsonConvert.DeserializeObject(Of CometMessages.dvrentry)(message.ToString())
-                                    If Not dvrEntry_message.create Is Nothing Then
-                                        For Each m In dvrEntry_message.create
-                                            currentCometStats.AddComet("dvrcreate")
-                                            Dim updatedRecording As RecordingViewModel
-                                            'updatedRecording = TryCast(Await LoadIDNode(m, New RecordingViewModel()), RecordingViewModel)
-                                            updatedRecording = (From rec In (Await LoadUpcomingRecordings()) Where rec.recording_id = m Select rec).FirstOrDefault()
-                                            If Not updatedRecording Is Nothing Then
-                                                'we received an update for a upcoming / running recording. handle it
-                                                Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
-                                                                                                                                                 Await Me.UpcomingRecordings.AddRecording(updatedRecording, True)
-                                                                                                                                             End Sub)
-
-                                            End If
-                                        Next
-                                    End If
-                                    If Not dvrEntry_message.change Is Nothing Then
-                                        For Each m In dvrEntry_message.change
-                                            currentCometStats.AddComet("dvrchange")
-                                            'We received the uuid for a recording that was changed. Request the updated recording from the server by quering
-                                            'for the ID Node
-                                            If TVHeadSettings.CapableOfLoadingRecordingIDNode Then
-                                                Dim updatedRecording As RecordingViewModel
-                                                ''TODO CHECK FOR ACCESS
-                                                updatedRecording = TryCast(Await LoadIDNode(m, New RecordingViewModel()), RecordingViewModel)
-
-                                                If Not updatedRecording Is Nothing Then
-                                                    If updatedRecording.schedstate = "scheduled" Or updatedRecording.schedstate = "recording" Then
-                                                        Await Me.UpcomingRecordings.UpdateRecording(updatedRecording)
-                                                    End If
-                                                    If updatedRecording.schedstate = "completed" Then
-                                                        Await Me.UpcomingRecordings.RemoveRecording(updatedRecording.recording_id, False)
-                                                        Await Me.FinishedRecordings.UpdateRecording(updatedRecording)
-                                                    End If
-                                                    If updatedRecording.schedstate = "completedError" Then
-                                                        Await Me.UpcomingRecordings.RemoveRecording(updatedRecording.recording_id, False)
-                                                        Await Me.FailedRecordings.UpdateRecording(updatedRecording)
-                                                    End If
-                                                Else
-                                                    'updatedRecording is Nothing, probably we don't have access somewhere
-                                                    If TVHeadSettings.hasDVRAccess Then Await Me.UpcomingRecordings.Reload(True)
-                                                    If TVHeadSettings.hasDVRAccess Then Await Me.FinishedRecordings.Reload(True)
-                                                    If TVHeadSettings.hasFailedDVRAccess Then Await Me.FailedRecordings.Reload(True)
-                                                End If
-                                            Else
-                                                If TVHeadSettings.hasDVRAccess Then Await Me.UpcomingRecordings.Reload(True)
-                                                If TVHeadSettings.hasDVRAccess Then Await Me.FinishedRecordings.Reload(True)
-                                                If TVHeadSettings.hasFailedDVRAccess Then Await Me.FailedRecordings.Reload(True)
-                                            End If
-                                        Next
-                                    End If
-                                    If Not dvrEntry_message.delete Is Nothing Then
-
-                                        For Each m In dvrEntry_message.delete
-                                            currentCometStats.AddComet("dvrdelete")
-                                            'Without knowing in which list the recording is located, initiate deletion of the recording by targeting all lists
-                                            If TVHeadSettings.hasDVRAccess Then Await Me.UpcomingRecordings.RemoveRecording(m, True)
-                                            If TVHeadSettings.hasDVRAccess Then Await Me.FinishedRecordings.RemoveRecording(m, True)
-                                            If TVHeadSettings.hasFailedDVRAccess Then Await Me.FailedRecordings.RemoveRecording(m, True)
-
-                                        Next
-                                    End If
-
-                                Case "dvrautorec"
-                                    Dim autorec_message As CometMessages.dvrautorec = JsonConvert.DeserializeObject(Of CometMessages.dvrautorec)(message.ToString())
-                                    If Not autorec_message.change Is Nothing Then
-                                        For Each m In autorec_message.change
-                                            currentCometStats.AddComet("dvrautorecchange")
-                                            If TVHeadSettings.CapableOfLoadingAutoRecordingIDNode And TVHeadSettings.hasDVRAccess Then
-                                                Dim updatedAutoRecording As AutoRecordingViewModel
-                                                updatedAutoRecording = TryCast(Await LoadIDNode(m, New AutoRecordingViewModel()), AutoRecordingViewModel)
-                                                If Not updatedAutoRecording Is Nothing Then Await Me.AutoRecordings.UpdateAutoRecording(updatedAutoRecording, True)
-                                            End If
-                                        Next
-
-                                    End If
-                                    If Not autorec_message.create Is Nothing Then
-                                        For Each m In autorec_message.create
-                                            currentCometStats.AddComet("dvrautoreccreate")
-                                            If TVHeadSettings.CapableOfLoadingAutoRecordingIDNode And TVHeadSettings.hasDVRAccess Then
-                                                Dim updatedAutoRecording As AutoRecordingViewModel
-                                                updatedAutoRecording = TryCast(Await LoadIDNode(m, New AutoRecordingViewModel()), AutoRecordingViewModel)
-                                                If Not updatedAutoRecording Is Nothing Then Await Me.AutoRecordings.AddAutoRecording(updatedAutoRecording, True)
-                                            End If
-                                        Next
-                                    End If
-
-                                    If Not autorec_message.delete Is Nothing Then
-
-                                        For Each m In autorec_message.delete
-                                            currentCometStats.AddComet("dvrautorecdelete")
-                                            Await Me.AutoRecordings.DeleteAutoRecording(m, True)
-                                        Next
-                                    End If
-
-                                    If Not autorec_message.update Is Nothing Then
-                                        For Each m In autorec_message.update
-                                            currentCometStats.AddComet("dvrautorecupdate")
-                                            If TVHeadSettings.CapableOfLoadingAutoRecordingIDNode And TVHeadSettings.hasDVRAccess Then
-                                                Dim updatedAutoRecording As AutoRecordingViewModel
-                                                updatedAutoRecording = TryCast(Await LoadIDNode(m, New AutoRecordingViewModel()), AutoRecordingViewModel)
-                                                If Not updatedAutoRecording Is Nothing Then Await Me.AutoRecordings.UpdateAutoRecording(updatedAutoRecording, True)
-                                            End If
-                                        Next
-                                    End If
 
 
-                                Case "epg"
-                                    Dim epg_message As CometMessages.epg = JsonConvert.DeserializeObject(Of CometMessages.epg)(message.ToString())
-                                    'Provide the EPG message to SelectedChannel.GroupedEPGItems in order to process any changes
-                                    If Not epg_message.delete Is Nothing Then
-                                        For Each m In epg_message.delete
-                                            currentCometStats.AddComet("epgdelete")
-                                            'Await SelectedChannel.epgitems.RemoveEvent(m)
-                                            'For Each g In SelectedChannel.GroupedEPGItems
-                                            '    Dim oldEPGEvent As EPGItemViewModel = (From e In g Where e.eventId.Equals(m) Select e).FirstOrDefault()
-                                            '    If Not oldEPGEvent Is Nothing Then
-                                            '        WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Deleting programme {0} : {1}", oldEPGEvent.title, m.ToString()))
-                                            '        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                            '                                                                                                         g.Remove(oldEPGEvent)
-                                            '                                                                                                     End Sub)
-                                            '    End If
-
-                                            'Next
-                                        Next
-                                    End If
-                                    If Not epg_message.update Is Nothing Then
-                                        'Running Programmes get updated regularly (percent completed ?)
-                                        For Each m In epg_message.update
-                                            currentCometStats.AddComet("epgupdate")
-                                            'Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(New List(Of Integer)(New Integer() {m}))).FirstOrDefault()
-                                            'If Not newEPGEvent Is Nothing Then
-                                            '    WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Updating programme {0} : {1}", newEPGEvent.title, m.ToString()))
-                                            'Else
-                                            '    WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Updating programme {0} : {1}", "EVENTID NOT ON SERVER", m.ToString()))
-                                            'End If
-                                            'For Each g In SelectedChannel.GroupedEPGItems
-                                            '    Dim oldEPGEvent As EPGItemViewModel = (From e In g Where e.eventId.Equals(m) Select e).FirstOrDefault()
-                                            '    If Not oldEPGEvent Is Nothing Then
-                                            '        WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Updating programme {0} : {1}", oldEPGEvent.title, m.ToString()))
-                                            '        oldEPGEvent.Update()
-                                            '    End If
-
-                                            'Next
-                                        Next
-                                    End If
-
-                                    If Not epg_message.create Is Nothing Then
-                                        For Each m In epg_message.create
-                                            currentCometStats.AddComet("epgcreate")
-                                            'Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(New List(Of Integer)(New Integer() {m}))).FirstOrDefault()
-                                            'If Not newEPGEvent Is Nothing Then
-                                            '    WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Creating programme {0} : {1}", newEPGEvent.title, m.ToString()))
-                                            'Else
-                                            '    WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Creating programme {0} : {1}", "EVENTID NOT ON SERVER", m.ToString()))
-                                            'End If
-                                            'If Not newEPGEvent Is Nothing AndAlso newEPGEvent.channelUuid = SelectedChannel.channelUuid Then
-                                            '    Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
-                                            '                                                                                                     Await SelectedChannel.AddEvent(newEPGEvent)
-                                            '                                                                                                 End Sub)
-                                            'End If
-                                        Next
-                                    End If
-
-                                    If Not epg_message.change Is Nothing Then
-                                        For Each m In epg_message.change
-                                            currentCometStats.AddComet("epgchange")
-                                            'Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(New List(Of Integer)(New Integer() {m}))).FirstOrDefault()
-                                            'If Not newEPGEvent Is Nothing Then
-                                            '    WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Changing programme {0} : {1}", newEPGEvent.title, m.ToString()))
-                                            'Else
-                                            '    WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Changing programme {0} : {1}", "EVENTID NOT ON SERVER", m.ToString()))
-                                            'End If
-                                            'If Not newEPGEvent Is Nothing AndAlso Not SelectedChannel Is Nothing AndAlso newEPGEvent.channelUuid = SelectedChannel.channelUuid Then
-                                            '    Await SelectedChannel.epgitems.UpdateEvent(newEPGEvent)
-                                            'End If
-                                        Next
-                                    End If
-                                    If Not epg_message.dvr_update Is Nothing Then
-                                        For Each m In epg_message.dvr_update
-                                            currentCometStats.AddComet("epgdvrupdate")
-                                            'Get the latest info for the EPGEvent
-                                            Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(New List(Of Integer)(New Integer() {m}))).FirstOrDefault()
-
-                                            If Not newEPGEvent Is Nothing AndAlso Not SelectedChannel Is Nothing AndAlso Not SelectedChannel.epgitems Is Nothing AndAlso newEPGEvent.channelUuid = SelectedChannel.channelUuid Then
-                                                Await SelectedChannel.epgitems.UpdateEvent(newEPGEvent)
-                                            End If
-
-                                            Dim channel As ChannelViewModel = (From c In Channels.items Where c.currentEPGItem.eventId = newEPGEvent.eventId Select c).FirstOrDefault()
-                                            If Not channel Is Nothing Then
-                                                Await channel.RefreshCurrentEPGItem(newEPGEvent)
-                                            End If
-
-                                            If Not SearchPage Is Nothing AndAlso Not SearchPage.GroupedSearchResults Is Nothing Then
-                                                For Each g In SearchPage.GroupedSearchResults
-                                                    Dim searchChannel As ChannelViewModel = (From c In g Where c.channelUuid = newEPGEvent.channelUuid AndAlso c.currentEPGItem.eventId = newEPGEvent.eventId Select c).FirstOrDefault()
-                                                    If Not searchChannel Is Nothing Then
-                                                        Await searchChannel.RefreshCurrentEPGItem(newEPGEvent)
-                                                    End If
-                                                Next
-
-                                            End If
-
-                                            'If Not newEPGEvent Is Nothing Then
-                                            '    'update the matching recording
-                                            '    Dim updatedRecording As RecordingViewModel
-                                            '    If CapableOfLoadingIDNode Then
-                                            '        updatedRecording = TryCast(Await LoadIDNode(newEPGEvent.dvrUuid, New RecordingViewModel()), RecordingViewModel)
-                                            '        If Not updatedRecording Is Nothing Then
-                                            '            If updatedRecording.schedstate = "completed" Then
-                                            '                Await Me.FinishedRecordings.AddRecording(updatedRecording, True)
-                                            '                Await Me.UpcomingRecordings.RemoveRecording(newEPGEvent.dvrUuid, False)
-                                            '            End If
-                                            '            If updatedRecording.schedstate = "completedError" Then
-                                            '                Await Me.FailedRecordings.AddRecording(updatedRecording, True)
-                                            '                Await Me.UpcomingRecordings.RemoveRecording(newEPGEvent.dvrUuid, False)
-                                            '            End If
-                                            '            If updatedRecording.schedstate = "scheduled" Or updatedRecording.schedstate = "recording" Then
-                                            '                Await Me.UpcomingRecordings.UpdateRecording(updatedRecording)
-                                            '            End If
-                                            '        Else
-                                            '            Await Me.UpcomingRecordings.RemoveRecording(newEPGEvent.dvrUuid, True)
-                                            '            Await Me.FinishedRecordings.RemoveRecording(newEPGEvent.dvrUuid, True)
-                                            '            Await Me.FailedRecordings.RemoveRecording(newEPGEvent.dvrUuid, True)
-                                            '            'Recording is gone...
-                                            '        End If
-                                            '    End If
-                                            'End If
-                                        Next
-                                    End If
-
-                                    If Not epg_message.dvr_delete Is Nothing Then
-                                        For Each m In epg_message.dvr_delete
-                                            currentCometStats.AddComet("epgdvrdelete")
-                                            Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(New List(Of Integer)(New Integer() {m}))).FirstOrDefault()
-                                            'Update any entry for the EPGEvent in the Selected Channel
-                                            If Not newEPGEvent Is Nothing Then
-                                                'Update SelectedChannel's status
-                                                If Not SelectedChannel Is Nothing AndAlso Not SelectedChannel.epgitems Is Nothing AndAlso newEPGEvent.channelUuid = SelectedChannel.channelUuid Then
-                                                    Await SelectedChannel.epgitems.UpdateEvent(newEPGEvent)
-                                                End If
-                                                'Update any channel with this EPG Event ID and tell it to refresh
-                                                Dim channel As ChannelViewModel = (From c In Channels.items Where c.currentEPGItem.eventId = newEPGEvent.eventId Select c).FirstOrDefault()
-                                                If Not channel Is Nothing Then
-                                                    Await channel.RefreshCurrentEPGItem(newEPGEvent)
-                                                End If
-
-                                                'Clean up any results in the Search Page
-                                                If Not SearchPage Is Nothing AndAlso Not SearchPage.GroupedSearchResults Is Nothing Then
-                                                    For Each g In SearchPage.GroupedSearchResults
-                                                        Dim searchChannel As ChannelViewModel = (From c In g Where c.channelUuid = newEPGEvent.channelUuid AndAlso c.currentEPGItem.eventId = newEPGEvent.eventId Select c).FirstOrDefault()
-                                                        If Not searchChannel Is Nothing Then
-                                                            Await searchChannel.RefreshCurrentEPGItem(newEPGEvent)
-                                                        End If
-                                                    Next
-                                                End If
-
-                                            Else
-                                                'EPG Item doesn't exist on the server anymore
-                                            End If
-                                        Next
-                                    End If
-
-                                Case "logmessage"
-                                    Dim log_message As CometMessages.logUpdate = JsonConvert.DeserializeObject(Of CometMessages.logUpdate)(message.ToString())
-                                    logmessages.Add(log_message.logtxt)
-                                Case "service"
-
-                                Case "mpegts_mux"
-
-                                Case "mpegts_network"
-
-                                Case "accessUpdate"
-                                    'We think such a message is ment for re-authentication or so, fixed  by asking new boxid from the TVH server
-                                    CatchCometsBoxID = Await GetBoxID()
-                                        'Dim diskspace_message As CometMessages.diskspaceUpdate = JsonConvert.DeserializeObject(Of CometMessages.diskspaceUpdate)(message.ToString())
-                                        'Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                        '                                                                                                 DiskSpaceStats.Update(diskspace_message)
-                                        '                                                                                             End Sub)
-
-                                Case "ServerIpPort"
-                                            'Not sure what this is used for
-
-                                Case "diskspaceUpdate"
-                                    Dim diskspace_message As CometMessages.diskspaceUpdate = JsonConvert.DeserializeObject(Of CometMessages.diskspaceUpdate)(message.ToString())
-                                    'Dim d As DiskspaceUpdateViewModel = New DiskspaceUpdateViewModel(diskspace_message)
-                                    Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                                     DiskSpaceStats.Update(diskspace_message)
-                                                                                                                                 End Sub)
 
 
-                                        'NOT IMPLEMENTED YET
-                                        'WriteToDebug("StatusPage.OnNavigatedTo()", message("notificationClass") & " : xxx  :")
-                                Case "servicemapper"
-                                            'NOT IMPLEMENTED YET
-                                            'WriteToDebug("StatusPage.OnNavigatedTo()", message("notificationClass") & " : xxx  :")
-                                Case "service_raw"
-                                    'NOT IMPLEMENTED YET
-                                    'WriteToDebug("StatusPage.OnNavigatedTo()", message("notificationClass") & " : xxx  :")
-                                Case Else
-                                    'WriteToDebug("StatusPage.OnNavigatedTo()", message("notificationClass") & " : Something else  :")
-                                    ' CatchCometsBoxID = ""
-                            End Select
-                        Next
-                        'End While
-                    End If
-                    'Perform some other updates while we're polling but only every 10 seconds or more
-                    If CometCatcherLastRun.AddSeconds(10) <= Date.Now Then
-                        If Not SelectedChannel Is Nothing Then
-                            Await SelectedChannel.RefreshEPG(False)
-                            'Await SelectedChannel.RemoveCompletedEvents()
-                            'Await SelectedChannel.UpdateEventProgress()
-                        End If
-                        If Not Me.AppBar.ButtonEnabled.refreshButton = False And Not Channels Is Nothing And Not Channels.items.Count = 0 Then
-                            For Each c In Channels.items
-                                Await c.RefreshCurrentEPGItem()
-                            Next
-                        End If
-                        CometCatcherLastRun = Date.Now()
-                    End If
-                    Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                     ConnectedRotation += 10
-                                                                                                                 End Sub)
-                Catch ex As Exception
-                    If Not ex.Message Is Nothing Then
-                        WriteToDebug("TVHead_ViewModel.CatchComets()", "Some error occured, resting for a second : Explanation " + ex.Message.ToString())
-                    Else
-                        WriteToDebug("TVHead_ViewModel.CatchComets()", "Some error occured, resting for a second : No explanation given...")
-                    End If
-                End Try
-            Else
-                WriteToDebug("TVHead_ViewModel.CatchComets()", "Didn't get a boxid, sleeping for 5 seconds...")
-                'app.isConnected = False
-                Await Task.Delay(5000)
-            End If
-            'End While
-            'WriteToDebug("TVHead_ViewModel.CatchComets", "doCatchComets = False, Sleeping...")
-            'Await Task.Delay(5000)
-
-        End While
-        If ct.IsCancellationRequested Then
-            ct.ThrowIfCancellationRequested()
-        End If
-    End Function
 
     Private Property _StatusPivotSelectedIndex As Integer
     Public Property StatusPivotSelectedIndex As Integer
@@ -878,6 +483,77 @@ Public Class TVHead_ViewModel
 
 #Region "RelayCommands"
 
+    Public ReadOnly Property ChannelSelectedCommand As RelayCommand(Of Object)
+        Get
+            Return New RelayCommand(Of Object)(Async Sub(x)
+                                                   WriteToDebug("TVHead_ViewModel.ChannelSelectedCommand()", "executed")
+                                                   Dim new_selected_channel As ChannelViewModel = TryCast(x, ChannelViewModel)
+                                                   If Not new_selected_channel Is Nothing Then
+                                                       Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
+                                                       For Each channel In Channels.items
+                                                           If channel Is new_selected_channel Then
+                                                               channel.IsSelected = True
+                                                               If rectie.Width < 720 Then
+                                                                   If channel.ExpandedView = "Collapsed" Then channel.ExpandedView = "Expanded" Else channel.ExpandedView = "Collapsed"
+                                                               Else
+                                                                   channel.ExpandedView = "Collapsed"
+                                                               End If
+                                                               Await channel.LoadEPG()
+                                                               SelectedChannel = channel
+                                                               selectedEPGItem = channel.epgitems.currentEPGItem
+                                                           Else
+                                                               channel.epgItemsLoaded = False
+                                                               channel.IsSelected = False
+                                                               channel.ExpandedView = "Collapsed"
+                                                           End If
+                                                       Next
+                                                       'If Not new_selected_channel.epgItemsLoaded Then Await new_selected_channel.LoadEPG()
+                                                   End If
+                                               End Sub)
+        End Get
+    End Property
+
+    Public ReadOnly Property ChannelEPGListSelectionChangedCommand As RelayCommand(Of Object)
+        Get
+            Return New RelayCommand(Of Object)(Sub(x)
+                                                   WriteToDebug("TVHead_ViewModel.EPGListSelectionChangedCommand()", "executed")
+                                                   Dim s As EPGItemViewModel = TryCast(x, EPGItemViewModel)
+                                                   If Not s Is Nothing Then
+                                                       Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
+                                                       For Each group In SelectedChannel.epgitems.groupeditems
+                                                           For Each epgitem In group
+                                                               If epgitem Is s Then
+                                                                   If rectie.Width < 720 Then
+                                                                       If (s.ExpandedView = "Collapsed" Or s.ExpandedView = "") Then
+                                                                           s.ExpandedView = "Expanded"
+                                                                       Else
+                                                                           s.ExpandedView = "Collapsed"
+                                                                       End If
+                                                                   End If
+                                                                   epgitem.IsSelected = True
+                                                               Else
+                                                                   epgitem.IsSelected = False
+                                                                   If epgitem.ExpandedView = "Expanded" Then
+                                                                       epgitem.ExpandedView = "Collapsed"
+                                                                   End If
+                                                               End If
+                                                           Next
+                                                       Next
+                                                       selectedEPGItem = s
+                                                   End If
+                                               End Sub)
+        End Get
+    End Property
+
+
+    Public ReadOnly Property MenuButtonClickedCommand As RelayCommand
+        Get
+            Return New RelayCommand(Sub()
+                                        WriteToDebug("TVHead_ViewModel.MenuButtonClickedCommand()", "executed")
+                                        MenuIsOpen = Not MenuIsOpen
+                                    End Sub)
+        End Get
+    End Property
 
     Public ReadOnly Property PageLoadedCommand As RelayCommand
         Get
@@ -888,6 +564,10 @@ Public Class TVHead_ViewModel
                                     End Sub)
         End Get
     End Property
+
+
+
+
 
     Public ReadOnly Property ChannelTagListSelectionChanged As RelayCommand(Of Object)
         Get
@@ -1399,12 +1079,12 @@ Public Class TVHead_ViewModel
             Dim currentEPGItems = Await LoadEPGEntry(New ChannelViewModel, False, AllChannels.items.Count)
             If Not currentEPGItems Is Nothing Then
                 For Each c In Channels.items
-                    Dim newItemForChannel = (From p In currentEPGItems Where p.channelUuid = c.channelUuid Select p).OrderBy(Function(x) x.startDate).FirstOrDefault
+                    Dim newItemForChannel = (From p In currentEPGItems Where p.channelUuid = c.uuid Select p).OrderBy(Function(x) x.startDate).FirstOrDefault
                     If Not newItemForChannel Is Nothing Then
                         Await c.RefreshCurrentEPGItem(newItemForChannel)
-                    Else
-                        If c.currentEPGItem Is Nothing Then c.currentEPGItem = New EPGItemViewModel()
-                        'c.AddEmptyEPGDetails()
+                        'Else
+                        '    If c.epgitems.currentEPGItem Is Nothing Then c.epgitems.currentEPGItem = New EPGItemViewModel()
+                        '    'c.AddEmptyEPGDetails()
                     End If
 
                 Next
@@ -1413,13 +1093,13 @@ Public Class TVHead_ViewModel
             'Dim recordings = Await LoadUpcomingRecordings()
 
             For Each c In Channels.items
-                If Not c.currentEPGItem Is Nothing Then
-                    If c.currentEPGItem.percentcompleted = 1 Then
+                If Not c.epgitems.currentEPGItem Is Nothing Then
+                    If c.epgitems.currentEPGItem.percentcompleted = 1 Then
                         Await c.RefreshCurrentEPGItem()
                         'Don't hammer the server too much during initial load, add a pause for each request
                         'Await Task.Delay(100)
                     Else
-                        If c.currentEPGItem.eventId <> 0 Then
+                        If c.epgitems.currentEPGItem.eventId <> 0 Then
                             'c.currentEPGItem.percentcompleted = 1
                         End If
 
@@ -1489,16 +1169,17 @@ Public Class TVHead_ViewModel
     '    End If
 
     'End Function
-    Public Async Function checkAdminAccess(Optional report As Boolean = False) As Task
-        Dim adminAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetSubscriptions())
-        If adminAccessResponse.IsSuccessStatusCode Then
-            TVHeadSettings.hasAdminAccess = True
-        Else
-            TVHeadSettings.hasAdminAccess = False
-            If report Then ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 2, .msg = "Error accessing Admin : " + adminAccessResponse.ReasonPhrase})
-        End If
 
-    End Function
+    'Public Async Function checkAdminAccess(Optional report As Boolean = False) As Task
+    '    Dim adminAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetSubscriptions())
+    '    If adminAccessResponse.IsSuccessStatusCode Then
+    '        TVHeadSettings.hasAdminAccess = True
+    '    Else
+    '        TVHeadSettings.hasAdminAccess = False
+    '        If report Then ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 2, .msg = "Error accessing Admin : " + adminAccessResponse.ReasonPhrase})
+    '    End If
+
+    'End Function
 
     Public Async Function checkFailedDVRAccess(Optional report As Boolean = False) As Task
         Dim dvrAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetFailedRecordings())
@@ -1527,7 +1208,7 @@ Public Class TVHead_ViewModel
     Public Async Function checkCapabilities() As Task
         If Await IsConnected() Then
             If Not Me.AllChannels Is Nothing AndAlso Me.AllChannels.items.Count > 0 Then
-                Dim testChannel As ChannelViewModel = CType(Await LoadIDNode(AllChannels.items(0).channelUuid, New ChannelViewModel), ChannelViewModel)
+                Dim testChannel As ChannelViewModel = CType(Await LoadIDNode(AllChannels.items(0).uuid, New ChannelViewModel), ChannelViewModel)
                 If Not testChannel Is Nothing Then
                     WriteToDebug("TVHead_ViewModel.checkCapabilities()", "LoadIDNode passed for test channel " + testChannel.name)
                 Else
@@ -1558,7 +1239,7 @@ Public Class TVHead_ViewModel
         'Await checkEPGAccess(report)
         Await checkDVRAccess(report)
         Await checkFailedDVRAccess(report)
-        Await checkAdminAccess(report)
+        'Await checkAdminAccess(report)
 
     End Function
 
@@ -1582,8 +1263,22 @@ Public Class TVHead_ViewModel
         If Me.ChannelTags.dataLoaded = False Then Await Me.ChannelTags.Load()
         If Me.DVRConfigs.dataLoaded = False Then Await Me.DVRConfigs.Load()
         If Me.ContentTypes.dataLoaded = False Then Await Me.ContentTypes.Load()
-        ''If Me.AllChannels.dataLoaded = False Then Await Me.AllChannels.LoadAll()
         If Me.Channels.dataLoaded = False Then Await Me.Channels.Load()
+
+
+        'EPGRefresher.StartRefresh()
+        Await Task.Delay(1000)
+        CometCatcher.StartRefresh()
+
+        If Await TVHeadSettings.hasAdminAccess Then
+            Streams.items = (Await LoadStreams()).ToObservableCollection()
+            Subscriptions.items = (Await LoadSubscriptions()).ToObservableCollection()
+            Services.items = Await LoadServices()
+            Muxes.items = Await LoadMuxes()
+            ' Else
+            'vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "You don't have Admin access to the TVH server with this account. Therefore you won't see Subscriptions / Stream updates."})
+        End If
+
         'If Not Me.Channels.dataLoaded Then Await Me.Channels.LoadAll()
         'REFRESH EPG INFORMATION FOR THE SELECTED CHANNEL. REFRESH EPG INFORMATION IF THE CHANNELS HAVE ALREADY BEEN LOADED AND THE PIVOT IS ON THE CHANNELS PAGE
         'If Me.PivotSelectedIndex = 0 And Not Me.Channels Is Nothing And Me.Channels.dataLoaded = True Then
@@ -1649,7 +1344,7 @@ Public Class TVHead_ViewModel
         If TypeOf (item) Is EPGItemViewModel Then
             epgitem = item
         Else
-            epgitem = CType(item, ChannelViewModel).currentEPGItem
+            epgitem = CType(item, ChannelViewModel).epgitems.currentEPGItem
         End If
 
 
@@ -1724,23 +1419,23 @@ Public Class TVHead_ViewModel
     End Sub
 #End Region
 
-    Public Async Sub StartRefresh()
-        WriteToDebug("TVHead_ViewModel.StartRefresh()", "")
-        If CometCatcher Is Nothing OrElse CometCatcher.IsCompleted Then
-            tokenSource = New CancellationTokenSource
-            ct = tokenSource.Token
-            CometCatcher = Await Task.Factory.StartNew(Function() CatchComets(ct), ct)
-        End If
-    End Sub
+    'Public Async Sub StartRefresh()
+    '    WriteToDebug("TVHead_ViewModel.StartRefresh()", "")
+    '    If CometCatcher Is Nothing OrElse CometCatcher.IsCompleted Then
+    '        tokenSource = New CancellationTokenSource
+    '        ct = tokenSource.Token
+    '        CometCatcher = Await Task.Factory.StartNew(Function() CatchComets(ct), ct)
+    '    End If
+    'End Sub
 
-    Public Sub StopRefresh()
-        If ct.CanBeCanceled Then
-            tokenSource.Cancel()
-            'tokenSource.Dispose()
-        End If
+    'Public Sub StopRefresh()
+    '    If ct.CanBeCanceled Then
+    '        tokenSource.Cancel()
+    '        'tokenSource.Dispose()
+    '    End If
 
-        WriteToDebug("TVHead_ViewModel.StopRefresh()", "")
-    End Sub
+    '    WriteToDebug("TVHead_ViewModel.StopRefresh()", "")
+    'End Sub
 
     Public Async Sub Cleanup()
         If Not Me.AllChannels Is Nothing Then Me.AllChannels.items.Clear()
@@ -1754,19 +1449,19 @@ Public Class TVHead_ViewModel
     End Sub
 
     Public Async Sub RefreshStatus()
-        If Await IsConnected() Then
-            If Not Me.TVHeadSettings.hasAdminAccess Then
-                Await checkAdminAccess(True)
-            End If
-            If Me.TVHeadSettings.hasAdminAccess Then
-                Await StatusBar.Update("Refreshing streams...", True, 0, True)
-                Me.Streams.items = (Await LoadStreams()).ToObservableCollection()
-                Await StatusBar.Update("Refreshing subscriptions...", True, 0, True)
-                Me.Subscriptions.items = (Await LoadSubscriptions()).ToObservableCollection()
-                Await StatusBar.Clean()
+        'If Await IsConnected() Then
+        '    If Not Me.TVHeadSettings.hasAdminAccess Then
+        '        Await checkAdminAccess(True)
+        '    End If
+        '    If Me.TVHeadSettings.hasAdminAccess Then
+        '        Await StatusBar.Update("Refreshing streams...", True, 0, True)
+        '        Me.Streams.items = (Await LoadStreams()).ToObservableCollection()
+        '        Await StatusBar.Update("Refreshing subscriptions...", True, 0, True)
+        '        Me.Subscriptions.items = (Await LoadSubscriptions()).ToObservableCollection()
+        '        Await StatusBar.Clean()
 
-            End If
-        End If
+        '    End If
+        'End If
     End Sub
 
 

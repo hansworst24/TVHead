@@ -23,7 +23,7 @@ Public NotInheritable Class AboutPage
         InitializeComponent()
 
         ' Hub is only supported in Portrait orientation
-        DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait
+        'DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait
 
     End Sub
 

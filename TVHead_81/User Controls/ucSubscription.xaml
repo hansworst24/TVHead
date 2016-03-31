@@ -42,56 +42,50 @@
                 <Image  Grid.Row="0" Grid.Column="0" Height="20" Width="20" Source="/Images/title.png"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" TextWrapping="NoWrap" 
                            TextTrimming="WordEllipsis" Text="{Binding title}" VerticalAlignment="Center" 
-                           FontSize="{StaticResource TextStyleLargeFontSize}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
                 
                 
                 <Image  Grid.Row="1" Grid.Column="0" Height="20" Width="20" Source="/Images/tv.png"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="8" TextWrapping="NoWrap" 
                            TextTrimming="WordEllipsis" Text="{Binding channel}" VerticalAlignment="Center" 
-                           
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
                 <Image  Grid.Row="1" Grid.Column="4" Height="20" Width="20" Source="/Images/state.png"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="5" Grid.Row="1" Grid.ColumnSpan="8" TextWrapping="NoWrap" 
                            TextTrimming="WordEllipsis" Text="{Binding state}" VerticalAlignment="Center" 
-                           
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
 
 
                 <Image Grid.Column="0" Grid.Row="2" Source="/Images/adapter.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="8" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding service}" VerticalAlignment="Center" 
-						    
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
                 <Image Grid.Column="0" Grid.Row="3" Source="/Images/transport_error.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="3" TextWrapping="NoWrap" 
 				           Text="{Binding errors}" VerticalAlignment="Center" 
-						    
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
                 <Image Grid.Column="2" Grid.Row="3" Source="/Images/in.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="3" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding kbps_in_string}" VerticalAlignment="Center" 
-						    
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
                 <Image Grid.Column="4" Grid.Row="3" Source="/Images/out.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="5" Grid.ColumnSpan="2" Grid.Row="3" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding kbps_out_string}" VerticalAlignment="Center" 
-						    
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
                 <Image Grid.Column="0" Grid.Row="4" Source="/Images/host.png" Visibility="{Binding hostname_usernameVisibility}" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="4" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding hostname}" VerticalAlignment="Center" 
-						      Visibility="{Binding hostname_usernameVisibility}"
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+            			   Visibility="{Binding hostname_usernameVisibility}"
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
                 <Image Grid.Column="2" Grid.Row="4" Source="/Images/user.png"  Visibility="{Binding hostname_usernameVisibility}" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="4" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding username}" VerticalAlignment="Center" 
 						     Visibility="{Binding hostname_usernameVisibility}"
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                            Style="{ThemeResource CaptionTextBlockStyle}"/>
                 <Image Grid.Column="0" Grid.Row="5" Source="/Images/descramble.png"  Visibility="{Binding descrambleVisibility}" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="5" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding descramble}" VerticalAlignment="Center" 
-						     Visibility="{Binding descrambleVisibility}"
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+						   Visibility="{Binding descrambleVisibility}"
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
 
 
             </Grid>

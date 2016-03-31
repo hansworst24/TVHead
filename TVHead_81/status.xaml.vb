@@ -20,7 +20,7 @@ Public NotInheritable Class StatusPage
     Public Sub New()
         InitializeComponent()
         ' Hub is only supported in Portrait orientation
-        DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait
+        'DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait
 
     End Sub
 
@@ -87,22 +87,22 @@ Public NotInheritable Class StatusPage
     ''' </summary>
     ''' <param name="e">Event data that describes how this page was reached.</param>
     Protected Overrides Async Sub OnNavigatedTo(e As NavigationEventArgs)
-        _navigationHelper.OnNavigatedTo(e)
-        'Loading of data happens here
-        DataContext = vm
-        If Not vm.TVHeadSettings.hasAdminAccess Then
-            Await vm.checkAdminAccess()
-        End If
-        If vm.TVHeadSettings.hasAdminAccess Then
-            vm.Streams.items = (Await LoadStreams()).ToObservableCollection()
-            vm.Subscriptions.items = (Await LoadSubscriptions()).ToObservableCollection()
-            vm.Services.items = Await LoadServices()
-            vm.Muxes.items = Await LoadMuxes()
-        Else
-            vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "You don't have Admin access to the TVH server with this account. Therefore you won't see Subscriptions / Stream updates."})
-        End If
-        If vm.FreeDiskSpace = "" Then vm.WaitingForDiskspaceUpdate = True Else vm.WaitingForDiskspaceUpdate = False
-        If Not vm.appSettings.LongPollingEnabled Then vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "Auto Refresh is not enabled. Enable Auto Refresh to receive continuous updates for streams/subscriptions and log."})
+        '_navigationHelper.OnNavigatedTo(e)
+        ''Loading of data happens here
+        'DataContext = vm
+        'If Not vm.TVHeadSettings.hasAdminAccess Then
+        '    Await vm.checkAdminAccess()
+        'End If
+        'If vm.TVHeadSettings.hasAdminAccess Then
+        '    vm.Streams.items = (Await LoadStreams()).ToObservableCollection()
+        '    vm.Subscriptions.items = (Await LoadSubscriptions()).ToObservableCollection()
+        '    vm.Services.items = Await LoadServices()
+        '    vm.Muxes.items = Await LoadMuxes()
+        'Else
+        '    vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "You don't have Admin access to the TVH server with this account. Therefore you won't see Subscriptions / Stream updates."})
+        'End If
+        'If vm.FreeDiskSpace = "" Then vm.WaitingForDiskspaceUpdate = True Else vm.WaitingForDiskspaceUpdate = False
+        'If Not vm.appSettings.LongPollingEnabled Then vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "Auto Refresh is not enabled. Enable Auto Refresh to receive continuous updates for streams/subscriptions and log."})
     End Sub
 
     Protected Overrides Sub OnNavigatedFrom(e As NavigationEventArgs)

@@ -63,12 +63,12 @@ Public Class EPGItemViewModel
     End Property
     Public ReadOnly Property endDate As DateTime
         Get
-            Return UnixToDateTime(_EPGItem.stop).ToLocalTime
+            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime Else Return UnixToDateTime(_EPGItem.stop).ToLocalTime
         End Get
     End Property
     Public ReadOnly Property endDateString As String
         Get
-            Return UnixToDateTime(_EPGItem.stop).ToLocalTime.ToString("t")
+            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime.ToString("t") Else Return UnixToDateTime(_EPGItem.stop).ToLocalTime.ToString("t")
         End Get
     End Property
     Public ReadOnly Property episodeId As Long
@@ -139,11 +139,15 @@ Public Class EPGItemViewModel
     Private Property _IsRecorded As Integer
     Public ReadOnly Property percentcompleted As Double
         Get
-            If (endDate > Date.MinValue) And (startDate > Date.MinValue) And (Date.Now > startDate) Then
-                If Date.Now > endDate Then
-                    Return 1
+            If _EPGItem.eventId <> 0 Then
+                If Date.Now > startDate Then
+                    If Date.Now > endDate Then
+                        Return 1
+                    Else
+                        Return Math.Round((Date.Now - startDate).TotalSeconds / (endDate - startDate).TotalSeconds, 2)
+                    End If
                 Else
-                    Return Math.Round((Date.Now - startDate).TotalSeconds / (endDate - startDate).TotalSeconds, 2)
+                    Return 0
                 End If
             Else
                 Return 0
@@ -186,6 +190,16 @@ Public Class EPGItemViewModel
         End Set
     End Property
     Private Property _Status As String
+    Public Property IsSelected As Boolean
+        Get
+            Return _IsSelected
+        End Get
+        Set(value As Boolean)
+            _IsSelected = value
+            RaisePropertyChanged("IsSelected")
+        End Set
+    End Property
+    Private Property _IsSelected As Boolean
     Public ReadOnly Property start As Integer
         Get
             Return _EPGItem.start
@@ -193,12 +207,12 @@ Public Class EPGItemViewModel
     End Property
     Public ReadOnly Property startDate As DateTime
         Get
-            Return UnixToDateTime(_EPGItem.start).ToLocalTime
+            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime Else Return UnixToDateTime(_EPGItem.start).ToLocalTime
         End Get
     End Property
     Public ReadOnly Property startDateString As String
         Get
-            Return UnixToDateTime(_EPGItem.start).ToLocalTime.ToString("t")
+            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime.ToString("t") Else Return UnixToDateTime(_EPGItem.start).ToLocalTime.ToString("t")
         End Get
     End Property
     Public ReadOnly Property [stop] As Integer
@@ -282,10 +296,10 @@ Public Class EPGItemViewModel
                                             vm.UpcomingRecordings.Reload(True)
                                             vm.FinishedRecordings.Reload(True)
                                             vm.FailedRecordings.Reload(True)
-                                            If Not vm.SelectedChannel Is Nothing AndAlso Me.channelUuid = vm.SelectedChannel.channelUuid Then
+                                            If Not vm.SelectedChannel Is Nothing AndAlso Me.channelUuid = vm.SelectedChannel.uuid Then
                                                 vm.SelectedChannel.RefreshEPG(True)
                                             End If
-                                            Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.currentEPGItem.eventId = Me.eventId).FirstOrDefault()
+                                            Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.epgitems.currentEPGItem.eventId = Me.eventId).FirstOrDefault()
                                             If Not c Is Nothing Then
                                                 c.RefreshCurrentEPGItem(Nothing, True)
                                             End If
@@ -295,7 +309,7 @@ Public Class EPGItemViewModel
 
                                         'Collapse the view of the parent channel, in case the EPG Item is the current epgitem for a channel
                                         If Not vm.Channels Is Nothing Then
-                                            Dim c = (From a In vm.Channels.items Where a.channelUuid = Me.channelUuid Select a).FirstOrDefault
+                                            Dim c = (From a In vm.Channels.items Where a.uuid = Me.channelUuid Select a).FirstOrDefault
                                             If Not c Is Nothing AndAlso c.ExpandedView = "Visible" Then
                                                 c.ExpandedView = "Collapsed"
                                             End If
@@ -305,7 +319,7 @@ Public Class EPGItemViewModel
                                         'Collapse the view of the channel, in case the EPG Item is residing in a search query
                                         If Not vm.SearchPage Is Nothing AndAlso Not vm.SearchPage.GroupedSearchResults Is Nothing Then
                                             For Each g In vm.SearchPage.GroupedSearchResults
-                                                Dim c = (From a In g Where a.channelUuid = Me.channelUuid AndAlso a.currentEPGItem.eventId = Me.eventId Select a).FirstOrDefault
+                                                Dim c = (From a In g Where a.uuid = Me.channelUuid AndAlso a.epgitems.currentEPGItem.eventId = Me.eventId Select a).FirstOrDefault
                                                 If Not c Is Nothing AndAlso c.ExpandedView = "Visible" Then
                                                     c.ExpandedView = "Collapsed"
                                                 End If
@@ -405,16 +419,15 @@ Public Class EPGItemViewModel
     ''' <param name="epgitem"></param>
     ''' <remarks></remarks>
     Public Async Sub Update(Optional epgitem As EPGItemViewModel = Nothing)
-        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                         If Not epgitem Is Nothing Then
-                                                                                                             dvrState = epgitem.dvrState
-                                                                                                             dvrUuid = epgitem.dvrUuid
-                                                                                                             RaisePropertyChanged("percentcompleted")
-                                                                                                         Else
-                                                                                                             RaisePropertyChanged("percentcompleted")
-                                                                                                         End If
-                                                                                                     End Sub)
-
+        Await RunOnUIThread(Sub()
+                                If Not epgitem Is Nothing Then
+                                    dvrState = epgitem.dvrState
+                                    dvrUuid = epgitem.dvrUuid
+                                    RaisePropertyChanged("percentcompleted")
+                                Else
+                                    RaisePropertyChanged("percentcompleted")
+                                End If
+                            End Sub)
 
     End Sub
     ''' <summary>

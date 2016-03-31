@@ -1,7 +1,9 @@
 ﻿Imports System.Text.RegularExpressions
+Imports GalaSoft.MvvmLight
 Imports Windows.Web.Http
 
 Public Class TVHead_Settings
+    Inherits ViewModelBase
 
     Dim settings As Windows.Storage.ApplicationDataContainer
     Const strLanguageKeyName As String = "strLanguage"
@@ -70,7 +72,21 @@ Public Class TVHead_Settings
     'Public Property hasEPGAccess As Boolean
     Public Property hasDVRAccess As Boolean
     Public Property hasFailedDVRAccess As Boolean
-    Public Property hasAdminAccess As Boolean
+    'Public Property hasAdminAccess As Boolean
+
+    Public Async Function hasAdminAccess(Optional showmessage As Boolean = False) As Task(Of Boolean)
+        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
+        Dim adminAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetSubscriptions())
+        If adminAccessResponse.IsSuccessStatusCode Then
+            Return True
+        Else
+            If showmessage Then Await vm.Notify.Update(True, "You're not an admin, some data cannot be loaded", 2, False, 0)
+            Return False
+        End If
+
+    End Function
+
+
 
 
     Public Async Function hasEPGAccess(Optional showmessage As Boolean = False) As Task(Of Boolean)
@@ -174,6 +190,7 @@ Public Class TVHead_Settings
             If AddOrUpdateValue(blLongPollingEnabledKeyName, value) Then
                 Save()
             End If
+            RaisePropertyChanged("LongPollingEnabled")
         End Set
     End Property
 

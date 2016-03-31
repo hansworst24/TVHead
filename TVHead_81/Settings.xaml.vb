@@ -361,16 +361,16 @@ Partial Public Class AppSettingsPage
     ''' </summary>
     ''' <param name="e">Event data that describes how this page was reached.</param>
     Protected Overrides Sub OnNavigatedTo(e As NavigationEventArgs)
-        _navigationHelper.OnNavigatedTo(e)
-        vm.StopRefresh()
-        Me.DataContext = vm
-        'Dim myRegion = New Windows.Globalization.GeographicRegion
-        vm.supportedLanguages.languages(0).val = vm.loader.GetString("usePhoneLanguage")
-        BindChannelTags()
-        Dim a = CType(cbLanguage.ItemsSource, LanguageList)
-        cbLanguage.ItemsSource = vm.supportedLanguages.languages
-        Dim aindex = vm.supportedLanguages.languages.IndexOf((From l In vm.supportedLanguages.languages Where l.code = vm.appSettings.PreferredLanguage).FirstOrDefault)
-        cbLanguage.SelectedIndex = aindex
+        '_navigationHelper.OnNavigatedTo(e)
+        'vm.StopRefresh()
+        'Me.DataContext = vm
+        ''Dim myRegion = New Windows.Globalization.GeographicRegion
+        'vm.supportedLanguages.languages(0).val = vm.loader.GetString("usePhoneLanguage")
+        'BindChannelTags()
+        'Dim a = CType(cbLanguage.ItemsSource, LanguageList)
+        'cbLanguage.ItemsSource = vm.supportedLanguages.languages
+        'Dim aindex = vm.supportedLanguages.languages.IndexOf((From l In vm.supportedLanguages.languages Where l.code = vm.appSettings.PreferredLanguage).FirstOrDefault)
+        'cbLanguage.SelectedIndex = aindex
     End Sub
 
 

@@ -1,0 +1,54 @@
+﻿<UserControl
+    x:Class="TVHead_81.ucCometStatistics"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TVHead_81"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="150"
+    d:DesignWidth="400">
+
+    <Grid Background="Transparent">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="1" Margin="5,0,5,0" Text="create" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" Text="update" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="0" Grid.Column="3" Margin="5,0,5,0" Text="change" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="0" Grid.Column="4" Margin="5,0,5,0" Text="delete" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="0" Grid.Column="5" Margin="5,0,5,0" Text="dvr_update" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="0" Grid.Column="6" Margin="5,0,5,0" Text="dvr_delete" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,0,5,0" Text="epg" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CometStats.intEPGCreate}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding CometStats.intEPGUpdate}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding CometStats.intEPGChange}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding CometStats.intEPGDelete}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="1" Grid.Column="5" Text="{Binding CometStats.intEPGDVRUpdate}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding CometStats.intEPGDVRDelete}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,0,5,0" Text="dvrentry" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding CometStats.intDVRCreate}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding CometStats.intDVRUpdate}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding CometStats.intDVRChange}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding CometStats.intDVRDelete}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,0,5,0" Text="dvrautorec" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CometStats.intDVRAutoRecCreate}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding CometStats.intDVRAutoRecUpdate}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding CometStats.intDVRAutoRecChange}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+        <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding CometStats.intDVRAutoRecDelete}" HorizontalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}"/>
+    </Grid>
+</UserControl>

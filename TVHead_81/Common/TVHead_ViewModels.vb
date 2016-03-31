@@ -405,7 +405,7 @@ Namespace ViewModels
         End Property
 
         Public Async Function Reload() As Task
-            If vm.TVHeadSettings.hasAdminAccess Then
+            If Await vm.TVHeadSettings.hasAdminAccess Then
                 Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
                                                                                                                  If Not items Is Nothing Then
                                                                                                                      items.Clear()
@@ -677,7 +677,7 @@ Namespace ViewModels
         End Property
 
         Public Async Function Reload() As Task
-            If vm.TVHeadSettings.hasAdminAccess Then
+            If Await vm.TVHeadSettings.hasAdminAccess Then
                 If Not items Is Nothing Then
                     Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
                                                                                                                      items.Clear()
@@ -705,98 +705,106 @@ Namespace ViewModels
     Public Class SubscriptionViewModel
         Inherits ViewModelBase
 
-        Public Property id As Integer
-        Public Property start As Integer
-        Public Property descramble As String
+        Private _subscription As tvh40.Subscription
+
+        Public ReadOnly Property id As Integer
             Get
-                Return _descramble
+                Return _subscription.id
             End Get
-            Set(value As String)
-                _descramble = value
-                RaisePropertyChanged("descramble")
-                RaisePropertyChanged("descrambleVisibility")
-            End Set
         End Property
-        Private Property _descramble As String
-        Private Property _errors As Integer
-        Public Property errors As Integer
+        Public Property start As Integer
             Get
-                Return _errors
+                Return _subscription.start
             End Get
             Set(value As Integer)
-                _errors = value
-                RaisePropertyChanged("errors")
+                _subscription.start = value
             End Set
         End Property
-
-        Public Property state As String
+        Public Property descramble As String
             Get
-                Return _state
+                Return _subscription.descramble
             End Get
             Set(value As String)
-                _state = value
+                _subscription.descramble = descramble
+            End Set
+        End Property
+        Public Property errors As Integer
+            Get
+                Return _subscription.errors
+            End Get
+            Set(value As Integer)
+                _subscription.errors = value
+            End Set
+        End Property
+        Public Property state As String
+            Get
+                Return _subscription.state
+            End Get
+            Set(value As String)
+                _subscription.state = value
                 RaisePropertyChanged("state")
             End Set
         End Property
-        Private Property _state As String
         Public ReadOnly Property hostname_usernameVisibility As String
             Get
-                If hostname = "" And username = "" Then Return "Collapsed" Else Return "Visible"
+                If _subscription.hostname = "" And _subscription.username = "" Then Return "Collapsed" Else Return "Visible"
             End Get
         End Property
         Public ReadOnly Property descrambleVisibility As String
             Get
-                If descramble = "" Then Return "Collapsed" Else Return "Visible"
+                If _subscription.descramble = "" Then Return "Collapsed" Else Return "Visible"
             End Get
         End Property
-
         Public ReadOnly Property hostnameVisibility As String
             Get
-                If hostname = "" Then Return "Collapsed" Else Return "Visible"
+                If _subscription.hostname = "" Then Return "Collapsed" Else Return "Visible"
             End Get
         End Property
         Public ReadOnly Property usernameVisibility As String
             Get
-                If username = "" Then Return "Collapsed" Else Return "Visible"
+                If _subscription.username = "" Then Return "Collapsed" Else Return "Visible"
             End Get
         End Property
-
-
-        Public Property hostname As String
-        Public Property username As String
+        Public ReadOnly Property hostname As String
+            Get
+                Return _subscription.hostname
+            End Get
+        End Property
+        Public ReadOnly Property username As String
+            Get
+                Return _subscription.username
+            End Get
+        End Property
         Public Property title As String
             Get
-                Return _title
+                Return _subscription.title
             End Get
             Set(value As String)
-                _title = value
+                _subscription.title = value
                 RaisePropertyChanged("title")
             End Set
         End Property
-        Private Property _title As String
         Public Property channel As String
             Get
-                Return _channel
+                Return _subscription.channel
             End Get
             Set(value As String)
-                _channel = value
+                _subscription.channel = value
                 RaisePropertyChanged("channel")
             End Set
         End Property
-        Private Property _channel As String
-
-        Public Property service As String
+        Public ReadOnly Property service As String
             Get
-                Return _service
+                Return _subscription.service
             End Get
-            Set(value As String)
-                _service = value
-                RaisePropertyChanged("service")
-            End Set
-        End Property
-        Private Property _service As String
 
-        Public Property starttime As DateTime
+        End Property
+
+        Public ReadOnly Property starttime As DateTime
+            Get
+                Return UnixToDateTime(_subscription.start)
+            End Get
+        End Property
 
 
         Public Property kbps_in As Integer
@@ -839,33 +847,34 @@ Namespace ViewModels
 
 
         Public Sub New(s As tvh40.Subscription)
-            id = s.id
-            state = s.state
-            hostname = s.hostname
-            username = s.username
-            title = s.title
-            channel = s.channel
-            service = s.service
-            errors = s.errors
-            start = s.start
-            starttime = UnixToDateTime(s.start)
-            descramble = s.descramble
+            _subscription = s
+            'id = s.id
+            'state = s.state
+            'hostname = s.hostname
+            'username = s.username
+            'title = s.title
+            'channel = s.channel
+            'service = s.service
+            'errors = s.errors
+            'start = s.start
+            'starttime = UnixToDateTime(s.start)
+            'descramble = s.descramble
         End Sub
 
         Public Sub New(json As JsonObject)
-            Dim v As IJsonValue
-            id = If(json.TryGetValue("id", v), json.GetNamedNumber("id"), 0)
-            state = If(json.TryGetValue("state", v), json.GetNamedString("state"), "")
-            channel = If(json.TryGetValue("channel", v), json.GetNamedString("channel"), "")
-            hostname = If(json.TryGetValue("hostname", v), json.GetNamedString("hostname"), "")
-            username = If(json.TryGetValue("username", v), json.GetNamedString("username"), "")
-            title = If(json.TryGetValue("title", v), json.GetNamedString("title"), "")
-            service = If(json.TryGetValue("service", v), json.GetNamedString("service"), "")
-            errors = If(json.TryGetValue("errors", v), json.GetNamedNumber("errors"), 0)
-            kbps_in = If(json.TryGetValue("in", v), json.GetNamedNumber("in"), 0)
-            kbps_out = If(json.TryGetValue("out", v), json.GetNamedNumber("out"), 0)
-            start = If(json.TryGetValue("start", v), json.GetNamedNumber("start"), 0)
-            descramble = If(json.TryGetValue("descramble", v), json.GetNamedString("descramble"), "")
+            'Dim v As IJsonValue
+            'id = If(json.TryGetValue("id", v), json.GetNamedNumber("id"), 0)
+            'state = If(json.TryGetValue("state", v), json.GetNamedString("state"), "")
+            'channel = If(json.TryGetValue("channel", v), json.GetNamedString("channel"), "")
+            'hostname = If(json.TryGetValue("hostname", v), json.GetNamedString("hostname"), "")
+            'username = If(json.TryGetValue("username", v), json.GetNamedString("username"), "")
+            'title = If(json.TryGetValue("title", v), json.GetNamedString("title"), "")
+            'service = If(json.TryGetValue("service", v), json.GetNamedString("service"), "")
+            'errors = If(json.TryGetValue("errors", v), json.GetNamedNumber("errors"), 0)
+            'kbps_in = If(json.TryGetValue("in", v), json.GetNamedNumber("in"), 0)
+            'kbps_out = If(json.TryGetValue("out", v), json.GetNamedNumber("out"), 0)
+            'start = If(json.TryGetValue("start", v), json.GetNamedNumber("start"), 0)
+            'descramble = If(json.TryGetValue("descramble", v), json.GetNamedString("descramble"), "")
 
             'starttime = If(json.TryGetValue("start", v), UnixToDateTime(json.GetNamedNumber("start")), "")
         End Sub
@@ -879,7 +888,7 @@ Namespace ViewModels
                 Me.kbps_in = x.in
                 Me.kbps_out = x.out
                 Me.channel = x.channel
-                Me.starttime = UnixToDateTime(start)
+                'Me.starttime = UnixToDateTime(start)
                 Me.descramble = x.descramble
             End If
         End Sub

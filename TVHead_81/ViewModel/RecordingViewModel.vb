@@ -174,7 +174,7 @@ Public Class RecordingViewModel
     Public Property chicon As String
         Get
             'Dim app As App = CType(Application.Current, Application)
-            Dim b = (From a In vm.AllChannels.items Where a.channelUuid = Me.channelUuid Select a).FirstOrDefault
+            Dim b = (From a In vm.AllChannels.items Where a.uuid = Me.channelUuid Select a).FirstOrDefault
             If Not b Is Nothing Then
                 Return b.chicon
             End If
@@ -417,10 +417,10 @@ Public Class RecordingViewModel
                 vm.UpcomingRecordings.RemoveRecording(Me.recording_id, True)
                 vm.FinishedRecordings.RemoveRecording(Me.recording_id, True)
                 vm.FailedRecordings.RemoveRecording(Me.recording_id, True)
-                If Not vm.SelectedChannel Is Nothing AndAlso Me.channelUuid = vm.SelectedChannel.channelUuid Then
+                If Not vm.SelectedChannel Is Nothing AndAlso Me.channelUuid = vm.SelectedChannel.uuid Then
                     vm.SelectedChannel.RefreshEPG(True)
                 End If
-                Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.currentEPGItem.dvrUuid = Me.recording_id).FirstOrDefault()
+                Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.epgitems.currentEPGItem.dvrUuid = Me.recording_id).FirstOrDefault()
                 If Not c Is Nothing Then
                     c.RefreshCurrentEPGItem(Nothing, True)
                 End If

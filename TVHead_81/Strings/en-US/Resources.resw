@@ -409,7 +409,7 @@
     <value>channels</value>
   </data>
   <data name="ipaddress.Text" xml:space="preserve">
-    <value>IP Address</value>
+    <value>IP Address or hostname</value>
   </data>
   <data name="password.Text" xml:space="preserve">
     <value>Password</value>
@@ -509,5 +509,8 @@
   </data>
   <data name="tsShowRecordingOptions.Header" xml:space="preserve">
     <value>Show recording options when starting a recording</value>
+  </data>
+  <data name="tbChannels.Text" xml:space="preserve">
+    <value>Channels</value>
   </data>
 </root>

@@ -32,28 +32,28 @@ NotInheritable Class Application
         WriteToDebug("App.App_Resuming()", "launched")
 
         'Check and set access flags to TVH server
-        Await Me.DefaultViewModel.checkAccess()
+        'Await Me.DefaultViewModel.checkAccess()
 
-        If Await Me.DefaultViewModel.TVHeadSettings.hasEPGAccess Then
-            If Not Me.DefaultViewModel.SelectedChannel Is Nothing Then Await Me.DefaultViewModel.SelectedChannel.RefreshEPG(True)
-            Await Me.DefaultViewModel.Channels.RefreshCurrentEvents()
-        End If
+        'If Await Me.DefaultViewModel.TVHeadSettings.hasEPGAccess Then
+        '    If Not Me.DefaultViewModel.SelectedChannel Is Nothing Then Await Me.DefaultViewModel.SelectedChannel.RefreshEPG(True)
+        '    Await Me.DefaultViewModel.Channels.RefreshCurrentEvents()
+        'End If
 
-        If Me.DefaultViewModel.TVHeadSettings.hasDVRAccess Then
-            Await Me.DefaultViewModel.UpcomingRecordings.Reload(False)
-            Await Me.DefaultViewModel.FinishedRecordings.Reload(False)
-            Await Me.DefaultViewModel.FailedRecordings.Reload(False)
-        End If
+        'If Me.DefaultViewModel.TVHeadSettings.hasDVRAccess Then
+        '    Await Me.DefaultViewModel.UpcomingRecordings.Reload(False)
+        '    Await Me.DefaultViewModel.FinishedRecordings.Reload(False)
+        '    Await Me.DefaultViewModel.FailedRecordings.Reload(False)
+        'End If
 
-        If Me.DefaultViewModel.TVHeadSettings.hasAdminAccess Then
-            Await Me.DefaultViewModel.Streams.Reload()
-            Await Me.DefaultViewModel.Subscriptions.Reload()
-        End If
+        'If Me.DefaultViewModel.TVHeadSettings.hasAdminAccess Then
+        '    Await Me.DefaultViewModel.Streams.Reload()
+        '    Await Me.DefaultViewModel.Subscriptions.Reload()
+        'End If
 
-        If Me.DefaultViewModel.appSettings.LongPollingEnabled Then
-            Me.DefaultViewModel.CatchCometsBoxID = Await GetBoxID()
-            Me.DefaultViewModel.doCatchComents = True
-        End If
+        'If Me.DefaultViewModel.appSettings.LongPollingEnabled Then
+        '    Me.DefaultViewModel.CatchCometsBoxID = Await GetBoxID()
+        '    Me.DefaultViewModel.doCatchComents = True
+        'End If
 
     End Sub
 
@@ -116,12 +116,12 @@ NotInheritable Class Application
             ApplicationView.GetForCurrentView.SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible)
             ApplicationView.PreferredLaunchViewSize = New Size(800, 480)
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize
-            'If (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar")) Then
-            '    Dim sBar As StatusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView()
-            '    If Not sBar Is Nothing Then
-            '        sBar.HideAsync()
-            '    End If
-            'End If
+            If (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar")) Then
+                Dim sBar As StatusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView()
+                If Not sBar Is Nothing Then
+                    sBar.HideAsync()
+                End If
+            End If
 
             ' When the navigation stack isn't restored navigate to the first page,
             ' configuring the new page by passing required information as a navigation

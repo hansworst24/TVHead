@@ -13,7 +13,13 @@
     x:Class="TVHead_81.ucChannelEPGDetail"  
     mc:Ignorable="d">
     <UserControl.Resources>
-        
+        <Storyboard x:Name="SelectedState">
+            <ColorAnimation To="Gray" Duration="0:0:0.3" Storyboard.TargetName="HeaderBackdrop" Storyboard.TargetProperty="(Fill).(SolidColorBrush.Color)"/>
+        </Storyboard>
+        <Storyboard x:Name="UnselectedState">
+            <ColorAnimation To="Transparent" Duration="0:0:0.3" Storyboard.TargetName="HeaderBackdrop" Storyboard.TargetProperty="(Fill).(SolidColorBrush.Color)"/>
+        </Storyboard>
+
         <Storyboard x:Name="RecordingOn" RepeatBehavior="Forever">
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="RecordingErrorIcon">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="0"/>
@@ -83,27 +89,8 @@
             </DoubleAnimationUsingKeyFrames>-->
         </Storyboard>
         <Storyboard x:Name="CollapseView">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Projection).(PlaneProjection.RotationX)" Storyboard.TargetName="btnRecord">
-                <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.25" Value="-90"/>
-            </DoubleAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="btnRecord">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="Collapsed"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="btnEPGChannelButton">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="Visible"/>
-            </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Projection).(PlaneProjection.RotationX)" Storyboard.TargetName="btnEPGChannelButton">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.25" Value="90"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="details">
                 <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
-
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="HeaderBackdrop">
-                <EasingDoubleKeyFrame KeyTime="0" Value="0.3"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="details">
@@ -111,20 +98,6 @@
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Name="ExpandView">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Projection).(PlaneProjection.RotationX)" Storyboard.TargetName="btnEPGChannelButton">
-                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.25" Value="90"/>
-            </DoubleAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="btnRecord">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="Visible"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="btnEPGChannelButton">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="Collapsed"/>
-            </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Projection).(PlaneProjection.RotationX)" Storyboard.TargetName="btnRecord">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.25" Value="-90"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="details">
                 <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
             </ObjectAnimationUsingKeyFrames>
@@ -132,170 +105,122 @@
                 <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1"/>
             </DoubleAnimationUsingKeyFrames>
-
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="HeaderBackdrop">
-                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0.5"/>
-            </DoubleAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="btnRecord_Icon">
-                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
     </UserControl.Resources>
 
     <Grid x:Name="mainGrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="80"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="55"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        
-        <Rectangle x:Name="HeaderBackdrop" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Opacity="0"/>
-        <Button x:Name="btnEPGChannelButton" Grid.Column="0" Grid.Row="0" Style="{StaticResource myTransparentButtonStyle}" 
-			Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="{Binding loadEPGButtonEnabled}"
-			Command="{Binding LoadChannelEPGItems}" CommandParameter="{Binding}" >
-            <Grid VerticalAlignment="Center" HorizontalAlignment="Left">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="80"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"/>
-                </Grid.ColumnDefinitions>
-                <Image x:Name="rowChannelIcon" Grid.Column="0" Grid.Row="0"  Width="50" Height="50" CacheMode="BitmapCache"
-					HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="99">
-                    <Image.Source>
-                        <BitmapImage UriSource="{Binding chicon}"/>
-                    </Image.Source>
-                </Image>
-                <Image x:Name="RecordingIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small.png" CacheMode="BitmapCache"
-					Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
-					Visibility="Visible"/>
-                <Image x:Name="RecordingErrorIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small_error.png" CacheMode="BitmapCache"
-					Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
-					Visibility="Visible"/>
-                <Image x:Name="RecordingScheduledIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small_scheduled.png" CacheMode="BitmapCache"
-					Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
-					Visibility="Visible"/>
-
-                <Border Grid.Column="0" Canvas.ZIndex="100" Grid.Row="0" VerticalAlignment="Bottom" Margin="0,0,0,5" 
-					    Background="Transparent" Visibility="{Binding ChannelNumberVisibility}">
-                    <Grid>
-                        <TextBlock Text="{Binding number}" VerticalAlignment="Bottom" Margin="3,-3,0,0"  Foreground="{ThemeResource SystemControlForegroundAltHighBrush}"  
-						           FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding number}" VerticalAlignment="Bottom" Margin="0,0,0,0"  Canvas.ZIndex="100"
-						           FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
-                   </Grid>
-                </Border>
-            </Grid>
-            <Button.Projection>
-                <PlaneProjection RotationX="0"/>
-            </Button.Projection>
-        </Button>
-
+        <!-- BACKDROP, USED FOR SHOWING IF THE CHANNEL IS SELECTED OR NOT-->
+        <Rectangle x:Name="HeaderBackdrop" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Opacity="0.5" Fill="Transparent"/>
+        <!-- CHANNEL ICON-->
+        <Image x:Name="rowChannelIcon" Grid.Column="0" Grid.Row="0" Source="{Binding chicon}" Width="50" Height="50" HorizontalAlignment="Center" 
+               VerticalAlignment="Center" Canvas.ZIndex="99"/>
         <!-- THE RECORDING BUTTON WILL ONLY SHOW UP IN EXPANDED VIEW -->
-        <Button x:Name="btnRecord" Visibility="Collapsed" Style="{StaticResource myTransparentButtonStyle}" Opacity="1" 
-			Command="{Binding currentEPGItem.RecordCommand, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="80"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Image x:Name="btnRecord_Icon" Source="{Binding currentEPGItem.RecordingIcon}" CacheMode="BitmapCache"	Canvas.ZIndex="99" Height="50" Opacity="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Grid>
-            <Button.Projection>
+        <!--<Grid x:Name="btnRecord" Grid.Column="0" Width="50" Grid.Row="0" 
+                HorizontalAlignment="Center" VerticalAlignment="Center" 
+                Visibility="Collapsed" Opacity="1"     >
+                <Image x:Name="btnRecord_Icon" Source="{Binding currentEPGItem.RecordingIcon}"
+                       Canvas.ZIndex="99" Height="50" Opacity="1" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Grid.Projection>
                 <PlaneProjection RotationX="-90"/>
-            </Button.Projection>
-        </Button>
+            </Grid.Projection>
+        </Grid>-->
 
-        <Button x:Name="btnEPGItemButton" IsEnabled="True" Grid.Column="1" Style="{StaticResource myTransparentButtonStyle}" 
-			Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-			Margin="0,0,5,0" Background="Transparent" Command="{Binding ExpandCollapse, Mode=OneWay}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Row="0" Grid.Column="0"  Grid.ColumnSpan="3">
-                    <TextBlock x:Name="tbChannelName" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
-						       Text="{Binding name}" Style="{ThemeResource BaseTextBlockStyle}"/>
-                </Grid>
-                <TextBlock x:Name="tbTitle" Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="3" 
-					       Style="{ThemeResource BodyTextBlockStyle}" Foreground="{ThemeResource SystemControlForegroundAccentBrush}" Text="{Binding currentEPGItem.title, Mode=TwoWay}" 
-                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
-                    <TextBlock.RenderTransform>
-                        <TranslateTransform X="0"/>
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-                <TextBlock x:Name="tbStartTime" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" TextAlignment="Left"
-					Text="{Binding currentEPGItem.startDateString, Mode=TwoWay}" HorizontalAlignment="Left" 
-					 Style="{ThemeResource CaptionTextBlockStyle}" />
-                <Grid x:Name="ProgressBar" Grid.Row="3" Grid.Column="1">
-                    <Rectangle x:Name="progressbackgroundbar" Margin="10,0,10,0" Grid.Row="3" Grid.Column="1" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}" HorizontalAlignment="Stretch" Height="5"  Opacity="0.2"/>
-                    <Rectangle x:Name="progress" Margin="10,0,10,0" Grid.Row="3" Grid.Column="1"  Height="5" Fill="{ThemeResource SystemControlBackgroundAccentBrush}" >
-                        <Rectangle.RenderTransform>
-                            <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0"  ScaleX="{Binding currentEPGItem.percentcompleted}" />
-                        </Rectangle.RenderTransform>
-                    </Rectangle>
-                </Grid>
-
-                <TextBlock x:Name="tbEndTime" Grid.Row="3" Grid.Column="2" TextAlignment="Right"
-					        Text="{Binding currentEPGItem.endDateString, Mode=TwoWay}" 
-					        Style="{ThemeResource CaptionTextBlockStyle}"
-					        HorizontalAlignment="Right" VerticalAlignment="Center" />
-            </Grid>
-        </Button>
-
-        <!-- THE SECOND ROW SHOWS THE EXPANDED PROGRAMME INFORMATION -->
-        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-			x:Name="grProgramDetails"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-			Margin="0,0,0,0">
+        <!-- SMALL RECORDING ICON AS INDICATOR-->
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Image x:Name="RecordingIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small.png"
+					Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
+					Visibility="Visible"/>
+            <Image x:Name="RecordingErrorIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small_error.png"
+					Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
+					Visibility="Visible"/>
+            <Image x:Name="RecordingScheduledIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small_scheduled.png"
+					Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
+					Visibility="Visible"/>
+        </Grid>
+        
+        <!-- CHANNEL CONTENT - TITLE AND SUBTITLE-->
+        <Grid x:Name="btnEPGItemButton" Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"
+			  HorizontalAlignment="Stretch" Margin="5,0,5,0" Background="Transparent" >
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
-            <local:ucEPGEntryDetail x:Name="details" Visibility="Collapsed" DataContext="{Binding currentEPGItem}" Opacity="1" RenderTransformOrigin="0.5,0">
+            <TextBlock Grid.Row="0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+					   Text="{Binding name}" Style="{ThemeResource BaseTextBlockStyle}"/>
+            <TextBlock Grid.Row="0" FontSize="10" Text="{Binding epgitems.currentEPGItem.eventId}" HorizontalAlignment="Right"/>
+            <TextBlock Grid.Row="1" Style="{ThemeResource BodyTextBlockStyle}" 
+                       Foreground="{ThemeResource SystemControlForegroundAccentBrush}" Text="{Binding epgitems.currentEPGItem.title}" 
+                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+        </Grid>
+        <!-- SECOND ROW - PROGRESS BAR-->
+        <Grid x:Name="ProgressBar" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="55"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="tbStartTime" Grid.Column="0" VerticalAlignment="Center"
+					   Text="{Binding epgitems.currentEPGItem.startDateString}" HorizontalAlignment="Center" 
+					   Style="{ThemeResource CaptionTextBlockStyle}" />
+            <Rectangle x:Name="progressbackgroundbar" Margin="5,0,5,0" Grid.Column="1" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}"
+                               HorizontalAlignment="Stretch" Height="5"  Opacity="0.2"/>
+            <Rectangle x:Name="progress" Margin="5,0,5,0" Grid.Column="1"  Height="5" Fill="{ThemeResource SystemControlBackgroundAccentBrush}" >
+                <Rectangle.RenderTransform>
+                    <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0"  ScaleX="{Binding epgitems.currentEPGItem.percentcompleted}" />
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <TextBlock x:Name="tbEndTime" Grid.Column="2"
+					   Text="{Binding epgitems.currentEPGItem.endDateString}" 
+					   Style="{ThemeResource CaptionTextBlockStyle}"
+					   HorizontalAlignment="Right" VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- THE THIRD ROW SHOWS THE EXPANDED PROGRAMME INFORMATION -->
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+			x:Name="grProgramDetails"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <local:ucEPGEntryDetail x:Name="details" Visibility="Collapsed" DataContext="{Binding epgitems.currentEPGItem}" RenderTransformOrigin="0.5,0">
                 <local:ucEPGEntryDetail.RenderTransform>
-                    <CompositeTransform SkewX="0" SkewY="0" ScaleX="1" ScaleY="1" Rotation="0"/>
+                    <CompositeTransform  ScaleY="0"/>
                 </local:ucEPGEntryDetail.RenderTransform>
             </local:ucEPGEntryDetail>
         </Grid>
 
         <Interactivity:Interaction.Behaviors>
+            <Core:DataTriggerBehavior Binding="{Binding IsSelected}" Value="True">
+                <Media:ControlStoryboardAction Storyboard="{StaticResource SelectedState}" />
+            </Core:DataTriggerBehavior>
+            <Core:DataTriggerBehavior Binding="{Binding IsSelected}" Value="False">
+                <Media:ControlStoryboardAction Storyboard="{StaticResource UnselectedState}" />
+            </Core:DataTriggerBehavior>
             <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Collapsed">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource CollapseView}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Visible">
+            <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Expanded">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource ExpandView}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.RecordingStatus}" Value="1">
+            <Core:DataTriggerBehavior Binding="{Binding epgitems.currentEPGItem.RecordingStatus}" Value="1">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingOn}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.RecordingStatus}" Value="0">
+            <Core:DataTriggerBehavior Binding="{Binding epgitems.currentEPGItem.RecordingStatus}" Value="0">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingOff}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.RecordingStatus}" Value="2">
+            <Core:DataTriggerBehavior Binding="{Binding epgitems.currentEPGItem.RecordingStatus}" Value="2">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingError}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.RecordingStatus}" Value="3">
+            <Core:DataTriggerBehavior Binding="{Binding epgitems.currentEPGItem.RecordingStatus}" Value="3">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingScheduled}" />
             </Core:DataTriggerBehavior>
-
-
-
         </Interactivity:Interaction.Behaviors>
     </Grid>
 </UserControl>

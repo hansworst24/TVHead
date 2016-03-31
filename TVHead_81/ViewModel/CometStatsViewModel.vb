@@ -1,5 +1,6 @@
 ﻿
 Imports GalaSoft.MvvmLight
+Imports Newtonsoft.Json
 
 Public Class CometStatsViewModel
     Inherits ViewModelBase
@@ -148,6 +149,8 @@ Public Class CometStatsViewModel
             RaisePropertyChanged("intDVRAutoRecDelete")
         End Set
     End Property
+
+    Public DiskSpace As New DiskSpaceUpdateViewModel
 
     ''' <summary>
     ''' Increases the counter of a received Comet item

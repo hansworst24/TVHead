@@ -209,6 +209,12 @@
                                HorizontalAlignment="Left" Style="{StaticResource BaseTextBlockStyle}"/>
                 </Border>
             </DataTemplate>
+            <DataTemplate x:Key="EPGItemListHeaderTemplate">
+                <Border HorizontalAlignment="Stretch">
+                    <TextBlock Text="{Binding Date}" 
+                               HorizontalAlignment="Left" Style="{StaticResource BaseTextBlockStyle}"/>
+                </Border>
+            </DataTemplate>
             <DataTemplate x:Key="ListViewJumpListTemplate">
                 <Border  HorizontalAlignment="Stretch">
                     <TextBlock Grid.Column="0" Text="{Binding Group.KeyString}" 

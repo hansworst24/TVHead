@@ -106,9 +106,9 @@ Public Class SearchPageViewModel
         Dim i As IEnumerable(Of ChannelViewModel)
         i = Await SearchEPGEntry(searchvalue, UseFullTextSearch)
         For Each result In i
-            result.loadEPGButtonEnabled = False
+            'result.loadEPGButtonEnabled = False
         Next
-        GroupedSearchResults = (From e In i Group By Day = e.currentEPGItem.startDate.ToString(System.Globalization.DateTimeFormatInfo.CurrentInfo.LongDatePattern) Into Group
+        GroupedSearchResults = (From e In i Group By Day = e.epgitems.currentEPGItem.startDate.ToString(System.Globalization.DateTimeFormatInfo.CurrentInfo.LongDatePattern) Into Group
                                 Select New Group(Of ChannelViewModel)(Day, Group)).ToObservableCollection()
         WriteToDebug("SearchPageViewModel.StartSearch", "stop")
 

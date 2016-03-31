@@ -41,13 +41,12 @@
                 <Image  Grid.Row="0" Grid.Column="0" Height="20" Width="20" Source="/Images/adapter.png"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="8" TextWrapping="NoWrap" 
                            TextTrimming="WordEllipsis" Text="{Binding name}" VerticalAlignment="Center" 
-                           FontSize="{StaticResource TextStyleLargeFontSize}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
 
                 <Image Grid.Column="0" Grid.Row="1" Source="/Images/mux.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="8" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding currentMux}" VerticalAlignment="Center" 
-						    
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
                 <Image Grid.Column="0" Grid.Row="2" Source="/Images/signalstrength.png" Height="20" Width="20"/>
                 <Rectangle x:Name="signalBackground" HorizontalAlignment="Stretch" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Height="5" 
 								Margin="10,0,10,0" Fill="DarkGray"/>
@@ -69,25 +68,16 @@
                 <Image Grid.Column="0" Grid.Row="3" Source="/Images/bandwidth.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="1" Grid.Row="3" TextWrapping="NoWrap" 
 				           Text="{Binding bandwidth_string}" VerticalAlignment="Center" 
-						    
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
                 <Image Grid.Column="2" Grid.Row="3" Source="/Images/weight.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="3" Grid.Row="3" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding weight}" VerticalAlignment="Center" 
-						    
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
                 <Image Grid.Column="4" Grid.Row="3" Source="/Images/transport_error.png" Height="20" Width="20"/>
                 <TextBlock Margin="10,0,0,0" Grid.Column="5" Grid.ColumnSpan="2" Grid.Row="3" TextWrapping="NoWrap" 
 				           TextTrimming="WordEllipsis" Text="{Binding errors_string}" VerticalAlignment="Center" 
-						    
-                            Style="{ThemeResource BaseTextBlockStyle}"/>
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
 
-
-                <!--<TextBlock x:Name="tbSignalStrength" Margin="10,0,10,0" Grid.Column="4" Grid.Row="2"  
-					Text="{Binding snr_string}" 
-				    
-                     
-                    Style="{ThemeResource BaseTextBlockStyle}"/>-->
 
             </Grid>
         </Border>

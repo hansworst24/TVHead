@@ -573,7 +573,6 @@ Module TVHead_Modules
             Return Nothing
         End Try
         If Not json_result = "" Then
-
             Dim dsChannelList = JsonConvert.DeserializeObject(Of tvh40.ChannelList)(json_result)
             For Each c In dsChannelList.entries
                 result.Add(New ChannelViewModel(c))
@@ -682,15 +681,15 @@ Module TVHead_Modules
                     'If Not entry.genre Is Nothing Then
                     'entry.genreName = (From c In ContentTypes Where c.uuid = entry.genre.First Select c.name).FirstOrDefault
                     'End If
-                    Dim c As ChannelViewModel = (From chan In vm.AllChannels.items Where chan.channelUuid = entry.channelUuid Select chan).FirstOrDefault()
+                    Dim c As ChannelViewModel = (From chan In vm.AllChannels.items Where chan.uuid = entry.channelUuid Select chan).FirstOrDefault()
                     If Not c Is Nothing Then
                         Dim foundChannel As New ChannelViewModel
-                        foundChannel.chicon = c.chicon
-                        foundChannel.channelUuid = c.channelUuid
-                        foundChannel.name = c.name
-                        foundChannel.number = c.number
-                        foundChannel.currentEPGItem = New EPGItemViewModel(entry)
-                        foundChannel.currentEPGItem.ExpandedView = "Expanded"
+                        'foundChannel.chicon = c.chicon
+                        'foundChannel.uuid = c.uuid
+                        'foundChannel.name = c.name
+                        'foundChannel.number = c.number
+                        'foundChannel.currentEPGItem = New EPGItemViewModel(entry)
+                        'foundChannel.currentEPGItem.ExpandedView = "Expanded"
                         result.Add(foundChannel)
                     End If
                 Next
@@ -700,7 +699,7 @@ Module TVHead_Modules
             WriteToDebug("Modules.SearchEPGEntry()", ex.InnerException.ToString())
         End Try
         WriteToDebug("Modules.SearchEPGEntry()", result.Count())
-        Return result.OrderBy(Function(x) x.currentEPGItem.startDate)
+        Return result.OrderBy(Function(x) x.epgitems.currentEPGItem.startDate)
     End Function
 
 
@@ -795,7 +794,7 @@ Module TVHead_Modules
 
         End If
 
-        WriteToDebug("Modules.LoadEPGEntry()", "Completed Loading EPG Entries. : " & result.Count.ToString & "item(s)")
+        'WriteToDebug("Modules.LoadEPGEntry()", "Completed Loading EPG Entries. : " & result.Count.ToString & "item(s)")
         Return result.OrderBy(Function(x) x.channelNumber)
     End Function
 
@@ -806,7 +805,7 @@ Module TVHead_Modules
         Dim result As New List(Of Integer)
         Dim json_result As String
         Try
-            json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetEPGEvents(selectedChannel.channelUuid, loadAll, maxItems))).Content.ReadAsStringAsync
+            json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetEPGEvents(selectedChannel.uuid, loadAll, maxItems))).Content.ReadAsStringAsync
         Catch ex As Exception
             'WriteToDebug("Modules.LoadEPGEntry()", ex.InnerException.ToString)
             Return result
@@ -829,7 +828,7 @@ Module TVHead_Modules
         Dim result As New List(Of EPGItemViewModel)
         Dim json_result As String
         Try
-            json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetEPGEvents(selectedChannel.channelUuid, loadAll, maxItems))).Content.ReadAsStringAsync
+            json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetEPGEvents(selectedChannel.uuid, loadAll, maxItems))).Content.ReadAsStringAsync
         Catch ex As Exception
             'WriteToDebug("Modules.LoadEPGEntry()", ex.InnerException.ToString)
             Return result

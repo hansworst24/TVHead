@@ -415,7 +415,7 @@
     <value>Kanalen</value>
   </data>
   <data name="ipaddress.Text" xml:space="preserve">
-    <value>IP adres</value>
+    <value>IP-adres of hostname</value>
   </data>
   <data name="password.Text" xml:space="preserve">
     <value>Wachtwoord</value>
@@ -512,5 +512,8 @@
   </data>
   <data name="tsShowRecordingOptions.Header" xml:space="preserve">
     <value>Laat opname-opties zien wanneer een opname gestart wordt</value>
+  </data>
+  <data name="tbChannels.Text" xml:space="preserve">
+    <value>Zenders</value>
   </data>
 </root>

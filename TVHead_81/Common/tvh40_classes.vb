@@ -225,6 +225,7 @@ Public NotInheritable Class api40
                 Return settings.GetFullURL() + "/api/epg/events/grid?start=0&sort=&dir=ASC&limit=" & 99999
             Else
                 Return settings.GetFullURL() + "/api/epg/events/grid?start=0&sort=&dir=ASC&limit=" & 99999 & "&channel=" & channelid
+                'Return settings.GetFullURL() + "/api/epg/events/grid?start=0&sort=&dir=ASC&limit=" & 99999 & "&channel=" & channelid & "&filter=[subtitle]"
             End If
         Else
             'Only return the first EPG Event

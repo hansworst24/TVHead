@@ -782,7 +782,7 @@ Public Class AutoRecordingViewModel
         Set(value As Boolean)
             _ChannelSelectionEnabled = value
             If value = True Then
-                Dim x As ChannelViewModel = (From c In vm.AllChannels.items Where c.channelUuid = channel Select c).FirstOrDefault()
+                Dim x As ChannelViewModel = (From c In vm.AllChannels.items Where c.uuid = channel Select c).FirstOrDefault()
                 If Not x Is Nothing Then
                     channelname = x.name
                 Else
@@ -862,7 +862,7 @@ Public Class AutoRecordingViewModel
         channel = recording.channel
 
         Dim c As ChannelViewModel
-        c = (From channel In vm.AllChannels.items Where channel.channelUuid = Me.channel Select channel).FirstOrDefault()
+        c = (From channel In vm.AllChannels.items Where channel.uuid = Me.channel Select channel).FirstOrDefault()
         If Not c Is Nothing Then
             chicon = c.chicon
         Else

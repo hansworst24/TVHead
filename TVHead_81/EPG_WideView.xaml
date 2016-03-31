@@ -10,7 +10,7 @@
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core" 
     NavigationCacheMode="Required"
-    RequestedTheme="Light"
+    RequestedTheme="Dark"
     d:DesignHeight="480"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -22,7 +22,13 @@
         <CollectionViewSource x:Key="cvsFinishedRecordings" Source="{Binding FinishedRecordings.groupeditems, Mode=TwoWay}" IsSourceGrouped="True"/>
         <CollectionViewSource x:Key="cvsFailedRecordings" Source="{Binding FailedRecordings.groupeditems, Mode=TwoWay}" IsSourceGrouped="True"/>
         <CollectionViewSource x:Key="cvsAutoRecordings" Source="{Binding AutoRecordings.items, Mode=TwoWay}" IsSourceGrouped="False"/>
-        <!--<CollectionViewSource x:Key="cvsAllChannels" Source="{Binding Channels.items}" IsSourceGrouped="False"/>-->
+
+        <CollectionViewSource x:Key="cvsLogMessages" Source="{Binding logmessages.entries}"/>
+        <CollectionViewSource x:Key="cvsAdapters" Source="{Binding Streams.items}"/>
+        <CollectionViewSource x:Key="cvsSubscriptions" Source="{Binding Subscriptions.items}"/>
+        <CollectionViewSource x:Key="cvsServices" Source="{Binding Services.items, Mode=TwoWay}"/>
+        <CollectionViewSource x:Key="cvsMuxes" Source="{Binding Muxes.items, Mode=TwoWay}"/>
+
         <local:BoolToVisibilityConverter x:Key="myBoolVisConvertor"/>
     </Page.Resources>
 
@@ -53,6 +59,26 @@
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
+            <VisualStateGroup x:Name="MenuStates">
+                <VisualState x:Name="ShowMenu">
+                    <Storyboard>
+                        <DoubleAnimation To="0" Storyboard.TargetName="MenuTranslate" Storyboard.TargetProperty="X" Duration="0:0:0.3">
+                            <DoubleAnimation.EasingFunction>
+                                <CircleEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="HideMenu">
+                    <Storyboard>
+                        <DoubleAnimation To="-300" Storyboard.TargetName="MenuTranslate" Storyboard.TargetProperty="X" Duration="0:0:0.3">
+                            <DoubleAnimation.EasingFunction>
+                                <CircleEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         <Grid.RowDefinitions>
             <!--<RowDefinition Height="30"/>-->
@@ -67,7 +93,8 @@
         <Border Grid.Row="0" VerticalAlignment="Bottom" Height="48" Canvas.ZIndex="100">
             <local:ucNotificationMessage DataContext="{Binding Notify}"/>
         </Border>
-        
+       
+
         <!-- THE SUB HEADER -->
         <!--<Grid Grid.Row="0" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" BorderThickness="0,1,0,1" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}">
             <Grid.ColumnDefinitions>
@@ -118,7 +145,9 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>-->
-                <ListView Grid.Column="0" Visibility="Visible" Grid.Row="1" ItemsSource="{Binding Channels.items}" BorderThickness="0,1,1,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                <ListView x:Name="ChannelList" Grid.Column="0" Visibility="Visible" Grid.Row="1" ItemsSource="{Binding Channels.items}" 
+                          BorderThickness="0,1,1,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" 
+                          ScrollViewer.VerticalScrollBarVisibility="Hidden">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -128,9 +157,17 @@
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <local:ucChannelEPGDetail />
-                            </Grid>
+                            <Button Background="Transparent" Padding="0" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <Button.Content>
+                                    <local:ucChannelEPGDetail />
+                                </Button.Content>
+                                <Interactivity:Interaction.Behaviors>
+                                    <Core:EventTriggerBehavior EventName="Click">
+                                        <Core:InvokeCommandAction Command="{Binding DataContext.ChannelSelectedCommand, ElementName=ChannelList}" 
+                                                                          CommandParameter="{Binding}"/>
+                                    </Core:EventTriggerBehavior>
+                                </Interactivity:Interaction.Behaviors>
+                            </Button>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -142,12 +179,12 @@
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Height="40" Text="{Binding SelectedChannel.name}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="0" Height="40" Margin="40,0,0,0" Text="{Binding SelectedChannel.name}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap" HorizontalAlignment="Center"/>
+                <Image Grid.Row="0" Width="40" Height="40" Source="{Binding SelectedChannel.chicon}" HorizontalAlignment="Left"/>
                 <SemanticZoom Grid.Row="1">
                     <SemanticZoom.ZoomedInView>
-                        <ListView ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Mode=TwoWay}"  BorderThickness="0,1,0,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
-                                    ContinuumNavigationTransitionInfo.ExitElementContainer="True" ScrollViewer.VerticalScrollBarVisibility="Hidden">
-
+                        <ListView x:Name="lstEPGItems" ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Mode=TwoWay}"  BorderThickness="0,1,0,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+                                    ContinuumNavigationTransitionInfo.ExitElementContainer="True" ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectionMode="None">
                             <ListView.GroupStyle>
                                 <GroupStyle HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
                             </ListView.GroupStyle>
@@ -160,11 +197,27 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid>
-                                        <local:ucActiveProgram />
-                                    </Grid>
+                                    <Button Background="Transparent" Padding="0" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                                        <Button.Content>
+                                            <local:ucActiveProgram/>
+                                        </Button.Content>
+                                        <Interactivity:Interaction.Behaviors>
+                                            <Core:EventTriggerBehavior EventName="Click">
+                                                <Core:InvokeCommandAction Command="{Binding DataContext.ChannelEPGListSelectionChangedCommand, ElementName=lstEPGItems}" 
+                                                                          CommandParameter="{Binding}"/>
+                                            </Core:EventTriggerBehavior>
+                                        </Interactivity:Interaction.Behaviors>
+                                    </Button>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
+                            <!--<Interactivity:Interaction.Behaviors>
+                                <Core:EventTriggerBehavior EventName="SelectionChanged" SourceObject="{Binding ElementName=lstEPGItems}">
+                                    <Core:InvokeCommandAction Command="{Binding ChannelEPGListSelectionChangedCommand}" CommandParameter="{Binding ElementName=lstEPGItems}"/>
+                                </Core:EventTriggerBehavior>
+                                <Core:DataTriggerBehavior Binding="{Binding MenuIsOpen}" Value="True">
+                                    <Core:GoToStateAction StateName="ShowMenu"/>
+                                </Core:DataTriggerBehavior>
+                            </Interactivity:Interaction.Behaviors>-->
                         </ListView>
                     </SemanticZoom.ZoomedInView>
                     <SemanticZoom.ZoomedOutView>
@@ -178,10 +231,13 @@
             <Grid x:Name="EPGItemView" Grid.Column="2" Visibility="Collapsed">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <Border Grid.Row="0" Height="40" HorizontalAlignment="Stretch" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" >
-                    <TextBlock Height="40" HorizontalAlignment="Center" Text="Programme" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap"/>
+                    <TextBlock Height="40" HorizontalAlignment="Center" Text="{Binding selectedEPGItem.title}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap"/>
                 </Border>
                 <Grid Grid.Row="1" BorderThickness="1,1,0,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}">
                     <Grid.RowDefinitions>
@@ -196,349 +252,77 @@
                         <Button Content="Delete" Margin="20,0,20,0"/>
                     </StackPanel>
                 </Grid>
-
-            </Grid>
-        </Grid>
-
-
-
-        <!--<Pivot Grid.Row="1" x:Uid="Pivot" SelectedIndex="{Binding PivotSelectedIndex, Mode=TwoWay}"
-               Margin="0,-10,0,0">
-            <Pivot.HeaderTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" Height="50"/>
-                </DataTemplate>
-            </Pivot.HeaderTemplate>
-            <PivotItem x:Uid="pviChannelList" Header="Channels" Margin="10,0,10,0" >
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-
-                    
-                </Grid>
-                
-            </PivotItem>
-            <PivotItem x:Uid="pviChannelEPG" Header="EPG Items"  Margin="10,0,10,0" >
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="0">
-                        <Image x:Name="rowChannelIcon" Grid.Column="0" Grid.Row="0"  Width="40" Height="40"
-                           HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Image.Source>
-                                <BitmapImage UriSource="{Binding SelectedChannel.chicon}"/>
-                            </Image.Source>
-                        </Image>
-                        <Border Margin="10,0,0,0" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding SelectedChannel.name}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource SubheaderTextBlockStyle}"/>
-                        </Border>
-                    </StackPanel>
-
-                    <Border Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0,10,0" Visibility="{Binding EPGInformationAvailable, Converter={StaticResource myBoolVisConvertor}, Mode=TwoWay}">
-                        <TextBlock x:Uid="tbNoEPGAvailable" Text="For this channel no EPG Information exists" TextWrapping="Wrap" Style="{StaticResource SubTitle}"/>
-                    </Border>
-                    <Border Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0,10,0" Visibility="{Binding ChannelSelected, Converter={StaticResource myBoolVisConvertor}, Mode=TwoWay}">
-                        <TextBlock x:Uid="tbNoChannelSelected" Text="No channel has been selected. Click on the channel's icon on the left to load the EPG." TextWrapping="Wrap" Style="{StaticResource SubTitle}"/>
-                    </Border>
-                    <SemanticZoom Grid.Row="1" Grid.RowSpan="2">
-                        <SemanticZoom.ZoomedInView>
-                            <ListView ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Mode=TwoWay}" 
-                                      ContinuumNavigationTransitionInfo.ExitElementContainer="True"
-                                      Style="{StaticResource myListViewStyle}">
-                                
-                                <ListView.GroupStyle>
-                                    <GroupStyle HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
-                                </ListView.GroupStyle>
-                                <ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                        <Setter Property="Padding" Value="0"/>
-                                        <Setter Property="Margin" Value="0,0,0,-20" />
-                                    </Style>
-                                </ListView.ItemContainerStyle>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <local:ucActiveProgram />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </SemanticZoom.ZoomedInView>
-                        <SemanticZoom.ZoomedOutView>
-                            <ListView Background="Black" ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Path=CollectionGroups}"
-                                      ItemTemplate="{StaticResource ListViewJumpListTemplate}">
-                            </ListView>
-                        </SemanticZoom.ZoomedOutView>
-                    </SemanticZoom>
-                </Grid>
-            </PivotItem>
-            <PivotItem x:Uid="pviUpcomingRecordings" Header="Upcoming Recordings"  Margin="5,0,5,0" >
-                <Grid>
-                    <Border Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0,10,0" Visibility="{Binding UpcomingRecordings.NoRecordingsAvailableVisibility, Mode=TwoWay}">
-                        <TextBlock x:Uid="tbNoUpcomingRecordings" Text="No channel has been selected. Click on the channel's icon on the left to load the EPG." TextWrapping="Wrap" Style="{StaticResource SubTitle}"/>
-                    </Border>
-                    <SemanticZoom>
-                        <SemanticZoom.ZoomedInView>
-                            <ListView ItemsSource="{Binding Source={StaticResource cvsUpcomingRecordings}}"
-                                      ContinuumNavigationTransitionInfo.ExitElementContainer="True"
-                                      Style="{StaticResource myListViewStyle}"
-                                      SelectionMode="{Binding UpcomingRecordings.MultiSelectMode, Mode=TwoWay}">
-                                <ListView.GroupStyle>
-                                    <GroupStyle HidesIfEmpty="False" HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
-                                </ListView.GroupStyle>
-                                <ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                        <Setter Property="Padding" Value="0"/>
-                                        <Setter Property="Margin" Value="0,0,0,0" />
-                                    </Style>
-                                </ListView.ItemContainerStyle>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <local:ucRecording />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                                <Interactivity:Interaction.Behaviors>
-                                    <Core:EventTriggerBehavior EventName="SelectionChanged">
-                                        <Core:InvokeCommandAction Command="{Binding UpcomingRecordings.RecordingsSelectionChanged}"/>
-                                    </Core:EventTriggerBehavior>
-                                </Interactivity:Interaction.Behaviors>
-                            </ListView>
-                        </SemanticZoom.ZoomedInView>
-                        <SemanticZoom.ZoomedOutView>
-                            <ListView Background="Black" ItemsSource="{Binding Source={StaticResource cvsUpcomingRecordings}, Path=CollectionGroups}"
-                                      ItemTemplate="{StaticResource ListViewJumpListTemplate}">
-                            </ListView>
-                        </SemanticZoom.ZoomedOutView>
-                    </SemanticZoom>
-                </Grid>
-            </PivotItem>
-            <PivotItem x:Uid="pviFinishedRecordings" Header="Finished Recordings"  Margin="5,0,5,0">
-                <Grid>
-                    <Border Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0,10,0" Visibility="{Binding FinishedRecordings.NoRecordingsAvailableVisibility, Mode=TwoWay}">
-                        <TextBlock x:Uid="tbNoFinishedRecordings" TextWrapping="Wrap" Style="{StaticResource SubTitle}"/>
-                    </Border>
-                    <SemanticZoom>
-                        <SemanticZoom.ZoomedInView>
-                            <ListView ItemsSource="{Binding Source={StaticResource cvsFinishedRecordings}}" 
-                                      ContinuumNavigationTransitionInfo.ExitElementContainer="True"
-                                      Style="{StaticResource myListViewStyle}"
-                                      SelectionMode="{Binding FinishedRecordings.MultiSelectMode, Mode=TwoWay}">
-                                <ListView.GroupStyle>
-                                    <GroupStyle HidesIfEmpty="False" HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
-                                </ListView.GroupStyle>
-                                <ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                        <Setter Property="Padding" Value="0"/>
-                                        <Setter Property="Margin" Value="0,0,0,0" />
-                                    </Style>
-                                </ListView.ItemContainerStyle>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <local:ucRecording />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                                <Interactivity:Interaction.Behaviors>
-                                    <Core:EventTriggerBehavior EventName="SelectionChanged">
-                                        <Core:InvokeCommandAction Command="{Binding FinishedRecordings.RecordingsSelectionChanged}"/>
-                                    </Core:EventTriggerBehavior>
-                                </Interactivity:Interaction.Behaviors>
-                            </ListView>
-                        </SemanticZoom.ZoomedInView>
-                        <SemanticZoom.ZoomedOutView>
-                            <ListView Background="Black" ItemsSource="{Binding Source={StaticResource cvsFinishedRecordings}, Path=CollectionGroups}"
-                                      ItemTemplate="{StaticResource ListViewJumpListTemplate}">
-                            </ListView>
-                        </SemanticZoom.ZoomedOutView>
-                    </SemanticZoom>
-                </Grid>
-            </PivotItem>
-            <PivotItem x:Uid="pviFailedRecordings" Header="Failed Recordings"  Margin="5,0,5,0" >
-                <Grid>
-                    <Border Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0,10,0" Visibility="{Binding FailedRecordings.NoRecordingsAvailableVisibility, Mode=TwoWay}">
-                        <TextBlock x:Uid="tbNoFailedRecordings" TextWrapping="Wrap" Style="{StaticResource SubTitle}"/>
-                    </Border>
-                    <SemanticZoom>
-                        <SemanticZoom.ZoomedInView>
-                            <ListView ItemsSource="{Binding Source={StaticResource cvsFailedRecordings}}" 
-                                  ContinuumNavigationTransitionInfo.ExitElementContainer="True"
-                                  Style="{StaticResource myListViewStyle}"
-                                  SelectionMode="{Binding FailedRecordings.MultiSelectMode, Mode=TwoWay}">
-                                <ListView.GroupStyle>
-                                    <GroupStyle HidesIfEmpty="False" HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
-                                </ListView.GroupStyle>
-                                <ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                        <Setter Property="Padding" Value="0"/>
-                                        <Setter Property="Margin" Value="0,0,0,0" />
-                                    </Style>
-                                </ListView.ItemContainerStyle>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <local:ucRecording />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                                <Interactivity:Interaction.Behaviors>
-                                    <Core:EventTriggerBehavior EventName="SelectionChanged">
-                                        <Core:InvokeCommandAction Command="{Binding FailedRecordings.RecordingsSelectionChanged}"/>
-                                    </Core:EventTriggerBehavior>
-                                </Interactivity:Interaction.Behaviors>
-                            </ListView>
-                        </SemanticZoom.ZoomedInView>
-                        <SemanticZoom.ZoomedOutView>
-                            <ListView Background="Black" ItemsSource="{Binding Source={StaticResource cvsFailedRecordings}, Path=CollectionGroups}"
-                                  ItemTemplate="{StaticResource ListViewJumpListTemplate}">
-                            </ListView>
-                        </SemanticZoom.ZoomedOutView>
-                    </SemanticZoom>
-                </Grid>
-            </PivotItem>
-            <PivotItem x:Uid="pviAutoRecordings" Header="Auto Recordings"  Margin="5,0,5,0" >
-                <Grid>
-                    <Border Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0,10,0" Visibility="{Binding AutoRecordings.NoRecordingsAvailableVisibility, Mode=TwoWay}">
-                        <TextBlock x:Uid="tbNoAutoRecordings" TextWrapping="Wrap" Style="{StaticResource SubTitle}"/>
-                    </Border>
-                    <ListView ItemsSource="{Binding Source={StaticResource cvsAutoRecordings}}" SelectionMode="{Binding AutoRecordings.MultiSelectMode, Mode=TwoWay}"
+                <local:ucCometStatistics Grid.Row="2" DataContext="{Binding CometCatcher}"/>
+                <ListView Grid.Row="3" ItemsSource="{Binding Source={StaticResource cvsAdapters}}" Margin="10,0,0,0"
                         ContinuumNavigationTransitionInfo.ExitElementContainer="True">
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                <Setter Property="Padding" Value="0"/>
-                                <Setter Property="Margin" Value="0,0,0,10" />
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <local:ucAutoRecording />
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                        <Interactivity:Interaction.Behaviors>
-                            <Core:EventTriggerBehavior EventName="SelectionChanged">
-                                <Core:InvokeCommandAction Command="{Binding AutoRecordings.RecordingsSelectionChanged}"/>
-                                </Core:EventTriggerBehavior>
-                        </Interactivity:Interaction.Behaviors>
-                    </ListView>
-                </Grid>
-                
-         
-            </PivotItem>
-            <Interactivity:Interaction.Behaviors>
-                <Core:EventTriggerBehavior EventName="SelectionChanged">
-                    <Core:InvokeCommandAction Command="{Binding PivotSelectionChanged}"/>
-                </Core:EventTriggerBehavior>
-            </Interactivity:Interaction.Behaviors>
-        </Pivot>-->
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0,0,0,5" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <local:ucStream />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <ListView Grid.Row="4" ItemsSource="{Binding Source={StaticResource cvsSubscriptions}}"  Margin="10,0,0,0"
+                        ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0,0,0,5" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <local:ucSubscription />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+            <local:ucSideMenu Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="300">
+                <local:ucSideMenu.RenderTransform>
+                    <TranslateTransform x:Name="MenuTranslate" X="-300"/>
+                </local:ucSideMenu.RenderTransform>
+            </local:ucSideMenu>
+        </Grid>
+        <Interactivity:Interaction.Behaviors>
+            <Core:DataTriggerBehavior Binding="{Binding MenuIsOpen}" Value="False">
+                <Core:GoToStateAction StateName="HideMenu"/>
+            </Core:DataTriggerBehavior>
+            <Core:DataTriggerBehavior Binding="{Binding MenuIsOpen}" Value="True">
+                <Core:GoToStateAction StateName="ShowMenu"/>
+            </Core:DataTriggerBehavior>
+        </Interactivity:Interaction.Behaviors>
     </Grid>
     <Page.BottomAppBar>
         <CommandBar IsOpen="False" IsSticky="False" ClosedDisplayMode="Compact" HorizontalContentAlignment="Stretch" Width="{Binding ElementName=RootSplitView, Path=ActualWidth}">
             <CommandBar.Content>
                 <Grid HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal">
-                        <AppBarButton Width="48" HorizontalAlignment="Left" VerticalAlignment="Center" Height="48" Command="{Binding TiczMenu.OpenMenuCommand}">
+                        <AppBarButton Width="48" HorizontalAlignment="Left" Command="{Binding MenuButtonClickedCommand}" VerticalAlignment="Center" Height="48">
                             <AppBarButton.Icon>
                                 <FontIcon FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE700;"/>
                             </AppBarButton.Icon>
                         </AppBarButton>
-                        <AppBarButton x:Name="AppBarBackButton" Width="48" HorizontalAlignment="Left" Visibility="{Binding BackButtonVisibility}" VerticalAlignment="Center" Height="48" Command="{Binding GoBackCommand}">
-                            <AppBarButton.Icon>
-                                <FontIcon FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE112;"/>
-                            </AppBarButton.Icon>
-                        </AppBarButton>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <AppBarButton Name="abbRefresh" Icon="Refresh" HorizontalAlignment="Right" VerticalAlignment="Center" Height="48" Width="48" Command="{Binding RefreshCommand}"/>
+                        <AppBarToggleButton Icon="Refresh" HorizontalAlignment="Right" VerticalAlignment="Center" Height="48" Width="48" IsChecked="{Binding TVHeadSettings.LongPollingEnabled, Mode=TwoWay}"/>
+                        <!--<AppBarButton Name="abbRefresh" Icon="Refresh" HorizontalAlignment="Right" VerticalAlignment="Center" Height="48" Width="48" Command="{Binding RefreshCommand}"/>-->
                     </StackPanel>
                 </Grid>
             </CommandBar.Content>
         </CommandBar>
     </Page.BottomAppBar>
-    
-    <!--<Page.BottomAppBar>
-        <CommandBar Visibility="{Binding AppBar.CommandBarVisibility}">
-            <AppBarButton x:Uid="abbRefresh" Label="refresh" IsEnabled="{Binding AppBar.ButtonEnabled.refreshButton, Mode=TwoWay}" Visibility="{Binding AppBar.ButtonVisibility.refreshButton}" Command="{Binding RefreshCommand}">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Images/refresh.png"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Uid="abbRecordings" Label="recordings" Visibility="{Binding AppBar.ButtonVisibility.recordingsButton}" Command="{Binding GoToRecordingsCommand}">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Images/feature.alarm.png"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Uid="abbChannels" Label="channels" Visibility="{Binding AppBar.ButtonVisibility.epgButton}" Command="{Binding GoToChannelsCommand}">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Images/feature.calendar.png"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Uid="abbTags" x:Name="abbTags" Label="tags" Visibility="{Binding AppBar.ButtonVisibility.tagsButton}">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Images/tag.png"/>
-                </AppBarButton.Icon>
-                <AppBarButton.Flyout>
-                    <Flyout local:BindableFlyout.ItemsSource="{Binding ChannelTags.items}"
-                            local:BindableFlyout.IsOpen="{Binding ChannelTagFlyoutIsOpen, Mode=TwoWay}"
-                            local:BindableFlyout.Parent="{Binding ElementName=abbTags}"
-                            local:BindableFlyout.ItemTemplate="{StaticResource ChannelTagTemplate}"
-                             Placement="Bottom">
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
-            <AppBarButton x:Uid="abbManage" Label="manage" Visibility="{Binding AppBar.ButtonVisibility.manageButton}" Command="{Binding MultiSelectCommand}">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Images/manage.png"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Uid="abbSearch" Label="search" Visibility="{Binding AppBar.ButtonVisibility.searchButton}" Command="{Binding SearchCommand}">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Images/feature.search.png"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Uid="abbAdd" Label="add" Visibility="{Binding AppBar.ButtonVisibility.addButton}" Command="{Binding AddCommand}">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Images/add.png"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Uid="abbDelete" Label="delete" IsEnabled="{Binding AppBar.ButtonEnabled.deleteButton, Mode=TwoWay}" Command="{Binding DeleteSelectedRecordings}" Visibility="{Binding AppBar.ButtonVisibility.deleteButton}">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Images/delete.png"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Uid="abbSave" Label="save" Visibility="{Binding AppBar.ButtonVisibility.saveButton}">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Images/save.png"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Uid="abbCancel" Label="cancel" Visibility="{Binding AppBar.ButtonVisibility.cancelButton}">
-                <AppBarButton.Icon>
-                    <BitmapIcon UriSource="ms-appx:///Images/cancel.png"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-        
-            
-            <CommandBar.SecondaryCommands>
-                <AppBarButton x:Uid="appBarSettings" Label="settings..." Command="{Binding SettingsCommand}"/>
-                <AppBarButton x:Uid="appBarStatus" Label="tvheadend status" Command="{Binding StatusCommand}"/>
-                <AppBarButton x:Uid="appBarAbout" Label="about" Command="{Binding AboutCommand}"/>
-            </CommandBar.SecondaryCommands>
-        </CommandBar>
-    </Page.BottomAppBar>-->
+   
     <Interactivity:Interaction.Behaviors>
         <Core:EventTriggerBehavior EventName="Loaded">
             <Core:InvokeCommandAction Command="{Binding PageLoadedCommand}"/>

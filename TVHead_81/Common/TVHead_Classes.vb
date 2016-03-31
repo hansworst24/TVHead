@@ -430,11 +430,11 @@ Public Class Downloader
             Using wc As New HttpClient(filter)
                 Dim cts As New CancellationTokenSource(5000)
                 Try
-                    WriteToDebug("Downloader.DownloadJSON", url)
+                    'WriteToDebug("Downloader.DownloadJSON", url)
                     ''TODO FIX GETRSTRINGAYNSC
                     Dim response As HttpResponseMessage = Await wc.GetAsync(New Uri(url)).AsTask(cts.Token)
                     vm.totalBytesReceived += response.Content.ToString.Length
-                    ' WriteToDebug("Downloader.DownloadJSON", "Length :" & response.Content.ToString.Length.ToString & ",Size :" & Math.Round(response.Content.ToString.Length / 1024).ToString & "kb")
+                    'WriteToDebug("Downloader.DownloadJSON", "Length :" & response.Content.ToString.Length.ToString & ",Size :" & Math.Round(response.Content.ToString.Length / 1024).ToString & "kb")
                     'If Await vm.IsConnected Then Await vm.StatusBar.Clean()
                     Return response
                 Catch ex As TaskCanceledException

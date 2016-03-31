@@ -20,7 +20,7 @@ Public NotInheritable Class EPG_WideView
     ''' </summary>
     Public Sub New()
         InitializeComponent()
-        DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait
+        'DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait
         NavigationCacheMode = NavigationCacheMode.Enabled
     End Sub
 

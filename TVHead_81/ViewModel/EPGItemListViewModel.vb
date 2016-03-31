@@ -23,17 +23,38 @@ Public Class EPGItemListViewModel
         Set(value As ObservableCollection(Of Group(Of EPGItemViewModel)))
             _groupeditems = value
             RaisePropertyChanged("groupeditems")
-            If value.Count = 0 Then NoEventsAvailableVisibility = Visibility.Visible Else NoEventsAvailableVisibility = Visibility.Collapsed
+            RaisePropertyChanged("currentEPGItem")
+            'If value.Count = 0 Then NoEventsAvailableVisibility = Visibility.Visible Else NoEventsAvailableVisibility = Visibility.Collapsed
         End Set
     End Property
     Private Property _groupeditems As ObservableCollection(Of Group(Of EPGItemViewModel))
+
+    Public ReadOnly Property currentEPGItem As EPGItemViewModel
+        Get
+            If Not groupeditems Is Nothing AndAlso groupeditems.Count > 0 AndAlso groupeditems(0).Count > 0 Then
+                Return groupeditems(0)(0)
+            Else
+                Return New EPGItemViewModel
+            End If
+        End Get
+        '      Set(value As EPGItemViewModel)
+        'If Not groupeditems Is Nothing AndAlso groupeditems.Count > 0 AndAlso groupeditems(0).Count > 0 Then
+        '    groupeditems(0)(0) = value
+        '    RaisePropertyChanged("currentEPGItem")
+        'Else
+        '    AddEvent(value)
+        '    RaisePropertyChanged("currentEPGItem")
+        'End If
+        ' End Set
+    End Property
+
 
     Public Sub New()
         groupeditems = New ObservableCollection(Of [Group](Of EPGItemViewModel))
     End Sub
 
     Public Async Function AddEvent(e As EPGItemViewModel) As Task
-        WriteToDebug("EPGItemListViewModel.AddEvent()", "start")
+        ' WriteToDebug("EPGItemListViewModel.AddEvent()", "executed")
 
         'FIND / INSERT THE GROUP IN WHICH THE EVENT SHOULD BELONG
         Dim dayGroup = groupeditems.Where(Function(x) x.Key = e.startDate.Date).FirstOrDefault()
@@ -73,65 +94,75 @@ Public Class EPGItemListViewModel
                                                                                                              groupeditems(dayGroupIndex).Add(e)
                                                                                                          End Sub)
         End If
-        WriteToDebug("EPGItemListViewModel.AddEvent()", "stop")
+        Await RunOnUIThread(Sub()
+                                RaisePropertyChanged("currentEPGItem")
+                            End Sub)
     End Function
 
     Public Async Function RemoveEvent(eventid As String) As Task
-        WriteToDebug("EPGItemListViewModel.RemoveEvent()", "start")
-        Dim eventToDelete As EPGItemViewModel
-        Dim groupIndex As Integer
-        If Not Me.groupeditems Is Nothing AndAlso Me.groupeditems.Count > 0 Then
-            For Each g In Me.groupeditems
-                Dim tmpEvent As EPGItemViewModel = (From epgevent In g Where epgevent.eventId = eventid Select epgevent).FirstOrDefault()
-                If Not tmpEvent Is Nothing Then
-                    eventToDelete = tmpEvent
-                    groupIndex = groupeditems.IndexOf(g)
+        WriteToDebug("EPGItemListViewModel.RemoveEvent()", "executed")
+
+        For g As Integer = Me.groupeditems.Count - 1 To 0 Step -1
+            For i As Integer = Me.groupeditems(g).Count - 1 To 0 Step -1
+                If Me.groupeditems(g)(i).eventId = eventid Then
+                    Dim groupIndex As Integer = g
+                    Dim itemIndex As Integer = i
+                    Await RunOnUIThread(Sub()
+                                            Me.groupeditems(groupIndex).RemoveAt(itemIndex)
+                                        End Sub)
                 End If
             Next
+        Next
 
-            If Not eventToDelete Is Nothing Then
-                Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                 groupeditems(groupIndex).Remove(eventToDelete)
-                                                                                                             End Sub)
-            End If
-            If groupeditems(groupIndex).Count = 0 Then
-                Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                 groupeditems.RemoveAt(groupIndex)
-                                                                                                             End Sub)
-            End If
-        End If
-        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                         If groupeditems.Count = 0 Then NoEventsAvailableVisibility = Visibility.Visible
-                                                                                                     End Sub)
+        Await RunOnUIThread(Sub()
+                                RaisePropertyChanged("currentEPGItem")
+                            End Sub)
 
-        WriteToDebug("EPGItemListViewModel.RemoveEvent()", "stop")
     End Function
 
+    ''' <summary>
+    ''' Searches for and then updates a given EPGItem within the EPGItemListViewModel
+    ''' </summary>
+    ''' <param name="e">Updated EPG Event</param>
+    ''' <returns></returns>
     Public Async Function UpdateEvent(e As EPGItemViewModel) As Task
         'WriteToDebug("EPGItemListViewModel.UpdateEvent()", "start")
-        Dim oldEvent As EPGItemViewModel
-        Dim dayGroupIndex As Integer
+        e.Update()
 
-        Dim dayGroup = groupeditems.Where(Function(x) x.Key = e.startDate.Date).FirstOrDefault()
-        If Not dayGroup Is Nothing Then
-            dayGroupIndex = groupeditems.IndexOf(dayGroup)
-            oldEvent = (From epgevent In groupeditems(dayGroupIndex) Where epgevent.eventId = e.eventId).FirstOrDefault()
-            If Not oldEvent Is Nothing Then
-                Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                 oldEvent.dvrState = e.dvrState
-                                                                                                                 oldEvent.dvrUuid = e.dvrUuid
-                                                                                                                 'oldEvent.percentcompleted = e.percentcompleted
-                                                                                                             End Sub)
-            Else
-                Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
-                                                                                                                 Await AddEvent(e)
-                                                                                                             End Sub)
+        'Dim oldEvent As EPGItemViewModel
+        'Dim dayGroupIndex As Integer
 
-            End If
-        End If
-        'WriteToDebug("EPGItemListViewModel.UpdateEvent()", "stop")
+
+        'Dim dayGroup = groupeditems.Where(Function(x) x.Key = e.startDate.Date).FirstOrDefault()
+        'If Not dayGroup Is Nothing Then
+        '    dayGroupIndex = groupeditems.IndexOf(dayGroup)
+        '    oldEvent = (From epgevent In groupeditems(dayGroupIndex) Where epgevent.eventId = e.eventId).FirstOrDefault()
+        '    If Not oldEvent Is Nothing Then
+        '        Await RunOnUIThread(Sub()
+        '                                oldEvent.Update(e)
+        '                            End Sub)
+        '    Else
+        '        Await RunOnUIThread(Async Sub()
+        '                                Await AddEvent(e)
+        '                            End Sub)
+        '    End If
+        'End If
+        'Await RunOnUIThread(Sub()
+        '                        RaisePropertyChanged("currentEPGItem")
+        '                    End Sub)
     End Function
 
+
+    Public Function GetEvent(eventid As String) As EPGItemViewModel
+        Dim tmpEvent As EPGItemViewModel
+        For Each g In Me.groupeditems
+            tmpEvent = (From epgevent In g Where epgevent.eventId = eventid Select epgevent).FirstOrDefault()
+            If Not tmpEvent Is Nothing Then
+                Return tmpEvent
+            End If
+        Next
+        Return Nothing
+    End Function
 
 
 End Class

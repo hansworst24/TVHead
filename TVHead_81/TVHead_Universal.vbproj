@@ -122,6 +122,15 @@
     <Compile Include="User Controls\ucAutoRecording.xaml.vb">
       <DependentUpon>ucAutoRecording.xaml</DependentUpon>
     </Compile>
+    <Compile Include="User Controls\ucCometStatistics.xaml.vb">
+      <DependentUpon>ucCometStatistics.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="User Controls\ucSettings_Menu.xaml.vb">
+      <DependentUpon>ucSettings_Menu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="User Controls\ucSideMenu.xaml.vb">
+      <DependentUpon>ucSideMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="User Controls\ucSubscription.xaml.vb">
       <DependentUpon>ucSubscription.xaml</DependentUpon>
     </Compile>
@@ -152,6 +161,8 @@
     <Compile Include="User Controls\ucTopHeader.xaml.vb">
       <DependentUpon>ucTopHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\BackgroundEPGRefresher.vb" />
+    <Compile Include="ViewModel\CometCatcher.vb" />
     <Compile Include="ViewModel\CometStatsViewModel.vb" />
     <Compile Include="ViewModel\NotificationViewModel.vb" />
     <Compile Include="ViewModel\TVHead_Settings.vb" />
@@ -341,6 +352,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="User Controls\ucCometStatistics.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="User Controls\ucSettings_Menu.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="User Controls\ucSideMenu.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="User Controls\ucSubscription.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -393,6 +416,9 @@
   <ItemGroup>
     <SDKReference Include="BehaviorsXamlSDKManaged, Version=12.0">
       <Name>Behaviors SDK %28XAML%29</Name>
+    </SDKReference>
+    <SDKReference Include="WindowsMobile, Version=10.0.10586.0">
+      <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
