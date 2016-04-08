@@ -2,22 +2,17 @@
 Imports TVHead_81.ViewModels
 Imports Windows.UI.Core
 
-
-
-' The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
-
-Public NotInheritable Class EPG_WideView
+''' <summary>
+''' An empty page that can be used on its own or navigated to within a Frame.
+''' </summary>
+Public NotInheritable Class HubView
     Inherits Page
-
     Private WithEvents _navigationHelper As New NavigationHelper(Me)
     Private ReadOnly _defaultViewModel As New ObservableDictionary
     Private ReadOnly _resourceLoader As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
 
     Public Property vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
 
-    ''' <summary>
-    ''' A page that displays a grouped collection of items.
-    ''' </summary>
     Public Sub New()
         InitializeComponent()
         'DisplayInformation.AutoRotationPreferences = DisplayOrientations.Portrait
@@ -190,4 +185,7 @@ Public NotInheritable Class EPG_WideView
         WriteToDebug("HubPage.OnBackPressed()", "stop")
     End Sub
 
+    Private Sub Page_SizeChanged(sender As Object, e As SizeChangedEventArgs)
+
+    End Sub
 End Class

@@ -1,16 +1,38 @@
 ﻿Imports System.Threading
+Imports GalaSoft.MvvmLight
 Imports Newtonsoft.Json
-Imports Windows.ApplicationModel.Core
 Imports Windows.Web.Http
 
 Public Class CometCatcher
+    Inherits ViewModelBase
     Public CatchCometsBoxID As String
 
     Public ct As CancellationToken
     Public tokenSource As New CancellationTokenSource()
     Public CometCatcher As Task
     Public CometCatcherLastRun As DateTime
-    Public Property CometStats As New CometStatsViewModel
+    Public Property CometStatistics As New CometStatsViewModel
+
+    Public Property CometsReceived As Integer
+        Get
+            Return _CometsReceived
+        End Get
+        Set(value As Integer)
+            _CometsReceived = value
+            RaisePropertyChanged("CometRotation")
+        End Set
+    End Property
+    Private Property _CometsReceived As Integer
+    Public ReadOnly Property CometRotation As Integer
+        Get
+            If CometsReceived < 36 Then
+                Return CometsReceived * 10
+            Else
+                CometsReceived = 0
+                Return 0
+            End If
+        End Get
+    End Property
 
     Public Async Sub StartRefresh()
         WriteToDebug("TVHead_ViewModel.StartRefresh()", "")
@@ -39,9 +61,6 @@ Public Class CometCatcher
                 Await Task.Delay(5000)
                 WriteToDebug("TVHead_ViewModel.CatchComets()", "long polling disabled")
             Else
-
-
-
                 'Dim CometCatcherTaskID As String
                 'If Not CometCatcher Is Nothing Then CometCatcherTaskID = CometCatcher.Id.ToString
                 If CatchCometsBoxID = "" Then
@@ -50,6 +69,7 @@ Public Class CometCatcher
                     WriteToDebug("TVHead_ViewModel.CatchComets()", "boxid = " & CatchCometsBoxID)
                 End If
                 If Not CatchCometsBoxID = "" Then
+                    'If 1 = 2 Then
                     Try
                         'isTimeOut = False
                         Dim response As HttpResponseMessage = Await (New Downloader).DownloadComet(CatchCometsBoxID)
@@ -61,6 +81,10 @@ Public Class CometCatcher
                             Dim body As String = Await response.Content.ReadAsStringAsync()
                             Dim comet = JsonConvert.DeserializeObject(Of CometMessages.CometMessage)(body)
                             For Each message In comet.messages
+                                Await RunOnUIThread(Sub()
+                                                        CometsReceived += 1
+                                                    End Sub)
+
                                 ' tvh40 : subscriptions,input_status,dvrentry,logmessage,servicemapper,service_raw,service,caclient,connections
                                 ' TVH41 : subscriptions,input_status,dvrentry,logmessage,servicemapper,service_raw,epg,mpegts_mux,mpegts_network,diskspaceUpdate
                                 ' TVH34 : dvrdb
@@ -107,7 +131,7 @@ Public Class CometCatcher
                                         End If
                                         If Not dvrEntry_message.change Is Nothing Then
                                             For Each m In dvrEntry_message.change
-                                                CometStats.AddComet("dvrchange")
+                                                CometStatistics.AddComet("dvrchange")
                                                 '    'We received the uuid for a recording that was changed. Request the updated recording from the server by quering
                                                 '    'for the ID Node
                                                 '    If TVHeadSettings.CapableOfLoadingRecordingIDNode Then
@@ -143,7 +167,7 @@ Public Class CometCatcher
                                         If Not dvrEntry_message.delete Is Nothing Then
 
                                             For Each m In dvrEntry_message.delete
-                                                CometStats.AddComet("dvrdelete")
+                                                CometStatistics.AddComet("dvrdelete")
                                                 '    'Without knowing in which list the recording is located, initiate deletion of the recording by targeting all lists
                                                 '    If TVHeadSettings.hasDVRAccess Then Await Me.UpcomingRecordings.RemoveRecording(m, True)
                                                 '    If TVHeadSettings.hasDVRAccess Then Await Me.FinishedRecordings.RemoveRecording(m, True)
@@ -156,7 +180,7 @@ Public Class CometCatcher
                                         Dim autorec_message As CometMessages.dvrautorec = JsonConvert.DeserializeObject(Of CometMessages.dvrautorec)(message.ToString())
                                         If Not autorec_message.change Is Nothing Then
                                             For Each m In autorec_message.change
-                                                CometStats.AddComet("dvrautorecchange")
+                                                CometStatistics.AddComet("dvrautorecchange")
                                                 '        If TVHeadSettings.CapableOfLoadingAutoRecordingIDNode And TVHeadSettings.hasDVRAccess Then
                                                 '            Dim updatedAutoRecording As AutoRecordingViewModel
                                                 '            updatedAutoRecording = TryCast(Await LoadIDNode(m, New AutoRecordingViewModel()), AutoRecordingViewModel)
@@ -167,7 +191,7 @@ Public Class CometCatcher
                                         End If
                                         If Not autorec_message.create Is Nothing Then
                                             For Each m In autorec_message.create
-                                                CometStats.AddComet("dvrautoreccreate")
+                                                CometStatistics.AddComet("dvrautoreccreate")
                                                 '        If TVHeadSettings.CapableOfLoadingAutoRecordingIDNode And TVHeadSettings.hasDVRAccess Then
                                                 '            Dim updatedAutoRecording As AutoRecordingViewModel
                                                 '            updatedAutoRecording = TryCast(Await LoadIDNode(m, New AutoRecordingViewModel()), AutoRecordingViewModel)
@@ -179,14 +203,14 @@ Public Class CometCatcher
                                         If Not autorec_message.delete Is Nothing Then
 
                                             For Each m In autorec_message.delete
-                                                CometStats.AddComet("dvrautorecdelete")
+                                                CometStatistics.AddComet("dvrautorecdelete")
                                                 '        Await Me.AutoRecordings.DeleteAutoRecording(m, True)
                                             Next
                                         End If
 
                                         If Not autorec_message.update Is Nothing Then
                                             For Each m In autorec_message.update
-                                                CometStats.AddComet("dvrautorecupdate")
+                                                CometStatistics.AddComet("dvrautorecupdate")
                                                 '        If TVHeadSettings.CapableOfLoadingAutoRecordingIDNode And TVHeadSettings.hasDVRAccess Then
                                                 '            Dim updatedAutoRecording As AutoRecordingViewModel
                                                 '            updatedAutoRecording = TryCast(Await LoadIDNode(m, New AutoRecordingViewModel()), AutoRecordingViewModel)
@@ -202,7 +226,7 @@ Public Class CometCatcher
                                         'Provide the EPG message to SelectedChannel.GroupedEPGItems in order to process any changes
                                         If Not epg_message.delete Is Nothing Then
                                             For Each m In epg_message.delete
-                                                CometStats.AddComet("epgdelete")
+                                                CometStatistics.AddComet("epgdelete")
                                                 'Remove the EPGItem from the SelectedChannel if an EPGItem with the EventID given is found in the SelectedChannel
                                                 If Not vm.SelectedChannel Is Nothing AndAlso Not vm.SelectedChannel.epgitems.GetEvent(m) Is Nothing Then
                                                     Dim oldEvent = vm.SelectedChannel.epgitems.GetEvent(m)
@@ -214,8 +238,8 @@ Public Class CometCatcher
                                         If Not epg_message.update Is Nothing Then
                                             'Running Programmes get updated regularly (percent completed ?)
                                             For Each m In epg_message.update
-                                                CometStats.AddComet("epgupdate")
-                                                Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(New List(Of Integer)(New Integer() {m}))).FirstOrDefault()
+                                                CometStatistics.AddComet("epgupdate")
+                                                Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(m)).FirstOrDefault()
                                                 If newEPGEvent Is Nothing Then
                                                     WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Updating programme {0} : {1}", "EVENTID NOT ON SERVER", m.ToString()))
                                                 End If
@@ -227,7 +251,7 @@ Public Class CometCatcher
                                                 End If
                                                 'Update the EPG Event if it is the currentEPGItem for a Channel
                                                 Dim channel As ChannelViewModel = (From c In vm.Channels.items Where c.uuid = newEPGEvent.channelUuid Select c).FirstOrDefault()
-                                                If Not channel Is Nothing AndAlso channel.epgitems.currentEPGItem.eventId = newEPGEvent.eventId Then
+                                                If Not channel Is Nothing AndAlso channel.currentEPGItem.eventId = newEPGEvent.eventId Then
                                                     WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Updating programme {0} : {1}", newEPGEvent.title, m.ToString()))
                                                     Await channel.RefreshCurrentEPGItem(newEPGEvent)
                                                 End If
@@ -236,8 +260,8 @@ Public Class CometCatcher
 
                                         If Not epg_message.create Is Nothing Then
                                             For Each m In epg_message.create
-                                                CometStats.AddComet("epgcreate")
-                                                Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(New List(Of Integer)(New Integer() {m}))).FirstOrDefault()
+                                                CometStatistics.AddComet("epgcreate")
+                                                Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(m)).FirstOrDefault()
                                                 If newEPGEvent Is Nothing Then
                                                     WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Creating programme {0} : {1}", "EVENTID NOT ON SERVER", m.ToString()))
                                                 End If
@@ -250,8 +274,8 @@ Public Class CometCatcher
 
                                         If Not epg_message.change Is Nothing Then
                                             For Each m In epg_message.change
-                                                CometStats.AddComet("epgchange")
-                                                Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(New List(Of Integer)(New Integer() {m}))).FirstOrDefault()
+                                                CometStatistics.AddComet("epgchange")
+                                                Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(m)).FirstOrDefault()
                                                 If newEPGEvent Is Nothing Then
                                                     WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Changing programme {0} : {1}", "EVENTID NOT ON SERVER", m.ToString()))
                                                 End If
@@ -263,7 +287,7 @@ Public Class CometCatcher
                                         End If
                                         If Not epg_message.dvr_update Is Nothing Then
                                             For Each m In epg_message.dvr_update
-                                                CometStats.AddComet("epgdvrupdate")
+                                                CometStatistics.AddComet("epgdvrupdate")
                                                 ''Get the latest info for the EPGEvent
                                                 'Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(New List(Of Integer)(New Integer() {m}))).FirstOrDefault()
 
@@ -316,7 +340,7 @@ Public Class CometCatcher
 
                                         If Not epg_message.dvr_delete Is Nothing Then
                                             For Each m In epg_message.dvr_delete
-                                                CometStats.AddComet("epgdvrdelete")
+                                                CometStatistics.AddComet("epgdvrdelete")
                                                 '    Dim newEPGEvent As EPGItemViewModel = (Await LoadEPGEventByID(New List(Of Integer)(New Integer() {m}))).FirstOrDefault()
                                                 '    'Update any entry for the EPGEvent in the Selected Channel
                                                 '    If Not newEPGEvent Is Nothing Then
@@ -390,24 +414,7 @@ Public Class CometCatcher
                             'End While
                         End If
 
-                        'Perform some other updates while we're polling but only every 10 seconds or more
-                        If CometCatcherLastRun.AddSeconds(5) <= Date.Now Then
-                            Await vm.Notify.Update(False, vm.loader.GetString("status_RefreshingEPGEntries"), 1, False, 0)
-                            ' First perform standard updates to currentEPGItem of each channel
-                            If Await vm.TVHeadSettings.hasEPGAccess Then
-                                For Each c In vm.Channels.items.Where(Function(x) x.epgitemsAvailable = True)
-                                    Await c.UpdateCurrentEPGItem(Nothing, True)
-                                Next
-                                If Not vm.SelectedChannel Is Nothing Then
-                                    Await vm.SelectedChannel.RefreshEPG(False)
-                                End If
-                            End If
-                            CometCatcherLastRun = Date.Now()
-                        End If
-                        'Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                        '                                                                                                 ConnectedRotation += 10
-                        '                                                                                             End Sub)
-                        vm.Notify.Clear()
+
                     Catch ex As Exception
                         If Not ex.Message Is Nothing Then
                             WriteToDebug("TVHead_ViewModel.CatchComets()", "Some error occured, resting for a second : Explanation " + ex.Message.ToString())
@@ -420,15 +427,26 @@ Public Class CometCatcher
                     'app.isConnected = False
                     Await Task.Delay(5000)
                 End If
-                'End While
-                'WriteToDebug("TVHead_ViewModel.CatchComets", "doCatchComets = False, Sleeping...")
-                'Await Task.Delay(5000)
+                'Perform some other updates while we're polling but only every 10 seconds or more
+                If CometCatcherLastRun.AddSeconds(5) <= Date.Now Then
+                    Await vm.Notify.Update(False, vm.loader.GetString("status_RefreshingEPGEntries"), 0, False, 0)
+                    ' First perform standard updates to currentEPGItem of each channel
+                    If Await vm.TVHeadSettings.hasEPGAccess Then
+                        For Each c In vm.Channels.items.Where(Function(x) x.epgitemsAvailable = True)
+                            'Await c.UpdateCurrentEPGItem(Nothing, True)
+                        Next
+                        If Not vm.SelectedChannel Is Nothing Then
+                            Await vm.SelectedChannel.RefreshEPG(False)
+                        End If
+                    End If
+                    CometCatcherLastRun = Date.Now()
+                End If
+                vm.Notify.Clear()
             End If
             s.Stop()
             WriteToDebug("CometCatcher.CatchComets()", String.Format("Refresh Cycle took {0}ms", s.ElapsedMilliseconds.ToString))
-            'If s.ElapsedMilliseconds < 5000 Then
-            '    WriteToDebug("CometCatcher.CatchComets()", String.Format("Sleeping for {0} ms...", 5000 - s.ElapsedMilliseconds))
-            '    Await Task.Delay(5000 - s.ElapsedMilliseconds)
+            'If s.ElapsedMilliseconds < 1000 Then
+            '    Await Task.Delay(1000 - s.ElapsedMilliseconds)
             'End If
         End While
         If ct.IsCancellationRequested Then

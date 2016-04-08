@@ -18,11 +18,33 @@ Public Class TVHead_ViewModel
     Public Property DiskSpaceStats As New DiskSpaceUpdateViewModel
 
 
+    Public Property HubSectionWidth As Integer
+        Get
+            Return _HubSectionWidth
+        End Get
+        Set(value As Integer)
+            _HubSectionWidth = value
+            RaisePropertyChanged("HubSectionWidth")
+        End Set
+    End Property
+    Private Property _HubSectionWidth As Integer
+
+    Public Property SelectedPivotIndex As Integer
+        Get
+            Return _SelectedPivotIndex
+        End Get
+        Set(value As Integer)
+            _SelectedPivotIndex = value
+            RaisePropertyChanged("SelectedPivotIndex")
+        End Set
+    End Property
+    Private Property _SelectedPivotIndex As Integer
     'Properties for running the background task that handles updating the current EPG event of each channel, and the EPG info if a channel is selected
     Public Property EPGRefresher As New BackgroundEPGRefresher
 
     'Properties for running a background task that performs long polling towards TVH server to catch any updates it sends out
     Public Property CometCatcher As New CometCatcher
+    Public Property CometStatistics As New CometStatsViewModel
     'Public CatchCometsBoxID As String
     'Public ct As CancellationToken
     'Public tokenSource As New CancellationTokenSource()
@@ -49,9 +71,16 @@ Public Class TVHead_ViewModel
         Set(value As EPGItemViewModel)
             _selectedEPGItem = value
             RaisePropertyChanged("selectedEPGItem")
+            RaisePropertyChanged("RecordSelectedEPGItemButtonEnabled")
         End Set
     End Property
     Private Property _selectedEPGItem As EPGItemViewModel
+
+    Public ReadOnly Property RecordSelectedEPGItemButtonEnabled As Boolean
+        Get
+            If _selectedEPGItem Is Nothing Then Return False Else Return True
+        End Get
+    End Property
 
 
     Public Property SearchPage As New SearchPageViewModel
@@ -80,7 +109,7 @@ Public Class TVHead_ViewModel
 
 
 
-    Public Property currentCometStats As New CometStatsViewModel
+
     Public Property CometCatcherLastRun As DateTime
 
     Private Property _totalBytesReceived As Long
@@ -488,62 +517,127 @@ Public Class TVHead_ViewModel
             Return New RelayCommand(Of Object)(Async Sub(x)
                                                    WriteToDebug("TVHead_ViewModel.ChannelSelectedCommand()", "executed")
                                                    Dim new_selected_channel As ChannelViewModel = TryCast(x, ChannelViewModel)
+
+                                                   'If Not SelectedChannel Is Nothing AndAlso new_selected_channel.uuid = SelectedChannel.uuid Then
+                                                   '    For Each g In SelectedChannel.groupeditems
+                                                   '        For Each e In g
+                                                   '            e.IsSelected = False
+                                                   '        Next
+                                                   '    Next
+                                                   '    SelectedChannel.IsExpanded = Not SelectedChannel.IsExpanded
+                                                   '    SelectedChannel.IsSelected = True
+                                                   '    selectedEPGItem = SelectedChannel.currentEPGItem
+                                                   '    Exit Sub
+                                                   'End If
+
+
+
+
+                                                   'If Not SelectedChannel Is Nothing Then SelectedChannel.ClearAllButCurrent()
+                                                   'If Not new_selected_channel Is Nothing Then
+                                                   '    Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
+                                                   '    For Each channel In Channels.items
+                                                   '        If channel Is new_selected_channel Then
+                                                   '            channel.IsSelected = True
+                                                   '            If rectie.Width < 720 Then
+                                                   '                channel.IsExpanded = Not channel.IsExpanded
+                                                   '            Else
+                                                   '                channel.IsExpanded = False
+                                                   '            End If
+                                                   '        Else
+                                                   '            channel.epgItemsLoaded = False
+                                                   '            channel.IsSelected = False
+                                                   '            channel.IsExpanded = False
+                                                   '        End If
+                                                   '    Next
                                                    If Not new_selected_channel Is Nothing Then
-                                                       Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
-                                                       For Each channel In Channels.items
-                                                           If channel Is new_selected_channel Then
-                                                               channel.IsSelected = True
-                                                               If rectie.Width < 720 Then
-                                                                   If channel.ExpandedView = "Collapsed" Then channel.ExpandedView = "Expanded" Else channel.ExpandedView = "Collapsed"
-                                                               Else
-                                                                   channel.ExpandedView = "Collapsed"
-                                                               End If
-                                                               Await channel.LoadEPG()
-                                                               SelectedChannel = channel
-                                                               selectedEPGItem = channel.epgitems.currentEPGItem
-                                                           Else
-                                                               channel.epgItemsLoaded = False
-                                                               channel.IsSelected = False
-                                                               channel.ExpandedView = "Collapsed"
-                                                           End If
-                                                       Next
-                                                       'If Not new_selected_channel.epgItemsLoaded Then Await new_selected_channel.LoadEPG()
+                                                       Await Notify.Update(False, loader.GetString("status_RefreshingEPGEntries"), 1, False, 0)
+                                                       Await new_selected_channel.LoadEPG()
+                                                       If Not SelectedChannel Is Nothing Then SelectedChannel.epgitems.ClearAllButCurrent()
+                                                       SelectedChannel = new_selected_channel
+                                                       selectedEPGItem = new_selected_channel.currentEPGItem
+                                                       Notify.Clear()
                                                    End If
+                                                   'End If
                                                End Sub)
         End Get
     End Property
 
-    Public ReadOnly Property ChannelEPGListSelectionChangedCommand As RelayCommand(Of Object)
-        Get
-            Return New RelayCommand(Of Object)(Sub(x)
-                                                   WriteToDebug("TVHead_ViewModel.EPGListSelectionChangedCommand()", "executed")
-                                                   Dim s As EPGItemViewModel = TryCast(x, EPGItemViewModel)
-                                                   If Not s Is Nothing Then
-                                                       Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
-                                                       For Each group In SelectedChannel.epgitems.groupeditems
-                                                           For Each epgitem In group
-                                                               If epgitem Is s Then
-                                                                   If rectie.Width < 720 Then
-                                                                       If (s.ExpandedView = "Collapsed" Or s.ExpandedView = "") Then
-                                                                           s.ExpandedView = "Expanded"
-                                                                       Else
-                                                                           s.ExpandedView = "Collapsed"
-                                                                       End If
-                                                                   End If
-                                                                   epgitem.IsSelected = True
-                                                               Else
-                                                                   epgitem.IsSelected = False
-                                                                   If epgitem.ExpandedView = "Expanded" Then
-                                                                       epgitem.ExpandedView = "Collapsed"
-                                                                   End If
-                                                               End If
-                                                           Next
-                                                       Next
-                                                       selectedEPGItem = s
-                                                   End If
-                                               End Sub)
-        End Get
-    End Property
+    Public Async Sub ShowStreamStatus(sender As Object, e As RoutedEventArgs)
+        WriteToDebug("TVHead_ViewMode.ShowHideStreamStatus", "executed")
+        Dim cDialog As New ContentDialog
+        cDialog.Style = CType(Application.Current.Resources("TVHeadContentDialog"), Style)
+        cDialog.RequestedTheme = ElementTheme.Light
+        cDialog.ContentTemplate = CType(Application.Current.Resources("TVHStatus"), DataTemplate)
+        cDialog.DataContext = Me
+        Await cDialog.ShowAsync()
+
+    End Sub
+
+
+
+
+    Public Sub ChannelEPGListSelectionChangedCommand(sender As Object, e As ItemClickEventArgs)
+        'WriteToDebug("TVHead_ViewModel.EPGListSelectionChangedCommand()", "executed")
+        'Dim ClickedEPGItem As EPGItemViewModel = TryCast(e.ClickedItem, EPGItemViewModel)
+        'If Not ClickedEPGItem Is Nothing Then
+        '    If ClickedEPGItem.EPGItemDetailsVisibility = "Visible" Then ClickedEPGItem.EPGItemDetailsVisibility = "Collapsed" Else ClickedEPGItem.EPGItemDetailsVisibility = "Visible"
+        '    ClickedEPGItem.IsSelected = True
+        '    selectedEPGItem = ClickedEPGItem
+        'End If
+        'If Not SelectedChannel Is Nothing Then
+        '    For Each g In SelectedChannel.groupeditems
+        '        For Each i In g
+        '            If i.eventId <> ClickedEPGItem.eventId Then
+        '                i.IsSelected = False
+        '                If i.EPGItemDetailsVisibility = "Visible" Then i.EPGItemDetailsVisibility = "Collapsed"
+        '            End If
+        '        Next
+        '    Next
+        'End If
+
+
+        'WriteToDebug("TVHead_ViewModel.EPGListSelectionChangedCommand()", "end")
+    End Sub
+
+
+
+
+    'Public ReadOnly Property ChannelEPGListSelectionChangedCommand As RelayCommand(Of SelectionChangedEventHandler)
+    '    Get
+    '        Return New RelayCommand(Of SelectionChangedEventHandler)(Sub(x)
+    '                                                                     WriteToDebug("TVHead_ViewModel.EPGListSelectionChangedCommand()", "executed")
+    '                                                                     'Dim s As EPGItemViewModel = TryCast(x, EPGItemViewModel)
+    '                                                                     Dim s As EPGItemViewModel
+    '                                                                     If Not s Is Nothing Then
+    '                                                                         Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
+    '                                                                         For Each group In SelectedChannel.groupeditems
+    '                                                                             For Each epgitem In group
+    '                                                                                 If epgitem Is s Then
+    '                                                                                     If rectie.Width < 720 Then
+    '                                                                                         If (s.ExpandedView = "Collapsed" Or s.ExpandedView = "") Then
+    '                                                                                             s.ExpandedView = "Expanded"
+    '                                                                                         Else
+    '                                                                                             s.ExpandedView = "Collapsed"
+    '                                                                                         End If
+    '                                                                                     End If
+    '                                                                                     epgitem.IsSelected = True
+    '                                                                                 Else
+    '                                                                                     epgitem.IsSelected = False
+    '                                                                                     If epgitem.ExpandedView = "Expanded" Then
+    '                                                                                         epgitem.ExpandedView = "Collapsed"
+    '                                                                                     End If
+    '                                                                                 End If
+    '                                                                             Next
+    '                                                                         Next
+    '                                                                         selectedEPGItem = s
+    '                                                                     End If
+    '                                                                     For Each c In Channels.items
+    '                                                                         c.IsSelected = False
+    '                                                                     Next
+    '                                                                 End Sub)
+    '    End Get
+    'End Property
 
 
     Public ReadOnly Property MenuButtonClickedCommand As RelayCommand
@@ -575,8 +669,14 @@ Public Class TVHead_ViewModel
                                                    WriteToDebug("TVHead_ViewModel.ChannelTagListSelectionChanged()", "start")
                                                    Dim sChannelTag As ChannelTagViewModel = TryCast(x, ChannelTagViewModel)
                                                    If Not sChannelTag Is Nothing Then
+                                                       For Each c In Channels.items
+                                                           c.epgitems.ClearAllButCurrent()
+                                                       Next
                                                        ChannelTags.selectedChannelTag = sChannelTag
-                                                       Await Channels.Load()
+                                                       Await Task.Run(Function() Channels.Load())
+                                                       SelectedChannel = Nothing
+                                                       selectedEPGItem = Nothing
+                                                       'Await Channels.RefreshCurrentEvents()
                                                    End If
                                                    WriteToDebug("TVHead_ViewModel.ChannelTagListSelectionChanged()", "end")
                                                    Notify.Clear()
@@ -614,6 +714,23 @@ Public Class TVHead_ViewModel
         End Set
     End Property
 
+
+    Public Sub View_SizeChanged(sender As Object, e As SizeChangedEventArgs)
+        If Window.Current.Bounds.Width > 720 Then
+            WriteToDebug("TVHead_ViewModel.View_SizeChanged()", String.Format("{0} / {1}", Window.Current.Bounds.Width, Window.Current.Bounds.Width / 3))
+            Dim sWidth As Integer = Window.Current.Bounds.Width
+            Dim ColumnWidth As Integer = sWidth / 3
+            HubSectionWidth = Math.Round(ColumnWidth)
+        Else
+            WriteToDebug("TVHead_ViewModel.View_SizeChanged()", String.Format("{0}", Window.Current.Bounds.Width))
+            HubSectionWidth = Window.Current.Bounds.Width
+        End If
+
+
+
+
+
+    End Sub
 
 
 
@@ -676,9 +793,9 @@ Public Class TVHead_ViewModel
                                         WriteToDebug("TVHead_ViewModel.StatusCommand", "start")
                                         'Me.StopRefresh()
                                         Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
-                                        If Not rootFrame.Navigate(GetType(StatusPage)) Then
-                                            Throw New Exception("Failed to create initial page")
-                                        End If
+                                        'If Not rootFrame.Navigate(GetType(StatusPage)) Then
+                                        '    Throw New Exception("Failed to create initial page")
+                                        'End If
                                         WriteToDebug("TVHead_ViewModel.StatusCommand", "stop")
                                     End Sub)
 
@@ -827,16 +944,16 @@ Public Class TVHead_ViewModel
     Public Property RefreshCommand As RelayCommand
         Get
             Return New RelayCommand(Async Sub()
-                                        If Me.AppBar.ButtonEnabled.refreshButton = True Then
-                                            Me.AppBar.ButtonEnabled.refreshButton = False
-                                        End If
-                                        If Me.PivotSelectedIndex = 0 And Not Me.Channels Is Nothing Then Await Me.Channels.RefreshCurrentEvents()
-                                        If Me.PivotSelectedIndex = 1 And Not Me.SelectedChannel Is Nothing Then Await Task.Run(Function() Me.SelectedChannel.RefreshEPG(True))
-                                        If Me.PivotSelectedIndex = 2 Then Await Task.Run(Function() Me.UpcomingRecordings.Reload(False))
-                                        If Me.PivotSelectedIndex = 3 Then Await Task.Run(Function() Me.FinishedRecordings.Reload(False))
-                                        If Me.PivotSelectedIndex = 4 Then Await Task.Run(Function() Me.FailedRecordings.Reload(False))
-                                        If Me.PivotSelectedIndex = 5 Then Await Task.Run(Function() Me.AutoRecordings.Reload())
-                                        Me.AppBar.ButtonEnabled.refreshButton = True
+                                        'If Me.AppBar.ButtonEnabled.refreshButton = True Then
+                                        '    Me.AppBar.ButtonEnabled.refreshButton = False
+                                        'End If
+                                        'If Me.PivotSelectedIndex = 0 And Not Me.Channels Is Nothing Then Await Me.Channels.RefreshCurrentEvents()
+                                        'If Me.PivotSelectedIndex = 1 And Not Me.SelectedChannel Is Nothing Then Await Task.Run(Function() Me.SelectedChannel.RefreshEPG(True))
+                                        'If Me.PivotSelectedIndex = 2 Then Await Task.Run(Function() Me.UpcomingRecordings.Reload(False))
+                                        'If Me.PivotSelectedIndex = 3 Then Await Task.Run(Function() Me.FinishedRecordings.Reload(False))
+                                        'If Me.PivotSelectedIndex = 4 Then Await Task.Run(Function() Me.FailedRecordings.Reload(False))
+                                        'If Me.PivotSelectedIndex = 5 Then Await Task.Run(Function() Me.AutoRecordings.Reload())
+                                        'Me.AppBar.ButtonEnabled.refreshButton = True
 
                                     End Sub)
 
@@ -1093,13 +1210,13 @@ Public Class TVHead_ViewModel
             'Dim recordings = Await LoadUpcomingRecordings()
 
             For Each c In Channels.items
-                If Not c.epgitems.currentEPGItem Is Nothing Then
-                    If c.epgitems.currentEPGItem.percentcompleted = 1 Then
+                If Not c.currentEPGItem Is Nothing Then
+                    If c.currentEPGItem.percentcompleted = 1 Then
                         Await c.RefreshCurrentEPGItem()
                         'Don't hammer the server too much during initial load, add a pause for each request
                         'Await Task.Delay(100)
                     Else
-                        If c.epgitems.currentEPGItem.eventId <> 0 Then
+                        If c.currentEPGItem.eventId <> 0 Then
                             'c.currentEPGItem.percentcompleted = 1
                         End If
 
@@ -1181,28 +1298,28 @@ Public Class TVHead_ViewModel
 
     'End Function
 
-    Public Async Function checkFailedDVRAccess(Optional report As Boolean = False) As Task
-        Dim dvrAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetFailedRecordings())
-        If dvrAccessResponse.IsSuccessStatusCode Then
-            TVHeadSettings.hasFailedDVRAccess = True
-        Else
-            TVHeadSettings.hasFailedDVRAccess = False
-            If report Then ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 5, .msg = "Error accessing Failed DVR : " + dvrAccessResponse.ReasonPhrase})
-        End If
+    'Public Async Function checkFailedDVRAccess(Optional report As Boolean = False) As Task
+    '    Dim dvrAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetFailedRecordings())
+    '    If dvrAccessResponse.IsSuccessStatusCode Then
+    '        TVHeadSettings.hasFailedDVRAccess = True
+    '    Else
+    '        TVHeadSettings.hasFailedDVRAccess = False
+    '        If report Then ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 5, .msg = "Error accessing Failed DVR : " + dvrAccessResponse.ReasonPhrase})
+    '    End If
 
-    End Function
+    'End Function
 
 
-    Public Async Function checkDVRAccess(Optional report As Boolean = False) As Task
-        Dim dvrAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetUpcomingRecordings())
-        If dvrAccessResponse.IsSuccessStatusCode Then
-            TVHeadSettings.hasDVRAccess = True
-        Else
-            TVHeadSettings.hasDVRAccess = False
-            If report Then ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 5, .msg = "Error accessing DVR : " + dvrAccessResponse.ReasonPhrase})
-        End If
+    'Public Async Function checkDVRAccess(Optional report As Boolean = False) As Task
+    '    Dim dvrAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetUpcomingRecordings())
+    '    If dvrAccessResponse.IsSuccessStatusCode Then
+    '        TVHeadSettings.hasDVRAccess = True
+    '    Else
+    '        TVHeadSettings.hasDVRAccess = False
+    '        If report Then ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 5, .msg = "Error accessing DVR : " + dvrAccessResponse.ReasonPhrase})
+    '    End If
 
-    End Function
+    'End Function
 
 
     Public Async Function checkCapabilities() As Task
@@ -1234,14 +1351,14 @@ Public Class TVHead_ViewModel
         End If
     End Function
 
-    Public Async Function checkAccess(Optional report As Boolean = False) As Task
-        'Checks the capabilities and authorization of the TVH server and used account
-        'Await checkEPGAccess(report)
-        Await checkDVRAccess(report)
-        Await checkFailedDVRAccess(report)
-        'Await checkAdminAccess(report)
+    'Public Async Function checkAccess(Optional report As Boolean = False) As Task
+    '    'Checks the capabilities and authorization of the TVH server and used account
+    '    'Await checkEPGAccess(report)
+    '    'Await checkDVRAccess(report)
+    '    'Await checkFailedDVRAccess(report)
+    '    'Await checkAdminAccess(report)
 
-    End Function
+    'End Function
 
     Public Async Function RefreshDataAsync() As Task
 
@@ -1263,10 +1380,13 @@ Public Class TVHead_ViewModel
         If Me.ChannelTags.dataLoaded = False Then Await Me.ChannelTags.Load()
         If Me.DVRConfigs.dataLoaded = False Then Await Me.DVRConfigs.Load()
         If Me.ContentTypes.dataLoaded = False Then Await Me.ContentTypes.Load()
-        If Me.Channels.dataLoaded = False Then Await Me.Channels.Load()
-
-
-        'EPGRefresher.StartRefresh()
+        If Me.Channels.dataLoaded = False Then Await Task.Run(Function() Me.Channels.Load())
+        'Await Task.Delay(3000)
+        'For Each c In Channels.items
+        '    Await c.LoadEPG()
+        'Next
+        'Await Task.Delay(3000)
+        EPGRefresher.StartRefresh()
         Await Task.Delay(1000)
         CometCatcher.StartRefresh()
 
@@ -1274,7 +1394,7 @@ Public Class TVHead_ViewModel
             Streams.items = (Await LoadStreams()).ToObservableCollection()
             Subscriptions.items = (Await LoadSubscriptions()).ToObservableCollection()
             Services.items = Await LoadServices()
-            Muxes.items = Await LoadMuxes()
+            Muxes.items = (Await LoadMuxes()).ToObservableCollection()
             ' Else
             'vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.isError = True, .secondsToShow = 4, .msg = "You don't have Admin access to the TVH server with this account. Therefore you won't see Subscriptions / Stream updates."})
         End If
@@ -1344,7 +1464,7 @@ Public Class TVHead_ViewModel
         If TypeOf (item) Is EPGItemViewModel Then
             epgitem = item
         Else
-            epgitem = CType(item, ChannelViewModel).epgitems.currentEPGItem
+            epgitem = CType(item, ChannelViewModel).currentEPGItem
         End If
 
 
@@ -1403,18 +1523,7 @@ Public Class TVHead_ViewModel
 
 #Region "Constructor"
     Public Sub New()
-        'Dim refreshInterval As Integer = appSettings.RefreshRate
-        'WaitingForDiskspaceUpdate = True
-        'If Not refreshInterval = 0 Then
-        '    ChannelTagFlyoutIsOpen = False
-        '    PivotSelectedIndex = 0
-        '    AddHandler timer.Tick, AddressOf RefreshMe
-        '    timer.Interval = New TimeSpan(0, 0, refreshInterval)
-        '    ChannelSelected = False
-        'timer.Start()
-        'StatusBar.Clean()
-
-        'End If
+        SelectedPivotIndex = 0
 
     End Sub
 #End Region

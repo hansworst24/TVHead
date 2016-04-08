@@ -4,18 +4,21 @@ Imports Windows.UI.Core
 Imports TVHead_81.ViewModels
 
 Public Class ChannelListViewModel
+    Inherits ViewModelBase
     Private Property _allchannels As New List(Of ChannelViewModel)
-    Public Property items As New ObservableCollection(Of ChannelViewModel)
-    Public Property dataLoaded As Boolean
 
-    Public ReadOnly Property vm As TVHead_ViewModel
+    Public ReadOnly Property items As List(Of ChannelViewModel)
         Get
-            Return CType(Application.Current, Application).DefaultViewModel
+            Dim vm As TVHead_ViewModel = TryCast(CType(Application.Current, Application).DefaultViewModel, TVHead_ViewModel)
+            Dim selectedChannelTag As ChannelTagViewModel = vm.ChannelTags.selectedChannelTag
+            Return _allchannels.OrderBy(Function(x) x.number).Where(Function(x) x.tags.Contains(selectedChannelTag.uuid)).ToList()
         End Get
     End Property
+    Public Property dataLoaded As Boolean
 
     Public Async Function RefreshCurrentEvents(Optional c As ChannelViewModel = Nothing) As Task
         WriteToDebug("ChannelListViewModel.RefreshCurrentEvents()", "executed")
+        Dim vm As TVHead_ViewModel = TryCast(CType(Application.Current, Application).DefaultViewModel, TVHead_ViewModel)
         If Await vm.TVHeadSettings.hasEPGAccess Then
             If c Is Nothing Then
                 'Await vm.Notify.Update(False, vm.loader.GetString("status_RefreshingChannels"), 1, False, 0)
@@ -48,6 +51,7 @@ Public Class ChannelListViewModel
     End Function
 
     Public Async Function Load() As Task
+        WriteToDebug("ChannelListViewModel.Load()", "executed")
         Dim vm As TVHead_ViewModel = TryCast(CType(Application.Current, Application).DefaultViewModel, TVHead_ViewModel)
         Dim selectedChannelTag As ChannelTagViewModel = vm.ChannelTags.selectedChannelTag
         Await vm.Notify.Update(False, vm.loader.GetString("status_RefreshingChannels"), 1, False, 0)
@@ -55,16 +59,45 @@ Public Class ChannelListViewModel
             Me._allchannels = (Await LoadAllChannels()).ToList()
         End If
         Await Me.RefreshCurrentEvents()
+        'Await RunOnUIThread(Sub()
+        '                        RaisePropertyChanged("items")
+        '                    End Sub)
+
 
         Dim newChannels = _allchannels.OrderBy(Function(x) x.number).Where(Function(x) x.tags.Contains(selectedChannelTag.uuid)).ToList()
+        items.Clear()
+        For Each channel In newChannels
+            items.Add(channel)
+        Next
         Await RunOnUIThread(Sub()
-                                items.Clear()
-                                For Each channel In newChannels
-                                    items.Add(channel)
-                                Next
+
+                                RaisePropertyChanged("items")
                             End Sub)
         Me.dataLoaded = True
     End Function
 
+
+
+    Public Async Sub Channel_Clicked(sender As Object, e As ItemClickEventArgs)
+        WriteToDebug("ChannelListViewModel.ChannelClicked", "executed")
+        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
+
+        Dim clickedChannel As ChannelViewModel = TryCast(e.ClickedItem, ChannelViewModel)
+        If Not clickedChannel Is Nothing Then
+            For Each c In items
+                If c.uuid = clickedChannel.uuid Then c.IsSelected = True Else c.IsSelected = False
+            Next
+
+            Await vm.Notify.Update(False, vm.loader.GetString("status_RefreshingEPGEntries"), 1, False, 0)
+            Await clickedChannel.LoadEPG()
+            If Not vm.SelectedChannel Is Nothing Then vm.SelectedChannel.epgitems.ClearAllButCurrent()
+            vm.SelectedChannel = clickedChannel
+            vm.selectedEPGItem = clickedChannel.currentEPGItem
+            vm.Notify.Clear()
+            vm.SelectedPivotIndex = 1
+        End If
+        ' Dim new_selected_channel As ChannelViewModel = TryCast(x, ChannelViewModel)
+
+    End Sub
 
 End Class

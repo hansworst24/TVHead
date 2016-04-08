@@ -432,7 +432,7 @@ Partial Public Class AppSettingsPage
                 vm.TVHVersion = sInfo.sw_version
                 tbTestResult.Text = vm.TVHVersionLong
             End If
-            Await vm.checkAccess(True)
+            'Await vm.checkAccess(True)
         Catch ex As Exception
             WriteToDebug("Downloader.DownloadJSON", ex.Message.ToString)
             tbTestResult.Text = ex.Message

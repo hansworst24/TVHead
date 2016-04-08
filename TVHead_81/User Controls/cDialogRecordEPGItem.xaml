@@ -8,12 +8,13 @@
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
-    Title="{Binding Title}"
+    ContentTemplate="{StaticResource ListViewJumpListTemplate}"
+    TitleTemplate="{StaticResource ContentDialogRecordingTitleTemplate}"
     FullSizeDesired="False"
     PrimaryButtonText="{Binding OKButtonText}"  
     SecondaryButtonText="{Binding CancelButtonText}">
 
-    <Grid>
+    <Grid HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
@@ -23,28 +24,23 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <ComboBox x:Uid="cbDVRConfig" x:Name="cbDVRConfig" Margin="0,20,0,0" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"  ItemsSource="{Binding dvrconfigs}" ItemTemplate="{StaticResource DVRConfigTemplate}" 
-                  SelectedIndex="{Binding selectedDVRConfigIndex}">
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="0,5,0,5" Height="1" VerticalAlignment="Top" Background="{ThemeResource SystemControlHighlightAccentBrush}"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" x:Uid="tbSelectDVRConfig" Text="Select DVR Config" Margin="0,10,0,0" TextWrapping="WrapWholeWords"/>
+        <ComboBox  Grid.Row="1" Grid.Column="1" x:Name="cbDVRConfig" HorizontalAlignment="Stretch" Margin="0,10,0,0" VerticalAlignment="Top" ItemsSource="{Binding dvrconfigs}" ItemTemplate="{StaticResource DVRConfigTemplate}" 
+                  SelectedItem="{Binding dvrconfigs[0]}">
             <Interactivity:Interaction.Behaviors>
                 <Core:EventTriggerBehavior EventName="SelectionChanged" >
                     <Core:InvokeCommandAction Command="{Binding selectDVRConfig}" CommandParameter="{Binding SelectedItem, ElementName=cbDVRConfig}"/>
                 </Core:EventTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
-
         </ComboBox>
-        <TextBlock Margin="0,50,0,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding RecordingQuestion}" TextWrapping="Wrap" Style="{ThemeResource ComboBoxPlaceholderTextBlockStyle}"/>
-        <ToggleButton Grid.Column="0" Grid.Row="2" Margin="0,0,10,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-               Content="{Binding SingleRecordingButtonText}" Command="{Binding selectSingleRecording}" 
-                      IsChecked="{Binding SingleRecording, Mode=TwoWay}"/>
-        <ToggleButton Grid.Column="1" Grid.Row="2" Margin="10,0,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                      Content="{Binding SeriesRecordingButtonText}" Command="{Binding selectSeriesRecording}" 
-                      IsChecked="{Binding SeriesRecording, Mode=TwoWay}"
-                      Visibility="{Binding SeriesRecordingButtonVisibility}"/>
-        <ToggleButton Grid.Column="1" Grid.Row="2" Margin="10,0,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                      Content="{Binding AutoRecordingButtonText}" Command="{Binding selectAutoRecording}" 
-                      IsChecked="{Binding AutoRecording, Mode=TwoWay}"
-                      Visibility="{Binding AutoRecordingButtonVisibility}"/>
-
+        <TextBlock Grid.Row="2" Grid.Column="0" x:Uid="tbSelectRecordingType" Text="Select Recording Type" Margin="0,10,0,0" TextWrapping="WrapWholeWords"/>
+        <ComboBox  Grid.Row="2" Grid.Column="1" x:Name="cbRecordingType" HorizontalAlignment="Stretch" Margin="0,10,0,0" VerticalAlignment="Top" ItemsSource="{Binding RecordingTypes}" SelectedItem="{Binding RecordingTypes[0]}">
+            <Interactivity:Interaction.Behaviors>
+                <Core:EventTriggerBehavior EventName="SelectionChanged" >
+                    <Core:InvokeCommandAction Command="{Binding selectRecordingType}" CommandParameter="{Binding ElementName=cbRecordingType}"/>
+                </Core:EventTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>
+        </ComboBox>
     </Grid>
-        <!-- Content body -->
 </ContentDialog>

@@ -88,8 +88,11 @@
     <Compile Include="EPG_WideView.xaml.vb">
       <DependentUpon>EPG_WideView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="status.xaml.vb">
-      <DependentUpon>status.xaml</DependentUpon>
+    <Compile Include="HubView.xaml.vb">
+      <DependentUpon>HubView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Dictionary.xaml.vb">
+      <DependentUpon>Dictionary.xaml</DependentUpon>
     </Compile>
     <Compile Include="SearchPage.xaml.vb">
       <DependentUpon>SearchPage.xaml</DependentUpon>
@@ -116,14 +119,8 @@
     <Compile Include="User Controls\cDialogRecordEPGItem.xaml.vb">
       <DependentUpon>cDialogRecordEPGItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="User Controls\ucActiveProgram.xaml.vb">
-      <DependentUpon>ucActiveProgram.xaml</DependentUpon>
-    </Compile>
     <Compile Include="User Controls\ucAutoRecording.xaml.vb">
       <DependentUpon>ucAutoRecording.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="User Controls\ucCometStatistics.xaml.vb">
-      <DependentUpon>ucCometStatistics.xaml</DependentUpon>
     </Compile>
     <Compile Include="User Controls\ucSettings_Menu.xaml.vb">
       <DependentUpon>ucSettings_Menu.xaml</DependentUpon>
@@ -131,20 +128,11 @@
     <Compile Include="User Controls\ucSideMenu.xaml.vb">
       <DependentUpon>ucSideMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="User Controls\ucSubscription.xaml.vb">
-      <DependentUpon>ucSubscription.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="User Controls\ucStream.xaml.vb">
-      <DependentUpon>ucStream.xaml</DependentUpon>
-    </Compile>
     <Compile Include="User Controls\ucChannel.xaml.vb">
       <DependentUpon>ucChannel.xaml</DependentUpon>
     </Compile>
     <Compile Include="User Controls\ucChannelEPGDetail.xaml.vb">
       <DependentUpon>ucChannelEPGDetail.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="User Controls\ucEPGEntryDetail.xaml.vb">
-      <DependentUpon>ucEPGEntryDetail.xaml</DependentUpon>
     </Compile>
     <Compile Include="User Controls\ucMux.xaml.vb">
       <DependentUpon>ucMux.xaml</DependentUpon>
@@ -316,9 +304,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="status.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="HubView.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Dictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SearchPage.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -344,15 +336,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="User Controls\ucActiveProgram.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="User Controls\ucAutoRecording.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="User Controls\ucCometStatistics.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -364,23 +348,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="User Controls\ucSubscription.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="User Controls\ucStream.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="User Controls\ucChannel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="User Controls\ucChannelEPGDetail.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="User Controls\ucEPGEntryDetail.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -17,17 +17,17 @@
 
     <Page.Resources>
         <vm:StatusUpdateViewModel x:Key="MyTopHeader" x:Name="MyTopHeader" UpdateText="TVHeadend Server Comes Here" IsBusy="True"/>
-        <CollectionViewSource x:Key="cvsEPGItems" Source="{Binding SelectedChannel.epgitems.groupeditems, Mode=TwoWay}" IsSourceGrouped="True"/>
-        <CollectionViewSource x:Key="cvsUpcomingRecordings" Source="{Binding UpcomingRecordings.groupeditems, Mode=TwoWay}" IsSourceGrouped="True" />
-        <CollectionViewSource x:Key="cvsFinishedRecordings" Source="{Binding FinishedRecordings.groupeditems, Mode=TwoWay}" IsSourceGrouped="True"/>
-        <CollectionViewSource x:Key="cvsFailedRecordings" Source="{Binding FailedRecordings.groupeditems, Mode=TwoWay}" IsSourceGrouped="True"/>
-        <CollectionViewSource x:Key="cvsAutoRecordings" Source="{Binding AutoRecordings.items, Mode=TwoWay}" IsSourceGrouped="False"/>
+        <CollectionViewSource x:Key="cvsEPGItems" Source="{Binding SelectedChannel.groupeditems, Mode=OneWay}" IsSourceGrouped="True"/>
+        <CollectionViewSource x:Key="cvsUpcomingRecordings" Source="{Binding UpcomingRecordings.groupeditems, Mode=OneWay}" IsSourceGrouped="True" />
+        <CollectionViewSource x:Key="cvsFinishedRecordings" Source="{Binding FinishedRecordings.groupeditems, Mode=OneWay}" IsSourceGrouped="True"/>
+        <CollectionViewSource x:Key="cvsFailedRecordings" Source="{Binding FailedRecordings.groupeditems, Mode=OneWay}" IsSourceGrouped="True"/>
+        <CollectionViewSource x:Key="cvsAutoRecordings" Source="{Binding AutoRecordings.items, Mode=OneWay}" IsSourceGrouped="False"/>
 
-        <CollectionViewSource x:Key="cvsLogMessages" Source="{Binding logmessages.entries}"/>
-        <CollectionViewSource x:Key="cvsAdapters" Source="{Binding Streams.items}"/>
-        <CollectionViewSource x:Key="cvsSubscriptions" Source="{Binding Subscriptions.items}"/>
-        <CollectionViewSource x:Key="cvsServices" Source="{Binding Services.items, Mode=TwoWay}"/>
-        <CollectionViewSource x:Key="cvsMuxes" Source="{Binding Muxes.items, Mode=TwoWay}"/>
+        <CollectionViewSource x:Key="cvsLogMessages" Source="{Binding logmessages.entries, Mode=OneWay}"/>
+        <CollectionViewSource x:Key="cvsAdapters" Source="{Binding Streams.items, Mode=OneWay}"/>
+        <CollectionViewSource x:Key="cvsSubscriptions" Source="{Binding Subscriptions.items, Mode=OneWay}"/>
+        <CollectionViewSource x:Key="cvsServices" Source="{Binding Services.items, Mode=OneWay}"/>
+        <CollectionViewSource x:Key="cvsMuxes" Source="{Binding Muxes.items, Mode=OneWay}"/>
 
         <local:BoolToVisibilityConverter x:Key="myBoolVisConvertor"/>
     </Page.Resources>
@@ -44,7 +44,7 @@
 
 
     <!--<Grid x:Name="LayoutRoot" Background="{ThemeResource HubBackgroundImageBrush}">-->
-    <Grid x:Name="LayoutRoot" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
+    <Grid x:Name="LayoutRoot" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>
@@ -52,6 +52,8 @@
                         <AdaptiveTrigger MinWindowWidth="720"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
+                        <Setter Target="abbEventInfo.Visibility" Value="Collapsed"/>
+                        <Setter Target="abbTVHStatus.Visibility" Value="Collapsed"/>
                         <Setter Target="EPGItemView.Visibility" Value="Visible"/>
                         <Setter Target="ChannelsColumn.Width" Value="2*"/>
                         <Setter Target="EPGItemsColumn.Width" Value="2*"/>
@@ -93,6 +95,7 @@
         <Border Grid.Row="0" VerticalAlignment="Bottom" Height="48" Canvas.ZIndex="100">
             <local:ucNotificationMessage DataContext="{Binding Notify}"/>
         </Border>
+
        
 
         <!-- THE SUB HEADER -->
@@ -172,8 +175,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </Grid>
-            
-            <!-- THIS IS THE MIDDLE COLUMN WHERE THE EPG APPEARS FOR THE SELECTED CHANNEL-->
+             <!-- THIS IS THE MIDDLE COLUMN WHERE THE EPG APPEARS FOR THE SELECTED CHANNEL-->
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
@@ -183,8 +185,10 @@
                 <Image Grid.Row="0" Width="40" Height="40" Source="{Binding SelectedChannel.chicon}" HorizontalAlignment="Left"/>
                 <SemanticZoom Grid.Row="1">
                     <SemanticZoom.ZoomedInView>
-                        <ListView x:Name="lstEPGItems" ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Mode=TwoWay}"  BorderThickness="0,1,0,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
-                                    ContinuumNavigationTransitionInfo.ExitElementContainer="True" ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectionMode="None">
+                        <ListView x:Name="lstEPGItems" ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Mode=TwoWay}"  
+                                  BorderThickness="0,1,0,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+                                    ContinuumNavigationTransitionInfo.ExitElementContainer="True" ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectionMode="None"
+                                    ItemClick="{x:Bind vm.ChannelEPGListSelectionChangedCommand}" IsItemClickEnabled="True" ItemTemplate="{StaticResource EPGItem}">
                             <ListView.GroupStyle>
                                 <GroupStyle HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
                             </ListView.GroupStyle>
@@ -195,21 +199,11 @@
                                     <Setter Property="Margin" Value="0" />
                                 </Style>
                             </ListView.ItemContainerStyle>
-                            <ListView.ItemTemplate>
+                            <!--<ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Background="Transparent" Padding="0" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
-                                        <Button.Content>
                                             <local:ucActiveProgram/>
-                                        </Button.Content>
-                                        <Interactivity:Interaction.Behaviors>
-                                            <Core:EventTriggerBehavior EventName="Click">
-                                                <Core:InvokeCommandAction Command="{Binding DataContext.ChannelEPGListSelectionChangedCommand, ElementName=lstEPGItems}" 
-                                                                          CommandParameter="{Binding}"/>
-                                            </Core:EventTriggerBehavior>
-                                        </Interactivity:Interaction.Behaviors>
-                                    </Button>
                                 </DataTemplate>
-                            </ListView.ItemTemplate>
+                            </ListView.ItemTemplate>-->
                             <!--<Interactivity:Interaction.Behaviors>
                                 <Core:EventTriggerBehavior EventName="SelectionChanged" SourceObject="{Binding ElementName=lstEPGItems}">
                                     <Core:InvokeCommandAction Command="{Binding ChannelEPGListSelectionChangedCommand}" CommandParameter="{Binding ElementName=lstEPGItems}"/>
@@ -233,8 +227,7 @@
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Border Grid.Row="0" Height="40" HorizontalAlignment="Stretch" BorderThickness="0,0,0,1" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" >
                     <TextBlock Height="40" HorizontalAlignment="Center" Text="{Binding selectedEPGItem.title}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap"/>
@@ -244,7 +237,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
-                    <local:ucEPGEntryDetail Grid.Row="0" DataContext="{Binding selectedEPGItem}"/>
+                    <!--<local:ucEPGEntryDetail Grid.Row="0" DataContext="{Binding selectedEPGItem}"/>-->
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,48" >
                         <Button Content="Record" Margin="20,0,20,0"/>
                         <Button Content="Abort Recording" Margin="20,0,20,0"/>
@@ -252,41 +245,8 @@
                         <Button Content="Delete" Margin="20,0,20,0"/>
                     </StackPanel>
                 </Grid>
-                <local:ucCometStatistics Grid.Row="2" DataContext="{Binding CometCatcher}"/>
-                <ListView Grid.Row="3" ItemsSource="{Binding Source={StaticResource cvsAdapters}}" Margin="10,0,0,0"
-                        ContinuumNavigationTransitionInfo.ExitElementContainer="True">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="Padding" Value="0"/>
-                            <Setter Property="Margin" Value="0,0,0,5" />
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <local:ucStream />
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-                <ListView Grid.Row="4" ItemsSource="{Binding Source={StaticResource cvsSubscriptions}}"  Margin="10,0,0,0"
-                        ContinuumNavigationTransitionInfo.ExitElementContainer="True">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="Padding" Value="0"/>
-                            <Setter Property="Margin" Value="0,0,0,5" />
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <local:ucSubscription />
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <ContentControl Grid.Row="2" ContentTemplate="{StaticResource CometStatistics}" DataContext="{x:Bind vm.CometCatcher.CometStatistics}" HorizontalContentAlignment="Stretch"/>
+                <ContentControl Grid.Row="3" ContentTemplate="{StaticResource TVHStatus}" HorizontalContentAlignment="Stretch"/>
             </Grid>
             <local:ucSideMenu Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="300">
                 <local:ucSideMenu.RenderTransform>
@@ -295,10 +255,10 @@
             </local:ucSideMenu>
         </Grid>
         <Interactivity:Interaction.Behaviors>
-            <Core:DataTriggerBehavior Binding="{Binding MenuIsOpen}" Value="False">
+            <Core:DataTriggerBehavior Binding="{x:Bind vm.MenuIsOpen, Mode=OneWay}" Value="False">
                 <Core:GoToStateAction StateName="HideMenu"/>
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding MenuIsOpen}" Value="True">
+            <Core:DataTriggerBehavior Binding="{x:Bind vm.MenuIsOpen, Mode=OneWay}" Value="True">
                 <Core:GoToStateAction StateName="ShowMenu"/>
             </Core:DataTriggerBehavior>
         </Interactivity:Interaction.Behaviors>
@@ -308,15 +268,39 @@
             <CommandBar.Content>
                 <Grid HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal">
-                        <AppBarButton Width="48" HorizontalAlignment="Left" Command="{Binding MenuButtonClickedCommand}" VerticalAlignment="Center" Height="48">
+                        <AppBarButton Width="48" HorizontalAlignment="Left" Command="{x:Bind vm.MenuButtonClickedCommand, Mode=OneWay}" VerticalAlignment="Center" Height="48">
                             <AppBarButton.Icon>
                                 <FontIcon FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE700;"/>
                             </AppBarButton.Icon>
                         </AppBarButton>
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <AppBarButton Width="48" Height="48" Margin="0,-20,0,-20" Padding="0,-10,0,-10" VerticalAlignment="Center" IsEnabled="{x:Bind vm.RecordSelectedEPGItemButtonEnabled, Mode=OneWay}" Command="{x:Bind vm.selectedEPGItem.RecordCommand, Mode=OneWay}">
+                            <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE1D2;" Foreground="{x:Bind vm.selectedEPGItem.RecordingIconColor, Mode=OneWay}"/>
+                        </AppBarButton>
+                        <AppBarButton x:Name="abbEventInfo"  Visibility="Visible" Margin="20,0,0,0" Width="48" Height="48" IsEnabled="{x:Bind vm.RecordSelectedEPGItemButtonEnabled, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                            <AppBarButton.Icon>
+                                <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xEC42;"/>
+                            </AppBarButton.Icon>
+                        </AppBarButton>
+                        <AppBarButton x:Name="abbTVHStatus" Visibility="Visible"  Margin="20,0,0,0" Padding="0" Width="48"  Height="48" Click="{x:Bind vm.ShowStreamStatus, Mode=OneWay}">
+                            <AppBarButton.Icon>
+                                <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE950;"/>
+                            </AppBarButton.Icon>
+                        </AppBarButton>
+                    </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <AppBarToggleButton Icon="Refresh" HorizontalAlignment="Right" VerticalAlignment="Center" Height="48" Width="48" IsChecked="{Binding TVHeadSettings.LongPollingEnabled, Mode=TwoWay}"/>
-                        <!--<AppBarButton Name="abbRefresh" Icon="Refresh" HorizontalAlignment="Right" VerticalAlignment="Center" Height="48" Width="48" Command="{Binding RefreshCommand}"/>-->
+                        <AppBarToggleButton HorizontalAlignment="Right" 
+                                            VerticalAlignment="Center" Height="48" Width="48" 
+                                            IsChecked="{x:Bind vm.TVHeadSettings.LongPollingEnabled, FallbackValue=False, Mode=TwoWay}"
+                                            Style="{StaticResource TVHeadAppBarToggleButton}">
+                            <AppBarToggleButton.Icon>
+                                <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE895;"/>
+                            </AppBarToggleButton.Icon>
+                            <AppBarToggleButton.RenderTransform>
+                                <RotateTransform CenterX="24" CenterY="24" Angle="{x:Bind vm.CometCatcher.CometRotation, Mode=OneWay}"/>
+                            </AppBarToggleButton.RenderTransform>
+                        </AppBarToggleButton>
                     </StackPanel>
                 </Grid>
             </CommandBar.Content>

@@ -1,21 +1,14 @@
 ﻿Imports GalaSoft.MvvmLight
-Imports Windows.ApplicationModel.Core
-Imports Windows.UI.Core
 Imports TVHead_81.ViewModels
 Imports Windows.UI.Popups
 Imports GalaSoft.MvvmLight.Command
+Imports Windows.UI
 
 Public Class EPGItemViewModel
     Inherits ViewModelBase
     Private _EPGItem As tvh40.EPGEvent
 
 #Region "Properties"
-    Private ReadOnly Property vm As TVHead_ViewModel
-        Get
-            Return CType(Application.Current, Application).DefaultViewModel
-        End Get
-
-    End Property
     Public ReadOnly Property channelName As String
         Get
             Return _EPGItem.channelName
@@ -47,6 +40,8 @@ Public Class EPGItemViewModel
                 RaisePropertyChanged("dvrState")
                 RaisePropertyChanged("RecordingStatus")
                 RaisePropertyChanged("RecordingIcon")
+                RaisePropertyChanged("RecordingIconColor")
+                RaisePropertyChanged("RecordingStatusIndicatorVisibility")
             End If
         End Set
     End Property
@@ -86,18 +81,6 @@ Public Class EPGItemViewModel
             Return _EPGItem.eventId
         End Get
     End Property
-    Public Property ExpandedView As String
-        Get
-            Return _ExpandedView
-        End Get
-        Set(value As String)
-            If value <> _ExpandedView Then
-                _ExpandedView = value
-                RaisePropertyChanged()
-            End If
-        End Set
-    End Property
-    Private Property _ExpandedView As String
     Public ReadOnly Property genre As List(Of Integer)
         Get
             Return _EPGItem.genre
@@ -105,6 +88,7 @@ Public Class EPGItemViewModel
     End Property
     Public ReadOnly Property genreName As String
         Get
+            Dim vm = CType(Application.Current, Application).DefaultViewModel
             If Not genre Is Nothing AndAlso Not genre.Count = 0 Then
                 Return (From g In vm.ContentTypes.allitems Where g.uuid = genre(0) Select g.name).FirstOrDefault
             Else
@@ -117,13 +101,41 @@ Public Class EPGItemViewModel
             If _EPGItem.subtitle <> "" Then Return _EPGItem.subtitle Else Return _EPGItem.description
         End Get
     End Property
-    Public ReadOnly Property RecordingIcon As String
+    Public ReadOnly Property RecordingIconColor As SolidColorBrush
         Get
             If RecordingStatus = 1 Or RecordingStatus = 3 Then
-                Return "/images/player_record.png"
+                Return CType(Application.Current.Resources("SystemControlHighlightAccentBrush"), SolidColorBrush)
             Else
-                Return "/images/player_record_off.png"
+                Return CType(Application.Current.Resources("SystemControlForegroundBaseHighBrush"), SolidColorBrush)
             End If
+        End Get
+    End Property
+    Public ReadOnly Property EPGItemBackground As SolidColorBrush
+        Get
+            If IsSelected Then
+                Return CType(Application.Current.Resources("SystemControlHighlightAccentBrush"), SolidColorBrush)
+            Else
+                Return New SolidColorBrush(Colors.Transparent)
+            End If
+
+        End Get
+    End Property
+    Public ReadOnly Property RecordingStatusIndicatorVisibility As String
+        Get
+            Select Case _EPGItem.dvrState
+                Case "recording", "scheduled", "recordingError" : Return "Visible"
+                Case Else : Return "Collapsed"
+            End Select
+        End Get
+    End Property
+    Public ReadOnly Property RecordingIcon As String
+        Get
+            Select Case _EPGItem.dvrState
+                Case "recording" : Return "/Images/player_record_small.png"
+                Case "scheduled" : Return "/Images/player_record_small_scheduled.png"
+                Case "recordingError" : Return "/Images/player_record_small_error.png"
+                Case Else : Return "/Images/player_record_small.png"
+            End Select
         End Get
     End Property
     Public ReadOnly Property RecordingStatus As Integer
@@ -195,8 +207,11 @@ Public Class EPGItemViewModel
             Return _IsSelected
         End Get
         Set(value As Boolean)
-            _IsSelected = value
-            RaisePropertyChanged("IsSelected")
+            If _IsSelected <> value Then
+                _IsSelected = value
+                RaisePropertyChanged("IsSelected")
+                RaisePropertyChanged("EPGItemBackground")
+            End If
         End Set
     End Property
     Private Property _IsSelected As Boolean
@@ -241,29 +256,29 @@ Public Class EPGItemViewModel
         Get
             Return New RelayCommand(Sub()
                                         WriteToDebug("EPGItemViewModel.ExpanseCollapseCommand()", "start")
-
+                                        Dim vm = CType(Application.Current, Application).DefaultViewModel
                                         Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
                                         If rectie.Width > 720 Then
                                             vm.selectedEPGItem = Me
                                         Else
-                                            For Each group In vm.SelectedChannel.epgitems.groupeditems
-                                                For Each epgitem In group
-                                                    If epgitem Is Me Then
-                                                        If (Me.ExpandedView = "Collapsed" Or Me.ExpandedView = "") Then
-                                                            Me.ExpandedView = "Expanded"
-                                                            Me.RecordButtonEnabled = True
-                                                        Else
-                                                            Me.ExpandedView = "Collapsed"
-                                                            Me.RecordButtonEnabled = False
-                                                        End If
-                                                    Else
-                                                        If epgitem.ExpandedView = "Expanded" Then
-                                                            epgitem.ExpandedView = "Collapsed"
-                                                            epgitem.RecordButtonEnabled = False
-                                                        End If
-                                                    End If
-                                                Next
-                                            Next
+                                            'For Each group In vm.SelectedChannel.groupeditems
+                                            '    For Each epgitem In group
+                                            '        If epgitem Is Me Then
+                                            '            If (Me.ExpandedView = "Collapsed" Or Me.ExpandedView = "") Then
+                                            '                Me.ExpandedView = "Expanded"
+                                            '                Me.RecordButtonEnabled = True
+                                            '            Else
+                                            '                Me.ExpandedView = "Collapsed"
+                                            '                Me.RecordButtonEnabled = False
+                                            '            End If
+                                            '        Else
+                                            '            If epgitem.ExpandedView = "Expanded" Then
+                                            '                epgitem.ExpandedView = "Collapsed"
+                                            '                epgitem.RecordButtonEnabled = False
+                                            '            End If
+                                            '        End If
+                                            '    Next
+                                            'Next
                                         End If
                                         WriteToDebug("EPGItemViewModel.ExpanseCollapseCommand()", "stop")
                                     End Sub)
@@ -278,6 +293,7 @@ Public Class EPGItemViewModel
                                         'Me.createSeriesRecording = False
                                         'Me.createSingleRecording = False
                                         Me.continueWithDeletion = False
+                                        Dim vm = CType(Application.Current, Application).DefaultViewModel
 
                                         WriteToDebug("EPGItemViewModel.RecordCommand()", "Executed")
                                         If RecordingStatus = 1 Or RecordingStatus = 2 Or RecordingStatus = 3 Then
@@ -292,14 +308,14 @@ Public Class EPGItemViewModel
                                             StartEventRecording()
                                         End If
 
-                                        If Not vm.appSettings.LongPollingEnabled And vm.TVHeadSettings.hasDVRAccess Then
+                                        If Not vm.appSettings.LongPollingEnabled And Await vm.TVHeadSettings.hasDVRAccess Then
                                             vm.UpcomingRecordings.Reload(True)
                                             vm.FinishedRecordings.Reload(True)
                                             vm.FailedRecordings.Reload(True)
                                             If Not vm.SelectedChannel Is Nothing AndAlso Me.channelUuid = vm.SelectedChannel.uuid Then
                                                 vm.SelectedChannel.RefreshEPG(True)
                                             End If
-                                            Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.epgitems.currentEPGItem.eventId = Me.eventId).FirstOrDefault()
+                                            Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.currentEPGItem.eventId = Me.eventId).FirstOrDefault()
                                             If Not c Is Nothing Then
                                                 c.RefreshCurrentEPGItem(Nothing, True)
                                             End If
@@ -310,8 +326,8 @@ Public Class EPGItemViewModel
                                         'Collapse the view of the parent channel, in case the EPG Item is the current epgitem for a channel
                                         If Not vm.Channels Is Nothing Then
                                             Dim c = (From a In vm.Channels.items Where a.uuid = Me.channelUuid Select a).FirstOrDefault
-                                            If Not c Is Nothing AndAlso c.ExpandedView = "Visible" Then
-                                                c.ExpandedView = "Collapsed"
+                                            If Not c Is Nothing AndAlso c.IsExpanded Then
+                                                c.IsExpanded = False
                                             End If
 
                                         End If
@@ -319,14 +335,13 @@ Public Class EPGItemViewModel
                                         'Collapse the view of the channel, in case the EPG Item is residing in a search query
                                         If Not vm.SearchPage Is Nothing AndAlso Not vm.SearchPage.GroupedSearchResults Is Nothing Then
                                             For Each g In vm.SearchPage.GroupedSearchResults
-                                                Dim c = (From a In g Where a.uuid = Me.channelUuid AndAlso a.epgitems.currentEPGItem.eventId = Me.eventId Select a).FirstOrDefault
-                                                If Not c Is Nothing AndAlso c.ExpandedView = "Visible" Then
-                                                    c.ExpandedView = "Collapsed"
+                                                Dim c = (From a In g Where a.uuid = Me.channelUuid AndAlso a.currentEPGItem.eventId = Me.eventId Select a).FirstOrDefault
+                                                If Not c Is Nothing AndAlso c.IsExpanded Then
+                                                    c.IsExpanded = False
                                                 End If
                                             Next
 
                                         End If
-                                        Me.ExpandedView = "Collapsed"
                                     End Sub)
 
         End Get
@@ -337,10 +352,8 @@ Public Class EPGItemViewModel
 
 #Region "Methods"
     Public Async Function StopEventRecording() As Task
-        If vm.TVHeadSettings.hasDVRAccess = False Then
-            Await vm.checkDVRAccess()
-        End If
-        If vm.TVHeadSettings.hasDVRAccess Then
+        Dim vm = CType(Application.Current, Application).DefaultViewModel
+        If Await vm.TVHeadSettings.hasDVRAccess Then
             WriteToDebug("EPGItemViewModel.StopEventRecording()", "Executed")
             Dim RecordingCancelled As New tvhCommandResponse
             RecordingCancelled = (Await CancelRecording(dvrUuid)).tvhResponse
@@ -355,11 +368,15 @@ Public Class EPGItemViewModel
                 Case 1
 
             End Select
+            'Retrieve the EPGItem again from the TVH server, which now should contain updated information around the DVR status
+            Dim updatedEPGItem As EPGItemViewModel = (Await LoadEPGEventByID(Me.eventId)).FirstOrDefault
+            If Not updatedEPGItem Is Nothing Then Me.Update(updatedEPGItem)
         End If
     End Function
 
     Private Async Function ShowConfirmDeletionPrompt() As Task
         'Get the language specific text strings
+        Dim vm = CType(Application.Current, Application).DefaultViewModel
         Dim strMessage As String = vm.loader.GetString("RecordingAbortContent")
         Dim strheader As String = vm.loader.GetString("RecordingAbortHeader")
         Dim msgBox As New MessageDialog(strMessage, strheader)
@@ -371,17 +388,14 @@ Public Class EPGItemViewModel
     End Function
 
     Private Async Function StartEventRecording() As Task
-        If vm.TVHeadSettings.hasDVRAccess = False Then
-            Await vm.checkDVRAccess()
-        End If
-        If vm.TVHeadSettings.hasDVRAccess Then
+        Dim vm = CType(Application.Current, Application).DefaultViewModel
+        If Await vm.TVHeadSettings.hasDVRAccess Then
             Dim response As New RecordingReturnValue With {.tvhResponse = New tvhCommandResponse With {.success = 2}}
             If vm.appSettings.ProposeAutoRecording Then
                 'Provide Prompt to user to select single/auto recording and dvrconfig
                 Dim a As New cDialogRecordEPGItem
-                Dim recpars As New RecordContentDialogViewModel With {.dvrconfigs = vm.DVRConfigs.items, .selectedDVRConfigIndex = 0}
+                Dim recpars As New RecordContentDialogViewModel(Me)
                 If Me.serieslinkId <> 0 Then recpars.ShowSeriesButton = True Else recpars.ShowSeriesButton = False
-                recpars.Init()
                 a.DataContext = recpars
                 Dim p As ContentDialogResult = Await a.ShowAsync()
 
@@ -409,6 +423,12 @@ Public Class EPGItemViewModel
                 Case "2"
                     'Recording command cancelled, do nothing
             End Select
+
+            'Retrieve the EPGItem again from the TVH server, which now should contain updated information around the DVR status
+            Dim updatedEPGItem As EPGItemViewModel = (Await LoadEPGEventByID(Me.eventId)).FirstOrDefault
+            If Not updatedEPGItem Is Nothing Then Me.Update(updatedEPGItem)
+
+
         End If
 
     End Function
@@ -441,11 +461,11 @@ Public Class EPGItemViewModel
 
 #Region "Constructors"
     Public Sub New()
+        Dim vm = CType(Application.Current, Application).DefaultViewModel
         If Not vm Is Nothing Then
             _EPGItem = New tvh40.EPGEvent With {.title = vm.loader.GetString("NoInformationAvailable"), .description = "", .dvrUuid = "", .dvrState = "", .eventId = 0}
-            Status = "Existing"
-            ExpandedView = "Collapsed"
         End If
+        Status = "Existing"
     End Sub
 
     ''' <summary>
@@ -455,7 +475,6 @@ Public Class EPGItemViewModel
     ''' <remarks></remarks>
     Public Sub New(epg_item As tvh40.EPGEvent)
         _EPGItem = epg_item
-        ExpandedView = ""
         'IsRecorded = 1
         RecordButtonEnabled = False
         Status = "New"

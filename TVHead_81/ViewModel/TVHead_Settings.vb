@@ -70,8 +70,8 @@ Public Class TVHead_Settings
 
     'Bools which are used for storing if the user has access to the TVHeadends various components
     'Public Property hasEPGAccess As Boolean
-    Public Property hasDVRAccess As Boolean
-    Public Property hasFailedDVRAccess As Boolean
+    'Public Property hasDVRAccess As Boolean
+    'Public Property hasFailedDVRAccess As Boolean
     'Public Property hasAdminAccess As Boolean
 
     Public Async Function hasAdminAccess(Optional showmessage As Boolean = False) As Task(Of Boolean)
@@ -86,9 +86,6 @@ Public Class TVHead_Settings
 
     End Function
 
-
-
-
     Public Async Function hasEPGAccess(Optional showmessage As Boolean = False) As Task(Of Boolean)
         Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
         Dim epgAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetEPGEvents("", False, 1))
@@ -99,6 +96,33 @@ Public Class TVHead_Settings
             Return False
         End If
     End Function
+
+    Public Async Function hasFailedDVRAccess(Optional showmessage As Boolean = False) As Task(Of Boolean)
+        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
+        Dim dvrAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetFailedRecordings())
+        If dvrAccessResponse.IsSuccessStatusCode Then
+            Return True
+        Else
+            If showmessage Then Await vm.Notify.Update(True, "Error accessing failed DVR", 2, False, 0)
+        End If
+
+    End Function
+
+
+    Public Async Function hasDVRAccess(Optional showmessage As Boolean = False) As Task(Of Boolean)
+        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
+        Dim dvrAccessResponse As HttpResponseMessage = Await (New Downloader).DownloadJSON((New api40).apiGetUpcomingRecordings())
+        If dvrAccessResponse.IsSuccessStatusCode Then
+            Return True
+        Else
+
+            If showmessage Then vm.Notify.Update(True, "Error accessing DVR", 2, False, 0)
+            Return False
+        End If
+
+    End Function
+
+
 
 
     Const strConnectionStatusDefault = False
@@ -181,12 +205,12 @@ Public Class TVHead_Settings
     End Property
 
 
-    Public Property LongPollingEnabled As Boolean
+    Public Property LongPollingEnabled As Nullable(Of Boolean)
         'DEFINES IF LONG POLLING SHOULD BE ENABLED
         Get
             Return GetValueOrDefault(Of Boolean)(blLongPollingEnabledKeyName, blLongPollingEnabledDefault)
         End Get
-        Set(value As Boolean)
+        Set(value As Nullable(Of Boolean))
             If AddOrUpdateValue(blLongPollingEnabledKeyName, value) Then
                 Save()
             End If

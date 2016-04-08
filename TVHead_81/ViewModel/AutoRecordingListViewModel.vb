@@ -99,10 +99,7 @@ Public Class AutoRecordingListViewModel
 
 
     Public Async Function Load() As Task
-        If vm.TVHeadSettings.hasDVRAccess = False Then
-            Await vm.checkDVRAccess()
-        End If
-        If vm.TVHeadSettings.hasDVRAccess Then
+        If Await vm.TVHeadSettings.hasDVRAccess Then
             Await vm.StatusBar.Update(vm.loader.GetString("status_RefreshingAutoRecordings"), True, 0, True)
             Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
                                                                                                              items = (Await LoadAutoRecordings()).ToObservableCollection()
@@ -114,10 +111,7 @@ Public Class AutoRecordingListViewModel
     End Function
 
     Public Async Function Reload() As Task
-        If vm.TVHeadSettings.hasDVRAccess = False Then
-            Await vm.checkDVRAccess()
-        End If
-        If vm.TVHeadSettings.hasDVRAccess Then
+        If Await vm.TVHeadSettings.hasDVRAccess Then
             Await vm.StatusBar.Update(vm.loader.GetString("status_RefreshingAutoRecordings"), True, 0, True)
             Dim newItems = Await LoadAutoRecordings()
 

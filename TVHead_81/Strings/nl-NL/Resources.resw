@@ -486,10 +486,10 @@
   <data name="updated" xml:space="preserve">
     <value>geaktualiseerd</value>
   </data>
-  <data name="cbDVRConfig.Header" xml:space="preserve">
+  <data name="tbSelectDVRConfig.Text" xml:space="preserve">
     <value>Selecteer opname profiel</value>
   </data>
-  <data name="RecordingConfigurationHeader" xml:space="preserve">
+  <data name="RecordingConfiguration.Text" xml:space="preserve">
     <value>Opname configuratie</value>
   </data>
   <data name="usePhoneLanguage" xml:space="preserve">

@@ -483,10 +483,10 @@
   <data name="updated" xml:space="preserve">
     <value>updated</value>
   </data>
-  <data name="cbDVRConfig.Header" xml:space="preserve">
+  <data name="tbSelectDVRConfig.Text" xml:space="preserve">
     <value>Select recording profile</value>
   </data>
-  <data name="RecordingConfigurationHeader" xml:space="preserve">
+  <data name="RecordingConfiguration.Text" xml:space="preserve">
     <value>Recording configuration</value>
   </data>
   <data name="usePhoneLanguage" xml:space="preserve">

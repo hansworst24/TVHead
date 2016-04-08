@@ -124,17 +124,6 @@
         <!-- CHANNEL ICON-->
         <Image x:Name="rowChannelIcon" Grid.Column="0" Grid.Row="0" Source="{Binding chicon}" Width="50" Height="50" HorizontalAlignment="Center" 
                VerticalAlignment="Center" Canvas.ZIndex="99"/>
-        <!-- THE RECORDING BUTTON WILL ONLY SHOW UP IN EXPANDED VIEW -->
-        <!--<Grid x:Name="btnRecord" Grid.Column="0" Width="50" Grid.Row="0" 
-                HorizontalAlignment="Center" VerticalAlignment="Center" 
-                Visibility="Collapsed" Opacity="1"     >
-                <Image x:Name="btnRecord_Icon" Source="{Binding currentEPGItem.RecordingIcon}"
-                       Canvas.ZIndex="99" Height="50" Opacity="1" 
-                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Grid.Projection>
-                <PlaneProjection RotationX="-90"/>
-            </Grid.Projection>
-        </Grid>-->
 
         <!-- SMALL RECORDING ICON AS INDICATOR-->
         <Grid Grid.Row="0" Grid.Column="1">
@@ -158,9 +147,9 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
 					   Text="{Binding name}" Style="{ThemeResource BaseTextBlockStyle}"/>
-            <TextBlock Grid.Row="0" FontSize="10" Text="{Binding epgitems.currentEPGItem.eventId}" HorizontalAlignment="Right"/>
+            <TextBlock Grid.Row="0" FontSize="10" Text="{Binding currentEPGItem.eventId}" HorizontalAlignment="Right"/>
             <TextBlock Grid.Row="1" Style="{ThemeResource BodyTextBlockStyle}" 
-                       Foreground="{ThemeResource SystemControlForegroundAccentBrush}" Text="{Binding epgitems.currentEPGItem.title}" 
+                       Foreground="{ThemeResource SystemControlForegroundAccentBrush}" Text="{Binding currentEPGItem.title}" 
                        TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
         </Grid>
         <!-- SECOND ROW - PROGRESS BAR-->
@@ -171,17 +160,17 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="tbStartTime" Grid.Column="0" VerticalAlignment="Center"
-					   Text="{Binding epgitems.currentEPGItem.startDateString}" HorizontalAlignment="Center" 
+					   Text="{Binding currentEPGItem.startDateString}" HorizontalAlignment="Center" 
 					   Style="{ThemeResource CaptionTextBlockStyle}" />
             <Rectangle x:Name="progressbackgroundbar" Margin="5,0,5,0" Grid.Column="1" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}"
                                HorizontalAlignment="Stretch" Height="5"  Opacity="0.2"/>
             <Rectangle x:Name="progress" Margin="5,0,5,0" Grid.Column="1"  Height="5" Fill="{ThemeResource SystemControlBackgroundAccentBrush}" >
                 <Rectangle.RenderTransform>
-                    <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0"  ScaleX="{Binding epgitems.currentEPGItem.percentcompleted}" />
+                    <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0"  ScaleX="{Binding currentEPGItem.percentcompleted}" />
                 </Rectangle.RenderTransform>
             </Rectangle>
             <TextBlock x:Name="tbEndTime" Grid.Column="2"
-					   Text="{Binding epgitems.currentEPGItem.endDateString}" 
+					   Text="{Binding currentEPGItem.endDateString}" 
 					   Style="{ThemeResource CaptionTextBlockStyle}"
 					   HorizontalAlignment="Right" VerticalAlignment="Center" />
         </Grid>
@@ -189,11 +178,11 @@
         <!-- THE THIRD ROW SHOWS THE EXPANDED PROGRAMME INFORMATION -->
         <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
 			x:Name="grProgramDetails"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <local:ucEPGEntryDetail x:Name="details" Visibility="Collapsed" DataContext="{Binding epgitems.currentEPGItem}" RenderTransformOrigin="0.5,0">
+            <!--<local:ucEPGEntryDetail x:Name="details" Visibility="Collapsed" DataContext="{Binding currentEPGItem}" RenderTransformOrigin="0.5,0">
                 <local:ucEPGEntryDetail.RenderTransform>
                     <CompositeTransform  ScaleY="0"/>
                 </local:ucEPGEntryDetail.RenderTransform>
-            </local:ucEPGEntryDetail>
+            </local:ucEPGEntryDetail>-->
         </Grid>
 
         <Interactivity:Interaction.Behaviors>
@@ -203,24 +192,24 @@
             <Core:DataTriggerBehavior Binding="{Binding IsSelected}" Value="False">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource UnselectedState}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Collapsed">
+            <!--<Core:DataTriggerBehavior Binding="{Binding IsExpanded}" Value="False">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource CollapseView}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding ExpandedView}" Value="Expanded">
+            <Core:DataTriggerBehavior Binding="{Binding IsExpanded}" Value="True">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource ExpandView}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding epgitems.currentEPGItem.RecordingStatus}" Value="1">
+            <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.RecordingStatus}" Value="1">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingOn}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding epgitems.currentEPGItem.RecordingStatus}" Value="0">
+            <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.RecordingStatus}" Value="0">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingOff}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding epgitems.currentEPGItem.RecordingStatus}" Value="2">
+            <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.RecordingStatus}" Value="2">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingError}" />
             </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{Binding epgitems.currentEPGItem.RecordingStatus}" Value="3">
+            <Core:DataTriggerBehavior Binding="{Binding currentEPGItem.RecordingStatus}" Value="3">
                 <Media:ControlStoryboardAction Storyboard="{StaticResource RecordingScheduled}" />
-            </Core:DataTriggerBehavior>
+            </Core:DataTriggerBehavior>-->
         </Interactivity:Interaction.Behaviors>
     </Grid>
 </UserControl>

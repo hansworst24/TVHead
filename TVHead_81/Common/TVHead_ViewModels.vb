@@ -645,25 +645,16 @@ Namespace ViewModels
 
 
     Public Class SubscriptionListViewModel
-        Implements INotifyPropertyChanged
+        Inherits ViewModelBase
 
         Public Sub New()
             items = New ObservableCollection(Of SubscriptionViewModel)
-
         End Sub
-        Public ReadOnly Property vm As TVHead_ViewModel
-            Get
-                Return CType(Application.Current, Application).DefaultViewModel
-            End Get
-        End Property
-        Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
-        Private Sub NotifyPropertyChanged(<CallerMemberName()> Optional ByVal propertyName As String = Nothing)
-            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
-        End Sub
-
-        Protected Overrides Sub Finalize()
-            MyBase.Finalize()
-        End Sub
+        'Public ReadOnly Property vm As TVHead_ViewModel
+        '    Get
+        '        Return CType(Application.Current, Application).DefaultViewModel
+        '    End Get
+        'End Property
 
         Private Property _items As ObservableCollection(Of SubscriptionViewModel)
         Public Property items As ObservableCollection(Of SubscriptionViewModel)
@@ -672,11 +663,12 @@ Namespace ViewModels
             End Get
             Set(value As ObservableCollection(Of SubscriptionViewModel))
                 _items = value
-                NotifyPropertyChanged()
+                RaisePropertyChanged("items")
             End Set
         End Property
 
         Public Async Function Reload() As Task
+            Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
             If Await vm.TVHeadSettings.hasAdminAccess Then
                 If Not items Is Nothing Then
                     Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
@@ -843,40 +835,8 @@ Namespace ViewModels
             End Get
         End Property
 
-
-
-
         Public Sub New(s As tvh40.Subscription)
             _subscription = s
-            'id = s.id
-            'state = s.state
-            'hostname = s.hostname
-            'username = s.username
-            'title = s.title
-            'channel = s.channel
-            'service = s.service
-            'errors = s.errors
-            'start = s.start
-            'starttime = UnixToDateTime(s.start)
-            'descramble = s.descramble
-        End Sub
-
-        Public Sub New(json As JsonObject)
-            'Dim v As IJsonValue
-            'id = If(json.TryGetValue("id", v), json.GetNamedNumber("id"), 0)
-            'state = If(json.TryGetValue("state", v), json.GetNamedString("state"), "")
-            'channel = If(json.TryGetValue("channel", v), json.GetNamedString("channel"), "")
-            'hostname = If(json.TryGetValue("hostname", v), json.GetNamedString("hostname"), "")
-            'username = If(json.TryGetValue("username", v), json.GetNamedString("username"), "")
-            'title = If(json.TryGetValue("title", v), json.GetNamedString("title"), "")
-            'service = If(json.TryGetValue("service", v), json.GetNamedString("service"), "")
-            'errors = If(json.TryGetValue("errors", v), json.GetNamedNumber("errors"), 0)
-            'kbps_in = If(json.TryGetValue("in", v), json.GetNamedNumber("in"), 0)
-            'kbps_out = If(json.TryGetValue("out", v), json.GetNamedNumber("out"), 0)
-            'start = If(json.TryGetValue("start", v), json.GetNamedNumber("start"), 0)
-            'descramble = If(json.TryGetValue("descramble", v), json.GetNamedString("descramble"), "")
-
-            'starttime = If(json.TryGetValue("start", v), UnixToDateTime(json.GetNamedNumber("start")), "")
         End Sub
 
         Public Sub Update(x As CometMessages.subscription)
@@ -892,9 +852,6 @@ Namespace ViewModels
                 Me.descramble = x.descramble
             End If
         End Sub
-
-
-
     End Class
 
 
@@ -969,13 +926,8 @@ Namespace ViewModels
 
 
     Public Class ServiceListViewModel
-        Implements INotifyPropertyChanged
+        Inherits ViewModelBase
 
-        Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
-
-        Private Sub NotifyPropertyChanged(<CallerMemberName()> Optional ByVal propertyName As String = Nothing)
-            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
-        End Sub
         Private Property _items As List(Of ServiceViewModel)
         Public Property items As List(Of ServiceViewModel)
             Get
@@ -983,9 +935,13 @@ Namespace ViewModels
             End Get
             Set(value As List(Of ServiceViewModel))
                 _items = value
-                NotifyPropertyChanged()
+                RaisePropertyChanged("items")
             End Set
         End Property
+
+        Public Sub New()
+            items = New List(Of ServiceViewModel)
+        End Sub
     End Class
 
 
@@ -1105,21 +1061,20 @@ Namespace ViewModels
     End Class
 
     Public Class MuxListViewModel
-        Implements INotifyPropertyChanged
+        Inherits ViewModelBase
 
-        Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
-
-        Private Sub NotifyPropertyChanged(<CallerMemberName()> Optional ByVal propertyName As String = Nothing)
-            RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
+        Public Sub New()
+            items = New ObservableCollection(Of MuxViewModel)
         End Sub
-        Private Property _items As List(Of MuxViewModel)
-        Public Property items As List(Of MuxViewModel)
+
+        Private Property _items As ObservableCollection(Of MuxViewModel)
+        Public Property items As ObservableCollection(Of MuxViewModel)
             Get
                 Return _items
             End Get
-            Set(value As List(Of MuxViewModel))
+            Set(value As ObservableCollection(Of MuxViewModel))
                 _items = value
-                NotifyPropertyChanged()
+                RaisePropertyChanged("items")
             End Set
         End Property
     End Class

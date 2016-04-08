@@ -141,7 +141,7 @@
         <!-- THIS IS THE CONTENTS OF THE MENU, WHERE PARTS GET HIDDEN OR MADE VISIBLE BASED ON DATATRIGGERS-->
         <Grid x:Name="MainMenu" Grid.Row="1" Margin="10,0,10,0" >
             <Grid.Resources>
-                <CollectionViewSource x:Name="cvsRooms" x:Key="cvsRooms" Source="{Binding EnabledRooms}"/>
+                <!--<CollectionViewSource x:Name="cvsRooms" x:Key="cvsRooms" Source="{Binding EnabledRooms}"/>-->
             </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>

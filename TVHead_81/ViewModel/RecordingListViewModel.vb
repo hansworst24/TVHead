@@ -313,16 +313,10 @@ Public Class RecordingListViewModel
         'First check if the account has access. If not, retrigger checking authentication
         Dim hasProperAccess As Boolean = False
         If Me.RecordingType = upcomingRecordings Or Me.RecordingType = finishedRecordings Then
-            If vm.TVHeadSettings.hasDVRAccess = False Then
-                Await vm.checkDVRAccess()
-            End If
-            hasProperAccess = vm.TVHeadSettings.hasDVRAccess
+            hasProperAccess = Await vm.TVHeadSettings.hasDVRAccess
         End If
         If Me.RecordingType = failedRecordings Then
-            If vm.TVHeadSettings.hasFailedDVRAccess = False Then
-                Await vm.checkFailedDVRAccess()
-            End If
-            hasProperAccess = vm.TVHeadSettings.hasFailedDVRAccess
+            hasProperAccess = Await vm.TVHeadSettings.hasFailedDVRAccess
         End If
 
         If hasProperAccess Then
@@ -350,17 +344,10 @@ Public Class RecordingListViewModel
     Public Async Function Reload(produceStatusUpdates As Boolean) As Task
         Dim hasProperAccess As Boolean = False
         If Me.RecordingType = upcomingRecordings Or Me.RecordingType = finishedRecordings Then
-            If vm.TVHeadSettings.hasDVRAccess = False Then
-                Await vm.checkDVRAccess()
-            End If
-
-            hasProperAccess = vm.TVHeadSettings.hasDVRAccess
+            hasProperAccess = Await vm.TVHeadSettings.hasDVRAccess
         End If
         If Me.RecordingType = failedRecordings Then
-            If vm.TVHeadSettings.hasFailedDVRAccess = False Then
-                Await vm.checkFailedDVRAccess()
-            End If
-            hasProperAccess = vm.TVHeadSettings.hasFailedDVRAccess
+            hasProperAccess = Await vm.TVHeadSettings.hasFailedDVRAccess
         End If
 
         If hasProperAccess Then

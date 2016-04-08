@@ -126,7 +126,7 @@ NotInheritable Class Application
             ' When the navigation stack isn't restored navigate to the first page,
             ' configuring the new page by passing required information as a navigation
             ' parameter
-            If Not rootFrame.Navigate(GetType(EPG_WideView), e.Arguments) Then
+            If Not rootFrame.Navigate(GetType(HubView), e.Arguments) Then
                 Throw New Exception("Failed to create initial page")
             End If
         End If

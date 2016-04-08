@@ -36,7 +36,7 @@ Public Class BackgroundEPGRefresher
                 WriteToDebug("TVHead_ViewModel.epgupdate()", "executed")
                 If Await vm.TVHeadSettings.hasEPGAccess Then
                     For Each c In vm.Channels.items.Where(Function(x) x.epgitemsAvailable = True)
-                        Await c.UpdateCurrentEPGItem(Nothing, True)
+                        'Await c.epgitems.UpdateCurrentEPGItem(Nothing, True)
                     Next
                     If Not vm.SelectedChannel Is Nothing Then
                         Await vm.SelectedChannel.RefreshEPG(False)

@@ -113,7 +113,7 @@ Public Class NotificationViewModel
             End If
         End While
         'Only trigger removing the notification from the screen when it had sufficient time to be displayed properly (based on ucNotificationMessage.xaml animation time)
-        While s.ElapsedMilliseconds < 300
+        While s.ElapsedMilliseconds < 1000
             Await Task.Delay(50)
         End While
         s.Stop()

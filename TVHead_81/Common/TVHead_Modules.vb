@@ -699,7 +699,7 @@ Module TVHead_Modules
             WriteToDebug("Modules.SearchEPGEntry()", ex.InnerException.ToString())
         End Try
         WriteToDebug("Modules.SearchEPGEntry()", result.Count())
-        Return result.OrderBy(Function(x) x.epgitems.currentEPGItem.startDate)
+        Return result.OrderBy(Function(x) x.currentEPGItem.startDate)
     End Function
 
 
@@ -771,16 +771,19 @@ Module TVHead_Modules
 
 
 
-    Public Async Function LoadEPGEventByID(eventids As List(Of Integer)) As Task(Of IEnumerable(Of EPGItemViewModel))
+    Public Async Function LoadEPGEventByID(eventid As Integer) As Task(Of IEnumerable(Of EPGItemViewModel))
         Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         'WriteToDebug("Modules.LoadEPGEventByID()", "Loading EPG Entry for channel :" & selectedChannel.name)
         Dim settings As New TVHead_Settings
+        Dim EventIDList As New List(Of Integer)
+        EventIDList.Add(eventid)
+
 
         'If vm.TVHVersion = "3.4" Then strURL = tvh34api.apiGetEPGEvents(selectedChannel.name, loadAll)
         Dim result As New List(Of EPGItemViewModel)
         Dim json_result As String
         Try
-            json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetEPGEvent(eventids))).Content.ReadAsStringAsync
+            json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetEPGEvent(EventIDList))).Content.ReadAsStringAsync
         Catch ex As Exception
             WriteToDebug("Modules.LoadEPGEntry()", ex.InnerException.ToString)
             Return result

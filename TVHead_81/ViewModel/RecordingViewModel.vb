@@ -420,7 +420,7 @@ Public Class RecordingViewModel
                 If Not vm.SelectedChannel Is Nothing AndAlso Me.channelUuid = vm.SelectedChannel.uuid Then
                     vm.SelectedChannel.RefreshEPG(True)
                 End If
-                Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.epgitems.currentEPGItem.dvrUuid = Me.recording_id).FirstOrDefault()
+                Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.currentEPGItem.dvrUuid = Me.recording_id).FirstOrDefault()
                 If Not c Is Nothing Then
                     c.RefreshCurrentEPGItem(Nothing, True)
                 End If

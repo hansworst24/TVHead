@@ -407,8 +407,8 @@ Namespace tvh40
 
         End Sub
 
-        Public Property eventId As Long                  '137935
-        Public Property episodeId As Long                '137936
+        Public Property eventId As Long                     '137935
+        Public Property episodeId As Long                   '137936
         Public Property episodeUri As String                'crid://bds.tv/50527985#00100000000CC7EF"
         Public Property serieslinkId As Integer             '473686
         Public Property serieslinkUri As String             'crid://eventis.nl/00000000-0000-1000-0008-00000000B083"

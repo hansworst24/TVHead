@@ -104,13 +104,13 @@
         
       
         <!-- EPG TITLE AND DESCRIPTION-->
-        <Grid Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5,0,5,0">
+        <Grid Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5,0,5,0" >
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
              </Grid.RowDefinitions>
              <TextBlock Grid.Row="0" Grid.ColumnSpan="3" TextWrapping="NoWrap" TextTrimming="WordEllipsis" 
-                                    Text="{Binding title}" Margin="0,0,0,0" Style="{StaticResource BaseTextBlockStyle}"/>
+                                    Text="{x:Bind p.title}" Margin="0,0,0,0" Style="{StaticResource BaseTextBlockStyle}"/>
             <TextBlock Grid.Row="0" Grid.ColumnSpan="3" FontSize="10" Text="{Binding eventId}" HorizontalAlignment="Right"/>
              <TextBlock Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="NoWrap" 
 								    Style="{ThemeResource SubTitleAccent}" Text="{Binding info}"/>
