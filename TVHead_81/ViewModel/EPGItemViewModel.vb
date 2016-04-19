@@ -1,14 +1,25 @@
 ﻿Imports GalaSoft.MvvmLight
 Imports TVHead_81.ViewModels
 Imports Windows.UI.Popups
-Imports GalaSoft.MvvmLight.Command
 Imports Windows.UI
+
 
 Public Class EPGItemViewModel
     Inherits ViewModelBase
     Private _EPGItem As tvh40.EPGEvent
 
 #Region "Properties"
+
+    Public ReadOnly Property Channel As ChannelViewModel
+        Get
+            Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
+            If Not vm Is Nothing AndAlso Not vm.Channels._allchannels.Count = 0 Then
+                Return vm.Channels._allchannels.Where(Function(x) x.uuid = Me.channelUuid).FirstOrDefault()
+            Else
+                Return Nothing
+            End If
+        End Get
+    End Property
     Public ReadOnly Property channelName As String
         Get
             Return _EPGItem.channelName
@@ -120,6 +131,11 @@ Public Class EPGItemViewModel
 
         End Get
     End Property
+    Public ReadOnly Property EPGItemDetailsVisibility As String
+        Get
+            Return If(IsExpanded, "Visible", "Collapsed")
+        End Get
+    End Property
     Public ReadOnly Property RecordingStatusIndicatorVisibility As String
         Get
             Select Case _EPGItem.dvrState
@@ -197,11 +213,26 @@ Public Class EPGItemViewModel
             Return _Status
         End Get
         Set(value As String)
-            _Status = value
-            RaisePropertyChanged()
+            If value <> _Status Then
+                _Status = value
+                RaisePropertyChanged("Status")
+            End If
         End Set
     End Property
     Private Property _Status As String
+    Public Property IsExpanded As Boolean
+        Get
+            Return _IsExpanded
+        End Get
+        Set(value As Boolean)
+            If value <> _IsExpanded Then
+                _IsExpanded = value
+                RaisePropertyChanged("IsExpanded")
+                RaisePropertyChanged("EPGItemDetailsVisibility")
+            End If
+        End Set
+    End Property
+    Private Property _IsExpanded As Boolean
     Public Property IsSelected As Boolean
         Get
             Return _IsSelected
@@ -240,133 +271,62 @@ Public Class EPGItemViewModel
             Return _EPGItem.subtitle
         End Get
     End Property
-    Public Property title As String
+    Public ReadOnly Property title As String
         Get
             Return _EPGItem.title
         End Get
-        Set(value As String)
-            _EPGItem.title = value
-            RaisePropertyChanged("title")
-        End Set
-    End Property
-#End Region
-
-#Region "RelayCommands"
-    Public Property ExpandCollapseCommand As RelayCommand
-        Get
-            Return New RelayCommand(Sub()
-                                        WriteToDebug("EPGItemViewModel.ExpanseCollapseCommand()", "start")
-                                        Dim vm = CType(Application.Current, Application).DefaultViewModel
-                                        Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
-                                        If rectie.Width > 720 Then
-                                            vm.selectedEPGItem = Me
-                                        Else
-                                            'For Each group In vm.SelectedChannel.groupeditems
-                                            '    For Each epgitem In group
-                                            '        If epgitem Is Me Then
-                                            '            If (Me.ExpandedView = "Collapsed" Or Me.ExpandedView = "") Then
-                                            '                Me.ExpandedView = "Expanded"
-                                            '                Me.RecordButtonEnabled = True
-                                            '            Else
-                                            '                Me.ExpandedView = "Collapsed"
-                                            '                Me.RecordButtonEnabled = False
-                                            '            End If
-                                            '        Else
-                                            '            If epgitem.ExpandedView = "Expanded" Then
-                                            '                epgitem.ExpandedView = "Collapsed"
-                                            '                epgitem.RecordButtonEnabled = False
-                                            '            End If
-                                            '        End If
-                                            '    Next
-                                            'Next
-                                        End If
-                                        WriteToDebug("EPGItemViewModel.ExpanseCollapseCommand()", "stop")
-                                    End Sub)
-        End Get
-        Set(value As RelayCommand)
-        End Set
-    End Property
-    Public Property RecordCommand As RelayCommand
-        Get
-            Return New RelayCommand(Async Sub()
-                                        'Me.createAutoRecording = False
-                                        'Me.createSeriesRecording = False
-                                        'Me.createSingleRecording = False
-                                        Me.continueWithDeletion = False
-                                        Dim vm = CType(Application.Current, Application).DefaultViewModel
-
-                                        WriteToDebug("EPGItemViewModel.RecordCommand()", "Executed")
-                                        If RecordingStatus = 1 Or RecordingStatus = 2 Or RecordingStatus = 3 Then
-                                            If vm.appSettings.ConfirmDeletion Then
-                                                Await ShowConfirmDeletionPrompt()
-                                            Else
-                                                continueWithDeletion = True
-                                            End If
-                                            'Abort the recording
-                                            If continueWithDeletion Then StopEventRecording()
-                                        Else
-                                            StartEventRecording()
-                                        End If
-
-                                        If Not vm.appSettings.LongPollingEnabled And Await vm.TVHeadSettings.hasDVRAccess Then
-                                            vm.UpcomingRecordings.Reload(True)
-                                            vm.FinishedRecordings.Reload(True)
-                                            vm.FailedRecordings.Reload(True)
-                                            If Not vm.SelectedChannel Is Nothing AndAlso Me.channelUuid = vm.SelectedChannel.uuid Then
-                                                vm.SelectedChannel.RefreshEPG(True)
-                                            End If
-                                            Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.currentEPGItem.eventId = Me.eventId).FirstOrDefault()
-                                            If Not c Is Nothing Then
-                                                c.RefreshCurrentEPGItem(Nothing, True)
-                                            End If
-                                        End If
-
-
-
-                                        'Collapse the view of the parent channel, in case the EPG Item is the current epgitem for a channel
-                                        If Not vm.Channels Is Nothing Then
-                                            Dim c = (From a In vm.Channels.items Where a.uuid = Me.channelUuid Select a).FirstOrDefault
-                                            If Not c Is Nothing AndAlso c.IsExpanded Then
-                                                c.IsExpanded = False
-                                            End If
-
-                                        End If
-
-                                        'Collapse the view of the channel, in case the EPG Item is residing in a search query
-                                        If Not vm.SearchPage Is Nothing AndAlso Not vm.SearchPage.GroupedSearchResults Is Nothing Then
-                                            For Each g In vm.SearchPage.GroupedSearchResults
-                                                Dim c = (From a In g Where a.uuid = Me.channelUuid AndAlso a.currentEPGItem.eventId = Me.eventId Select a).FirstOrDefault
-                                                If Not c Is Nothing AndAlso c.IsExpanded Then
-                                                    c.IsExpanded = False
-                                                End If
-                                            Next
-
-                                        End If
-                                    End Sub)
-
-        End Get
-        Set(value As RelayCommand)
-        End Set
+        'Private Set(value As String)
+        '    _EPGItem.title = value
+        '    RaisePropertyChanged("title")
+        'End Set
     End Property
 #End Region
 
 #Region "Methods"
+    ''' <summary>
+    ''' Handles the start or stop of an EPGItem's recording. When the EPGItem is already being recorded, or scheduled for recording, then cancel the recording
+    ''' When the EPGItem isn't yet being recorded, plan the recording.
+    ''' Show a confirmation popup when deleting/creating a recording if the user has chosen this in the Settings menu
+    ''' </summary>
+    ''' <returns></returns>
+    Public Async Function Record() As Task
+        WriteToDebug("EPGItemViewModel.Record()", "Executed")
+        Dim vm = CType(Application.Current, Application).DefaultViewModel
+        If RecordingStatus = 1 Or RecordingStatus = 2 Or RecordingStatus = 3 Then
+            If vm.TVHeadSettings.ConfirmDeletion Then
+                Await ShowConfirmDeletionPrompt()
+                Exit Function
+            Else
+                Await StopEventRecording()
+                Exit Function
+            End If
+        Else
+            If vm.TVHeadSettings.ProposeAutoRecording Then
+                Await ShowSingleAutoRecordingPrompt()
+                Exit Function
+            Else
+                Await StartEventRecording()
+                Exit Function
+            End If
+        End If
+    End Function
+
+    ''' <summary>
+    ''' Stops the recording of this EPGItem, based on the dvr uuid attached.
+    ''' </summary>
+    ''' <returns></returns>
     Public Async Function StopEventRecording() As Task
         Dim vm = CType(Application.Current, Application).DefaultViewModel
-        If Await vm.TVHeadSettings.hasDVRAccess Then
+        If Await vm.TVHeadSettings.hasDVRAccess And dvrUuid <> "" Then
             WriteToDebug("EPGItemViewModel.StopEventRecording()", "Executed")
             Dim RecordingCancelled As New tvhCommandResponse
             RecordingCancelled = (Await CancelRecording(dvrUuid)).tvhResponse
 
             Select Case RecordingCancelled.success
                 Case 0
-                    Dim strMessage As String = vm.loader.GetString("RecordingAbortErrorHeader")
-                    Dim strheader As String = vm.loader.GetString("RecordingAbortErrorContent")
-                    Dim msgBox As New MessageDialog(strMessage, strheader)
-                    msgBox.Commands.Add(New UICommand(vm.loader.GetString("OK")))
-                    Await msgBox.ShowAsync()
+                    Await vm.Notify.Update(True, vm.loader.GetString("RecordingAbortErrorContent"), 2, 0, 4)
                 Case 1
-
+                    Await vm.Notify.Update(False, vm.loader.GetString("RecordingAbortSuccess"), 1, 0, 2)
             End Select
             'Retrieve the EPGItem again from the TVH server, which now should contain updated information around the DVR status
             Dim updatedEPGItem As EPGItemViewModel = (Await LoadEPGEventByID(Me.eventId)).FirstOrDefault
@@ -374,62 +334,63 @@ Public Class EPGItemViewModel
         End If
     End Function
 
+    ''' <summary>
+    ''' Provides a MessageDialog which is shown to ask the user to confirm the deletion of the recording.
+    ''' </summary>
+    ''' <returns></returns>
     Private Async Function ShowConfirmDeletionPrompt() As Task
-        'Get the language specific text strings
         Dim vm = CType(Application.Current, Application).DefaultViewModel
         Dim strMessage As String = vm.loader.GetString("RecordingAbortContent")
         Dim strheader As String = vm.loader.GetString("RecordingAbortHeader")
         Dim msgBox As New MessageDialog(strMessage, strheader)
-        msgBox.Commands.Add(New UICommand(vm.loader.GetString("Yes"), Sub()
-                                                                          continueWithDeletion = True
-                                                                      End Sub))
-        msgBox.Commands.Add(New UICommand(vm.loader.GetString("No")))
+        msgBox.Commands.Add(New UICommand(vm.loader.GetString("Yes"), New UICommandInvokedHandler(AddressOf StopEventRecording)))
+        msgBox.Commands.Add(New UICommand(vm.loader.GetString("No"))) 'No command is attached to the No button, which will cause the MessageDialog to close without any action
         Await msgBox.ShowAsync()
     End Function
 
-    Private Async Function StartEventRecording() As Task
+
+    Private Async Function ShowSingleAutoRecordingPrompt() As Task
         Dim vm = CType(Application.Current, Application).DefaultViewModel
-        If Await vm.TVHeadSettings.hasDVRAccess Then
-            Dim response As New RecordingReturnValue With {.tvhResponse = New tvhCommandResponse With {.success = 2}}
-            If vm.appSettings.ProposeAutoRecording Then
-                'Provide Prompt to user to select single/auto recording and dvrconfig
-                Dim a As New cDialogRecordEPGItem
-                Dim recpars As New RecordContentDialogViewModel(Me)
-                If Me.serieslinkId <> 0 Then recpars.ShowSeriesButton = True Else recpars.ShowSeriesButton = False
-                a.DataContext = recpars
-                Dim p As ContentDialogResult = Await a.ShowAsync()
+        Dim cDialogDataContext As New StartRecordingContentDialogViewModel(Me)
 
-                If p = ContentDialogResult.Primary Then
-                    'User clicked OK button, to start recording
-                    If recpars.SingleRecording Then response = Await Task.Run(Function() RecordProgram(Me, recpars.selectedDVRConfig))
-                    If recpars.AutoRecording Then response = Await Task.Run(Function() RecordProgramBySeries(Me, recpars.selectedDVRConfig))
-                    If recpars.SeriesRecording Then response = Await Task.Run(Function() RecordProgramBySeries(Me, recpars.selectedDVRConfig))
+        Dim cDialog As New ContentDialog With {.IsPrimaryButtonEnabled = True,
+                                               .IsSecondaryButtonEnabled = True,
+                                               .DataContext = cDialogDataContext,
+                                               .ContentTemplate = CType(Application.Current.Resources("StartRecordingContentDialog"), DataTemplate),
+                                               .Title = vm.loader.GetString("RecordingConfiguration"),
+                                               .PrimaryButtonText = vm.loader.GetString("OK"),
+                                               .SecondaryButtonText = vm.loader.GetString("Cancel")}
+        Dim r As ContentDialogResult = Await cDialog.ShowAsync()
+        If r = ContentDialogResult.Primary Then Await StartEventRecording(cDialogDataContext)
 
-                Else
-                    'User cancelled out of the ContentDialogBox by Pressing Cancel Button
-                End If
-            Else
-                'Start recording as once, without providing any dvrconfig
-                response = Await Task.Run(Function() RecordProgram(Me))
-            End If
-            Select Case response.tvhResponse.success
-                Case "0"
-                    'Error during starting Recording 
-                    Dim strMessage As String = vm.loader.GetString("RecordingStartErrorContent")
-                    Dim strheader As String = vm.loader.GetString("RecordingStartErrorHeader")
-                    Dim msgBox As New MessageDialog(strMessage, strheader)
-                    msgBox.Commands.Add(New UICommand(vm.loader.GetString("OK")))
-                    Await msgBox.ShowAsync()
-                Case "2"
-                    'Recording command cancelled, do nothing
-            End Select
-
-            'Retrieve the EPGItem again from the TVH server, which now should contain updated information around the DVR status
-            Dim updatedEPGItem As EPGItemViewModel = (Await LoadEPGEventByID(Me.eventId)).FirstOrDefault
-            If Not updatedEPGItem Is Nothing Then Me.Update(updatedEPGItem)
+    End Function
 
 
+    Private Async Function StartEventRecording(Optional recordingoptions As StartRecordingContentDialogViewModel = Nothing) As Task
+        Dim vm = CType(Application.Current, Application).DefaultViewModel
+        Dim response As New RecordingReturnValue
+        If recordingoptions Is Nothing Then
+            'Record program with standard settings, one time
+            response = Await Task.Run(Function() RecordProgram(Me))
+
+        Else
+            If recordingoptions.SingleRecording Then response = Await Task.Run(Function() RecordProgram(Me, recordingoptions.selectedDVRConfig))
+            If recordingoptions.SeriesRecording Then response = Await Task.Run(Function() RecordProgramBySeries(Me, recordingoptions.selectedDVRConfig))
+            If recordingoptions.AutoRecording Then response = Await Task.Run(Function() RecordProgramBySeries(Me, recordingoptions.selectedDVRConfig))
         End If
+
+        Select Case response.tvhResponse.success
+            Case "0"
+                'Error during starting Recording 
+                Await vm.Notify.Update(True, vm.loader.GetString("RecordingStartErrorContent"), 2, 0, 4)
+            Case "1"
+                'Recording command cancelled, do nothing
+                Await vm.Notify.Update(False, vm.loader.GetString("RecordingStartSuccess"), 1, 0, 2)
+        End Select
+
+        'Retrieve the EPGItem again from the TVH server, which now should contain updated information around the DVR status
+        Dim updatedEPGItem As EPGItemViewModel = (Await LoadEPGEventByID(Me.eventId)).FirstOrDefault
+            If Not updatedEPGItem Is Nothing Then Me.Update(updatedEPGItem)
 
     End Function
 
@@ -438,17 +399,16 @@ Public Class EPGItemViewModel
     ''' </summary>
     ''' <param name="epgitem"></param>
     ''' <remarks></remarks>
-    Public Async Sub Update(Optional epgitem As EPGItemViewModel = Nothing)
-        Await RunOnUIThread(Sub()
-                                If Not epgitem Is Nothing Then
-                                    dvrState = epgitem.dvrState
-                                    dvrUuid = epgitem.dvrUuid
-                                    RaisePropertyChanged("percentcompleted")
-                                Else
-                                    RaisePropertyChanged("percentcompleted")
-                                End If
-                            End Sub)
-
+    Public Sub Update(Optional epgitem As EPGItemViewModel = Nothing)
+        RunOnUIThread(Sub()
+                          If Not epgitem Is Nothing Then
+                              dvrState = epgitem.dvrState
+                              dvrUuid = epgitem.dvrUuid
+                              RaisePropertyChanged("percentcompleted")
+                          Else
+                              RaisePropertyChanged("percentcompleted")
+                          End If
+                      End Sub)
     End Sub
     ''' <summary>
     ''' 'Marks the EPGItemViewModel for removal

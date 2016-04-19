@@ -85,50 +85,55 @@ Public Class NotificationViewModel
     Private Property _isError As Boolean
     Public Property secondsToShow As Integer
 
-    Public cts As New CancellationTokenSource
-    Public ct As CancellationToken = cts.Token
+    Public cts As CancellationTokenSource
+    Public ct As CancellationToken
 
     Private Async Function ShowMessage(err As Boolean, message As String, priority As Integer, intSeconds As Integer, ct As CancellationToken) As Task
         Dim s As New Stopwatch
         s.Start()
         Dim timeWaited As Integer
+        'Update the properties of the notification on the UI thread
+        RunOnUIThread(Sub()
+                          isGoing = False
+                          secondsToShow = intSeconds
+                          msg = message
+                          isError = err
+                          msg_Priority = priority
+                      End Sub)
+
+        'Loop until the task is cancelled, or until the time to show the message has been reached. We increment with 300ms in order to avoid heavy looping
         While Not ct.IsCancellationRequested
-            Await RunOnUIThread(Sub()
-                                    isGoing = False
-                                    msg = message
-                                    isError = err
-                                    msg_Priority = priority
-                                End Sub)
             If intSeconds > 0 Then
                 If intSeconds * 1000 > timeWaited Then
-                    timeWaited += 100
-                    Await Task.Delay(100)
+                    timeWaited += 300
+                    Await Task.Delay(300)
                 Else
-                    'Messages that are shown for a limited amount of time should always be cleared (hence forcing them with True parameter)
+                    'Messages that are shown for a limited amount of time should always be cleared (hence forcing them with True parameter). Set msg_Priority back to 0
                     cts.Cancel(True)
                     msg_Priority = 0
                 End If
             Else
-                'Await Task.Delay(100)
+                Await Task.Delay(300)
             End If
         End While
         'Only trigger removing the notification from the screen when it had sufficient time to be displayed properly (based on ucNotificationMessage.xaml animation time)
+
         While s.ElapsedMilliseconds < 1000
-            Await Task.Delay(50)
+            Await Task.Delay(100)
         End While
         s.Stop()
-        Await RunOnUIThread(Sub()
-                                isGoing = True
-                            End Sub)
+        RunOnUIThread(Sub()
+                          isGoing = True
+                      End Sub)
     End Function
 
 
     ''' <summary>
-    ''' Clears any Notifications
+    ''' Clears the last Notification. If there is a specific timelimit set on the last notification (secondsToShow), clearing will be ignored
     ''' </summary>
     ''' <param name="forceClear">When forceClear is set to True, Clear will also remove any messages with msg_Priority 2 (error)</param>
     Public Sub Clear(Optional forceClear As Boolean = False)
-        If ct.CanBeCanceled And (msg_Priority < 2 Or forceClear = True) Then
+        If ct.CanBeCanceled And (forceClear = True Or (msg_Priority < 2 And secondsToShow = 0)) Then
             cts.Cancel()
             msg_Priority = 0
         End If
@@ -148,10 +153,9 @@ Public Class NotificationViewModel
         If ct.CanBeCanceled Then
             If (priority >= msg_Priority Or ForceUpdate = True) Then
                 cts.Cancel()
-                If priority > msg_Priority Then
-                    Await Task.Delay(300)
-                End If
-
+                'If priority > msg_Priority Then
+                Await Task.Delay(300)
+                'End If
             Else
                 Exit Function
             End If

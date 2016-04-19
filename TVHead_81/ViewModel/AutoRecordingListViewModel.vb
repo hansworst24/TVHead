@@ -101,9 +101,9 @@ Public Class AutoRecordingListViewModel
     Public Async Function Load() As Task
         If Await vm.TVHeadSettings.hasDVRAccess Then
             Await vm.StatusBar.Update(vm.loader.GetString("status_RefreshingAutoRecordings"), True, 0, True)
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
-                                                                                                             items = (Await LoadAutoRecordings()).ToObservableCollection()
-                                                                                                         End Sub)
+            RunOnUIThread(Async Sub()
+                              items = (Await LoadAutoRecordings()).ToObservableCollection()
+                          End Sub)
             Await vm.StatusBar.Clean()
 
         End If
@@ -142,56 +142,39 @@ Public Class AutoRecordingListViewModel
     End Function
 
     Public Async Function AddAutoRecording(item As AutoRecordingViewModel, Optional fromComet As Boolean = False) As Task
-        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                         If fromComet Then
-                                                                                                             Dim message As String = String.Format(vm.loader.GetString("AutoRecordingAdded"), item.title)
-                                                                                                             vm.ToastMessages.AddMessage(New ToastMessageViewModel With {
-                                                                                                                                                     .msg = message,
-                                                                                                                                                     .isGoing = False,
-                                                                                                                                                     .secondsToShow = 2,
-                                                                                                                                                     .isError = False})
-
-                                                                                                         End If
-                                                                                                         items.Add(item)
-                                                                                                         If items.Count = 0 Then NoRecordingsAvailableVisibility = Visibility.Visible Else NoRecordingsAvailableVisibility = Visibility.Collapsed
-                                                                                                     End Sub)
+        RunOnUIThread(Sub()
+                          If fromComet Then
+                              Dim message As String = String.Format(vm.loader.GetString("AutoRecordingAdded"), item.title)
+                          End If
+                          items.Add(item)
+                          If items.Count = 0 Then NoRecordingsAvailableVisibility = Visibility.Visible Else NoRecordingsAvailableVisibility = Visibility.Collapsed
+                      End Sub)
 
     End Function
 
     Public Async Function UpdateAutoRecording(item As AutoRecordingViewModel, Optional fromComet As Boolean = False) As Task
         Dim currentAutoRecording As AutoRecordingViewModel = (From i In items Where i.id = item.id).FirstOrDefault()
         If Not currentAutoRecording Is Nothing Then
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                             If fromComet Then
-                                                                                                                 Dim message As String = String.Format(vm.loader.GetString("AutoRecordingUpdated"), item.title)
-                                                                                                                 vm.ToastMessages.AddMessage(New ToastMessageViewModel With {
-                                                                                                                                                     .msg = message,
-                                                                                                                                                     .isGoing = False,
-                                                                                                                                                     .secondsToShow = 2,
-                                                                                                                                                     .isError = False})
-
-                                                                                                             End If
-                                                                                                             currentAutoRecording.Update(item)
-                                                                                                         End Sub)
+            RunOnUIThread(Sub()
+                              If fromComet Then
+                                  Dim message As String = String.Format(vm.loader.GetString("AutoRecordingUpdated"), item.title)
+                              End If
+                              currentAutoRecording.Update(item)
+                          End Sub)
         End If
     End Function
 
     Public Async Function DeleteAutoRecording(id As String, Optional fromComet As Boolean = False) As Task
         Dim itemIndex As Integer = items.IndexOf(items.Where(Function(p) p.id = id).FirstOrDefault())
         If Not itemIndex < 0 Then
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                             If fromComet Then
-                                                                                                                 Dim message As String = String.Format(vm.loader.GetString("AutoRecordingDeleted"), items(itemIndex).title)
-                                                                                                                 vm.ToastMessages.AddMessage(New ToastMessageViewModel With {
-                                                                                                                                                     .msg = message,
-                                                                                                                                                     .isGoing = False,
-                                                                                                                                                     .secondsToShow = 2,
-                                                                                                                                                     .isError = False})
+            RunOnUIThread(Sub()
+                              If fromComet Then
+                                  Dim message As String = String.Format(vm.loader.GetString("AutoRecordingDeleted"), items(itemIndex).title)
 
-                                                                                                             End If
-                                                                                                             items.RemoveAt(itemIndex)
-                                                                                                             If items.Count = 0 Then NoRecordingsAvailableVisibility = Visibility.Visible Else NoRecordingsAvailableVisibility = Visibility.Collapsed
-                                                                                                         End Sub)
+                              End If
+                              items.RemoveAt(itemIndex)
+                              If items.Count = 0 Then NoRecordingsAvailableVisibility = Visibility.Visible Else NoRecordingsAvailableVisibility = Visibility.Collapsed
+                          End Sub)
 
         End If
 
@@ -210,9 +193,9 @@ Public Class AutoRecordingListViewModel
                 For Each i In reloadedItems
                     Dim myItem = items.Where(Function(x) x.id = i.id).FirstOrDefault()
                     If myItem Is Nothing Then
-                        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                         items.Add(i)
-                                                                                                                     End Sub)
+                        RunOnUIThread(Sub()
+                                          items.Add(i)
+                                      End Sub)
                     End If
                 Next
                 'Remove items that are not in the current list
@@ -222,10 +205,9 @@ Public Class AutoRecordingListViewModel
                     If myItem Is Nothing Then
 
                         'item doesnt exist in newly retrieved list of autorecordings, remove it
-                        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-
-                                                                                                                         items.RemoveAt(index)
-                                                                                                                     End Sub)
+                        RunOnUIThread(Sub()
+                                          items.RemoveAt(index)
+                                      End Sub)
 
 
                     End If
@@ -235,22 +217,22 @@ Public Class AutoRecordingListViewModel
                 For Each i In reloadedItems
                     Dim myItem = items.Where(Function(x) x.id = i.id).FirstOrDefault()
                     If Not myItem Is Nothing Then
-                        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
+                        RunOnUIThread(Sub()
 
-                                                                                                                         myItem.Update(i)
-                                                                                                                     End Sub)
+                                          myItem.Update(i)
+                                      End Sub)
 
                     End If
                 Next
             End If
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
+            RunOnUIThread(Sub()
 
-                                                                                                             If items.Count = 0 Then
-                                                                                                                 Me.NoRecordingsAvailableVisibility = Visibility.Visible
-                                                                                                             Else
-                                                                                                                 Me.NoRecordingsAvailableVisibility = Visibility.Collapsed
-                                                                                                             End If
-                                                                                                         End Sub)
+                              If items.Count = 0 Then
+                                  Me.NoRecordingsAvailableVisibility = Visibility.Visible
+                              Else
+                                  Me.NoRecordingsAvailableVisibility = Visibility.Collapsed
+                              End If
+                          End Sub)
 
         End If
 

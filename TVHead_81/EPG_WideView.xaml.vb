@@ -84,7 +84,7 @@ Public NotInheritable Class EPG_WideView
     ''' <param name="e">Event data that describes how this page was reached.</param>
     Protected Overrides Async Sub OnNavigatedTo(e As NavigationEventArgs)
         '_navigationHelper.OnNavigatedTo(e)
-        'AddHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf HubBackPressed
+        AddHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf HubBackPressed
         ''Loading of data happens here
         Me.DataContext = vm
 
@@ -150,44 +150,43 @@ Public NotInheritable Class EPG_WideView
 
         If vm.UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Multiple Then
             vm.UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
-            vm.UpcomingRecordings.SetExpanseCollapseEnabled(True)
             vm.SetApplicationBarButtons()
             e.Handled = True
             Exit Sub
         End If
         If vm.FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple Then
             vm.FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None
-            vm.FinishedRecordings.SetExpanseCollapseEnabled(True)
             vm.SetApplicationBarButtons()
             e.Handled = True
             Exit Sub
         End If
         If vm.FailedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple Then
             vm.FailedRecordings.MultiSelectMode = ListViewSelectionMode.None
-            vm.FailedRecordings.SetExpanseCollapseEnabled(True)
             vm.SetApplicationBarButtons()
             e.Handled = True
             Exit Sub
         End If
         If vm.AutoRecordings.MultiSelectMode = ListViewSelectionMode.Multiple Then
             vm.AutoRecordings.MultiSelectMode = ListViewSelectionMode.None
-            vm.AutoRecordings.SetExpanseCollapseEnabled(True)
             vm.SetApplicationBarButtons()
             e.Handled = True
             Exit Sub
         End If
 
         'If Pivot is on any EPG or Upcoming Recordings, or... go one pivotitem back
-        If vm.PivotSelectedIndex > 0 Then
-            vm.PivotSelectedIndex -= 1
+        If vm.SelectedPivotIndex > 0 Then
+            vm.SelectedPivotIndex -= 1
             e.Handled = True
             Exit Sub
         End If
         'If Pivot is on Channels PivotItem, close the app
-        If vm.PivotSelectedIndex = 0 Then
+        If vm.SelectedPivotIndex = 0 Then
             Application.Current.Exit()
         End If
         WriteToDebug("HubPage.OnBackPressed()", "stop")
     End Sub
 
+    Private Sub AppBarButton_Click(sender As Object, e As RoutedEventArgs)
+
+    End Sub
 End Class

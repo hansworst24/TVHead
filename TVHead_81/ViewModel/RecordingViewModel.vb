@@ -1,40 +1,35 @@
 ﻿Imports GalaSoft.MvvmLight
 Imports GalaSoft.MvvmLight.Command
-Imports TVHead_81.Common
-Imports TVHead_81.ViewModels
 
 Public Class RecordingViewModel
     Inherits ViewModelBase
-    Public ReadOnly Property vm As TVHead_ViewModel
-        Get
-            Return CType(Application.Current, Application).DefaultViewModel
-        End Get
 
-    End Property
+    Private _recording As tvh40.Recording
 
     Public Property ExpandCollapseCommand As RelayCommand
         Get
             Return New RelayCommand(Sub()
-                                        WriteToDebug("RecordingViewModel.ExpanseCollapse", "start")
-                                        Dim rlist As New ObservableCollection(Of Group(Of RecordingViewModel))
-                                        Select Case vm.PivotSelectedIndex
-                                            Case 2
-                                                rlist = vm.UpcomingRecordings.groupeditems
-                                            Case 3
-                                                rlist = vm.FinishedRecordings.groupeditems
-                                            Case 4
-                                                rlist = vm.FailedRecordings.groupeditems
-                                        End Select
-                                        For Each group In rlist
-                                            For Each epgitem In group
-                                                If epgitem Is Me Then
-                                                    If Me.ExpandedView = "Collapsed" Then Me.ExpandedView = "Visible" Else Me.ExpandedView = "Collapsed"
-                                                Else
-                                                    epgitem.ExpandedView = "Collapsed"
-                                                End If
-                                            Next
-                                        Next
-                                        WriteToDebug("RecordingViewModel.ExpanseCollapse", "Stop")
+                                        '    WriteToDebug("RecordingViewModel.ExpanseCollapse", "start")
+                                        '    Dim rlist As New ObservableCollection(Of Group(Of RecordingViewModel))
+                                        '    Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
+                                        '    Select Case vm.PivotSelectedIndex
+                                        '        Case 2
+                                        '            rlist = vm.UpcomingRecordings.groupeditems
+                                        '        Case 3
+                                        '            rlist = vm.FinishedRecordings.groupeditems
+                                        '        Case 4
+                                        '            rlist = vm.FailedRecordings.groupeditems
+                                        '    End Select
+                                        '    For Each group In rlist
+                                        '        For Each epgitem In group
+                                        '            If epgitem Is Me Then
+                                        '                If Me.ExpandedView = "Collapsed" Then Me.ExpandedView = "Visible" Else Me.ExpandedView = "Collapsed"
+                                        '            Else
+                                        '                epgitem.ExpandedView = "Collapsed"
+                                        '            End If
+                                        '        Next
+                                        '    Next
+                                        '    WriteToDebug("RecordingViewModel.ExpanseCollapse", "Stop")
                                     End Sub)
         End Get
         Set(value As RelayCommand)
@@ -80,31 +75,32 @@ Public Class RecordingViewModel
             Return New RelayCommand(Async Sub()
                                         WriteToDebug("RecordingViewModel.SaveRecording()", "start")
                                         'Dim app As App = CType(Application.Current, Application)
+                                        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
 
                                         Dim r As tvhCommandResponse
-                                        If Me.recording_id = "" Then
+                                        If Me.uuid = "" Then
                                             r = Await AddManualRecording(Me)
                                         Else
                                             r = Await UpdateManualRecording(Me)
                                         End If
 
                                         If r.success = 1 Then
-                                            If Not vm.appSettings.LongPollingEnabled Then
-                                                vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
-                                                                                .msg = vm.loader.GetString("RecordingStartSuccess")})
+                                            If Not vm.TVHeadSettings.LongPollingEnabled Then
+                                                'vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
+                                                '                                .msg = vm.loader.GetString("RecordingStartSuccess")})
 
                                             End If
                                             WriteToDebug("TVHead_ViewModel.SaveRecording()", "Recording Saved")
                                         Else
-                                            If Not vm.appSettings.LongPollingEnabled Then
-                                                vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
-                                                                                .msg = vm.loader.GetString("RecordingStartErrorContent")})
+                                            If Not vm.TVHeadSettings.LongPollingEnabled Then
+                                                'vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
+                                                '                                .msg = vm.loader.GetString("RecordingStartErrorContent")})
 
                                             End If
                                             WriteToDebug("TVHead_ViewModel.SaveRecording()", "Recording Failed")
                                         End If
-                                        If Not vm.appSettings.LongPollingEnabled Then
-                                            Await vm.UpcomingRecordings.Reload(True)
+                                        If Not vm.TVHeadSettings.LongPollingEnabled Then
+                                            ' Await vm.UpcomingRecordings.Reload(True)
                                         End If
                                         Dim content = Window.Current.Content
                                         Dim frame = CType(content, Frame)
@@ -156,111 +152,76 @@ Public Class RecordingViewModel
         End Set
     End Property
 
-    Public Property filename As String
-    Public Property broadcast As String
-
-    Public Property channel As String
+    Public ReadOnly Property channelName As String
         Get
-            Return _channel
+            Return _recording.channelname
         End Get
-        Set(value As String)
-            _channel = value
-            RaisePropertyChanged("channel")
-        End Set
     End Property
-    Private Property _channel As String
-    Public Property channelUuid As String
-
-    Public Property chicon As String
+    Public ReadOnly Property channelUuid As String
         Get
-            'Dim app As App = CType(Application.Current, Application)
-            Dim b = (From a In vm.AllChannels.items Where a.uuid = Me.channelUuid Select a).FirstOrDefault
-            If Not b Is Nothing Then
-                Return b.chicon
+            Return _recording.channel
+        End Get
+    End Property
+    Public ReadOnly Property channel_icon As String
+        Get
+            Dim i = _recording.channel_icon
+            Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
+            If Not i Is Nothing And Not i = "" Then
+                If i.ToUpper.IndexOf("HTTP:/") >= 0 Or i.ToUpper.IndexOf("HTTPS:/") >= 0 Then
+                    Return i
+                ElseIf i.StartsWith("imagecache/") Then
+                    Return vm.TVHeadSettings.GetFullURL() & "/" & i
+                Else
+                    Return "ms-appx:///Images/tvheadend.png"
+                End If
+            Else
+                Return "ms-appx:///Images/tvheadend.png"
             End If
         End Get
-        Set(value As String)
-            _chicon = "blaat"
-
-            RaisePropertyChanged("chicon")
-        End Set
     End Property
-    Private Property _chicon As String
-    Public Property configName As String
+    Public ReadOnly Property configName As String
         Get
-            Return _configName
-        End Get
-        Set(value As String)
-            _configName = value
-
-            RaisePropertyChanged("configName")
-        End Set
-    End Property
-    Private Property _configName As String
-
-    Public Property configUuid As String
-    Public Property title As String
-    Public Property description As String
-    Public Property recording_id As String
-
-    Private Property _startDate As DateTime
-    Public Property startDate As DateTime
-        Get
-            Return _startDate
-        End Get
-        Set(value As DateTime)
-            _startDate = value
-            RaisePropertyChanged("startDate")
-        End Set
-    End Property
-    Private Property _startTime As DateTime
-
-    Public ReadOnly Property startDateString As String
-        Get
-            Return startDate.ToString("t")
+            Return _recording.config_name
         End Get
     End Property
-    Public ReadOnly Property stopDateString As String
+    Public ReadOnly Property creator As String
         Get
-            Return stopDate.ToString("t")
+            Return _recording.creator
         End Get
     End Property
-
-
-    Public Property startTime As DateTime
+    Public ReadOnly Property description As String
         Get
-            Return _startTime
+            Return _recording.disp_description
         End Get
-        Set(value As DateTime)
-            _startTime = value
-            RaisePropertyChanged("startTime")
-        End Set
     End Property
-    Private Property _stopDate As DateTime
-    Public Property stopDate As DateTime
+    Public ReadOnly Property duration As Integer
         Get
-            Return _stopDate
+            Return _recording.duration
         End Get
-        Set(value As DateTime)
-            _stopDate = value
-            RaisePropertyChanged("stopDate")
-        End Set
     End Property
-    Private Property _stopTime As DateTime
-    Public Property stopTime As DateTime
+    Public ReadOnly Property eventid As String
         Get
-            Return _stopTime
+            Return _recording.broadcast
         End Get
-        Set(value As DateTime)
-            _stopTime = value
-            RaisePropertyChanged("stopTime")
-        End Set
     End Property
+    Public ReadOnly Property filename As String
+        Get
+            Return _recording.filename
+        End Get
+    End Property
+    Public ReadOnly Property filesizeGB As String
+        Get
+            If _recording.filesize > 0 Then
+                Return Math.Round(_recording.filesize / 1024 / 1024 / 1024, 2).ToString + " GB"
+            Else : Return ""
+            End If
+        End Get
+        'Set(value As String)
+        '    _recording.filesize = value
+        '    RaisePropertyChanged("filesizeGB")
+        'End Set
 
-    Public Property duration As Integer
-    Public Property creator As String
-    Public Property pri As String
-
+    End Property
     Private Property _IsRecorded As Integer
     Public Property IsRecorded As Integer
         Get
@@ -282,41 +243,7 @@ Public Class RecordingViewModel
             RaisePropertyChanged("IsSelected")
         End Set
     End Property
-    Public Property status As String
-        Get
-            Return _status
-        End Get
-        Set(value As String)
-            _status = value
-            RaisePropertyChanged("status")
-        End Set
-    End Property
-    Private Property _status As String
-
-    Public Property schedstate As String
-        Get
-            Return _schedstate
-        End Get
-        Set(value As String)
-            _schedstate = value
-            Select Case value
-                Case "recording"
-                    IsRecorded = 1
-                Case "scheduled"
-                    IsRecorded = 3
-                Case "recordingError"
-                    IsRecorded = 2
-                Case "completedError"
-                    IsRecorded = 2
-
-                Case Else
-                    IsRecorded = 0
-            End Select
-            RaisePropertyChanged("schedstate")
-        End Set
-    End Property
-    Private Property _schedstate As String
-    Public Property percentcompleted As Double
+    Public ReadOnly Property percentcompleted As Double
         Get
             If (stopDate > Date.MinValue) And (startDate > Date.MinValue) And (Date.Now > startDate) Then
                 If Date.Now > stopDate Then
@@ -328,153 +255,103 @@ Public Class RecordingViewModel
                 Return 0
             End If
         End Get
-        Set(value As Double)
-            _percentcompleted = value
-            RaisePropertyChanged("percentcompleted")
-
-        End Set
     End Property
-    Private Property _percentcompleted As Double
-
-    Public Property filesize As Long
+    Public ReadOnly Property pri As String
         Get
-            Return _filesize
-        End Get
-        Set(value As Long)
-            _filesize = value
-            RaisePropertyChanged("filesize")
-            RaisePropertyChanged("filesizeGB")
-
-        End Set
-    End Property
-    Private Property _filesize As Long
-    Public ReadOnly Property filesizeGB As String
-        Get
-            If filesize > 0 Then
-                Return Math.Round(filesize / 1024 / 1024 / 1024, 2).ToString + " GB"
-            Else : Return ""
-            End If
+            Return _recording.pri
         End Get
     End Property
-    ' Used for FInished and Failed Recordings only
-    Public Property url As String                       'Used for FInished and Failed Recordings only
-    Public Property ExpandedView As String
+    Public ReadOnly Property RecordingIcon As String
         Get
-            Return _ExpandedView
+            Select Case sched_status
+                Case "recording" : Return "/Images/player_record_small.png"
+                Case "scheduled" : Return "/Images/player_record_small_scheduled.png"
+                Case "completed" : Return "/Images/player_record_small_completed.png"
+                    'everything else is assumed to be in error state
+                Case Else : Return "/Images/player_record_small_error.png"
+            End Select
         End Get
-        Set(value As String)
-            _ExpandedView = value
-
-            RaisePropertyChanged("ExpandedView")
-        End Set
     End Property
-    Private Property _ExpandedView As String
-    Public Property ItemStatus As String
+    Public ReadOnly Property title As String
         Get
-            Return _ItemStatus
+            Return _recording.disp_title
         End Get
-        Set(value As String)
-            _ItemStatus = value
-
-            RaisePropertyChanged("ItemStatus")
-        End Set
     End Property
-    Private Property _ItemStatus As String
-
-    Public Property ExpanseCollapseEnabled As Boolean
+    Public ReadOnly Property sched_status As String
         Get
-            Return _ExpanseCollapseEnabled
+            Return _recording.sched_status
         End Get
-        Set(value As Boolean)
-            _ExpanseCollapseEnabled = value
-
-            RaisePropertyChanged("ExpanseCollapseEnabled")
-        End Set
     End Property
-    Private Property _ExpanseCollapseEnabled As Boolean
-
-    Public Property DVRConfigSelectionEnabled As Boolean
+    Public ReadOnly Property startDate As DateTime
         Get
-            Return _DVRConfigSelectionEnabled
+            Return UnixToDateTime(_recording.start).ToLocalTime
         End Get
-        Set(value As Boolean)
-            _DVRConfigSelectionEnabled = value
-
-            RaisePropertyChanged("DVRConfigSelectionEnabled")
-        End Set
     End Property
-    Private Property _DVRConfigSelectionEnabled As Boolean
+    Public ReadOnly Property startDateString As String
+        Get
+            Return startDate.ToString("t")
+        End Get
+    End Property
+    Public ReadOnly Property stopDate As DateTime
+        Get
+            Return UnixToDateTime(_recording.stop).ToLocalTime
+        End Get
+    End Property
+    Public ReadOnly Property stopDateString As String
+        Get
+            Return stopDate.ToString("t")
+        End Get
+    End Property
+    Public ReadOnly Property uuid As String
+        Get
+            Return _recording.uuid
+        End Get
+    End Property
+    Public ReadOnly Property url As String
+        Get
+            Return _recording.url
+        End Get
+    End Property
 
-    Public Property EndDateVisibility As Visibility ' TVH3.4/3.5/3.6 do not used a End Date for a recording
+    Public Sub Update(updatedRecording As RecordingViewModel)
+        _recording = updatedRecording._recording
+        RunOnUIThread(Sub()
+                          RaisePropertyChanged("sched_state")
+                          RaisePropertyChanged("filesizeGB")
+                          RaisePropertyChanged("percentcompleted")
+                      End Sub)
+    End Sub
 
-
-    Public Async Function RecordingAbort() As Task(Of RecordingReturnValue)
+    ''' <summary>
+    ''' Sends a command to the TVH server to abort the recording.
+    ''' </summary>
+    ''' <returns></returns>
+    Public Async Function Abort() As Task(Of RecordingReturnValue)
         'Initiates the deletion of a recording
         Dim retValue As RecordingReturnValue
-        retValue = Await AbortRecording(Me.recording_id)
+        retValue = Await AbortRecording(Me.uuid)
+        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
         If retValue.tvhResponse.success = 1 Then
-            If Not vm.appSettings.LongPollingEnabled Then
-                vm.UpcomingRecordings.RemoveRecording(Me.recording_id, True)
-                vm.FinishedRecordings.RemoveRecording(Me.recording_id, True)
-                vm.FailedRecordings.RemoveRecording(Me.recording_id, True)
+            If Not vm.TVHeadSettings.LongPollingEnabled Then
+                vm.UpcomingRecordings.RemoveRecording(Me.uuid, True)
+                vm.FinishedRecordings.RemoveRecording(Me.uuid, True)
+                vm.FailedRecordings.RemoveRecording(Me.uuid, True)
                 If Not vm.SelectedChannel Is Nothing AndAlso Me.channelUuid = vm.SelectedChannel.uuid Then
                     vm.SelectedChannel.RefreshEPG(True)
                 End If
-                Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.currentEPGItem.dvrUuid = Me.recording_id).FirstOrDefault()
+                Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.currentEPGItem.dvrUuid = Me.uuid).FirstOrDefault()
                 If Not c Is Nothing Then
                     c.RefreshCurrentEPGItem(Nothing, True)
                 End If
             End If
         Else
-
-            vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
-                                                                                .msg = vm.loader.GetString("RecordingAbortErrorContent")})
-
             WriteToDebug("TVHead_ViewModel.RecordingAbort()", "Recording Failed")
         End If
-
-
-        '#End If
-
         Return retValue
     End Function
 
-    Public Sub New()
-        If vm.TVHVersion = "3.4" Then EndDateVisibility = Visibility.Collapsed Else EndDateVisibility = Visibility.Visible
-        ExpandedView = "Collapsed"
-        ItemStatus = "New"
-        DVRConfigSelectionEnabled = False
-        startDate = Date.Now
-        startTime = Date.Now
-        stopDate = Date.Now
-        stopTime = Date.Now.AddHours(2)
-    End Sub
-
-    Public Sub New(recording As tvh40.Recording)
+    Public Sub New(recordingModel As tvh40.Recording)
         ' Create a new Viewmodel based on a 3.9 TVH JSON entry
-        ExpanseCollapseEnabled = True
-        EndDateVisibility = Visibility.Visible
-        broadcast = recording.broadcast
-        channel = recording.channelname
-        channelUuid = recording.channel
-        chicon = recording.channel_icon
-        configName = recording.config_name
-        creator = recording.creator
-        description = recording.disp_description
-        duration = recording.duration
-        startDate = UnixToDateTime(recording.start).ToLocalTime
-        stopDate = UnixToDateTime(recording.stop).ToLocalTime
-        filesize = recording.filesize
-        pri = recording.pri
-        recording_id = recording.uuid
-        schedstate = recording.sched_status
-        filename = recording.filename
-        status = recording.status
-        title = recording.disp_title
-        url = recording.url
-        ExpandedView = "Collapsed"
-        ItemStatus = "New"
-        DVRConfigSelectionEnabled = False
-        IsSelected = False
+        _recording = recordingModel
     End Sub
 End Class

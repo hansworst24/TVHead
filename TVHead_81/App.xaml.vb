@@ -1,5 +1,6 @@
 ﻿Imports TVHead_81.Common
 Imports TVHead_81.ViewModels
+Imports Windows.UI
 
 ' The Hub Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -83,7 +84,8 @@ NotInheritable Class Application
             rootFrame.CacheSize = 1
 
             'Set the Theme
-            If DefaultViewModel.TVHeadSettings.UseDarkTheme Then rootFrame.RequestedTheme = ElementTheme.Dark Else rootFrame.RequestedTheme = ElementTheme.Light
+            'DefaultViewModel.TVHeadSettings.UseDarkTheme = False
+            'If DefaultViewModel.TVHeadSettings.UseDarkTheme Then rootFrame.RequestedTheme = ElementTheme.Dark Else rootFrame.RequestedTheme = ElementTheme.Light
 
             ' Set the default language
             rootFrame.Language = Windows.Globalization.ApplicationLanguages.Languages(0)
@@ -119,14 +121,17 @@ NotInheritable Class Application
             If (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar")) Then
                 Dim sBar As StatusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView()
                 If Not sBar Is Nothing Then
-                    sBar.HideAsync()
+                    sBar.BackgroundColor = CType(Application.Current.Resources("SystemControlBackgroundChromeMediumBrush"), SolidColorBrush).Color
+                    sBar.ForegroundColor = CType(Application.Current.Resources("SystemControlHighlightAccentBrush"), SolidColorBrush).Color
+                    sBar.BackgroundOpacity = 1
+                    'sBar.HideAsync()
                 End If
             End If
 
             ' When the navigation stack isn't restored navigate to the first page,
             ' configuring the new page by passing required information as a navigation
             ' parameter
-            If Not rootFrame.Navigate(GetType(HubView), e.Arguments) Then
+            If Not rootFrame.Navigate(GetType(StartPage), e.Arguments) Then
                 Throw New Exception("Failed to create initial page")
             End If
         End If

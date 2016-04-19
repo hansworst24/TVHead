@@ -489,7 +489,7 @@
   <data name="tbSelectDVRConfig.Text" xml:space="preserve">
     <value>Selecteer opname profiel</value>
   </data>
-  <data name="RecordingConfiguration.Text" xml:space="preserve">
+  <data name="RecordingConfiguration" xml:space="preserve">
     <value>Opname configuratie</value>
   </data>
   <data name="usePhoneLanguage" xml:space="preserve">
@@ -515,5 +515,11 @@
   </data>
   <data name="tbChannels.Text" xml:space="preserve">
     <value>Zenders</value>
+  </data>
+  <data name="RecordingProfile.Text" xml:space="preserve">
+    <value>Opname profiel</value>
+  </data>
+  <data name="RecordingType.Text" xml:space="preserve">
+    <value>Opname type</value>
   </data>
 </root>

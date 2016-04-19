@@ -85,23 +85,8 @@
     <Compile Include="about.xaml.vb">
       <DependentUpon>about.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EPG_WideView.xaml.vb">
-      <DependentUpon>EPG_WideView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="HubView.xaml.vb">
-      <DependentUpon>HubView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Resources\Dictionary.xaml.vb">
       <DependentUpon>Dictionary.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="SearchPage.xaml.vb">
-      <DependentUpon>SearchPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="RecordingPage.xaml.vb">
-      <DependentUpon>RecordingPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AutoRecordingPage.xaml.vb">
-      <DependentUpon>AutoRecordingPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\NavigationHelper.vb" />
     <Compile Include="Common\SuspensionManager.vb" />
@@ -109,24 +94,15 @@
     <Compile Include="Common\TVHead_Classes.vb" />
     <Compile Include="Common\TVHead_Modules.vb" />
     <Compile Include="Common\TVHead_ViewModels.vb" />
-    <Compile Include="HubPage.xaml.vb">
-      <DependentUpon>HubPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
-    <Compile Include="Settings.xaml.vb">
-      <DependentUpon>Settings.xaml</DependentUpon>
+    <Compile Include="StartPage.xaml.vb">
+      <DependentUpon>StartPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="User Controls\cDialogRecordEPGItem.xaml.vb">
       <DependentUpon>cDialogRecordEPGItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="User Controls\ucAutoRecording.xaml.vb">
       <DependentUpon>ucAutoRecording.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="User Controls\ucSettings_Menu.xaml.vb">
-      <DependentUpon>ucSettings_Menu.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="User Controls\ucSideMenu.xaml.vb">
-      <DependentUpon>ucSideMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="User Controls\ucChannel.xaml.vb">
       <DependentUpon>ucChannel.xaml</DependentUpon>
@@ -150,6 +126,8 @@
       <DependentUpon>ucTopHeader.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\BackgroundEPGRefresher.vb" />
+    <Compile Include="ViewModel\ChannelTagListViewModel.vb" />
+    <Compile Include="ViewModel\ChannelTagViewModel.vb" />
     <Compile Include="ViewModel\CometCatcher.vb" />
     <Compile Include="ViewModel\CometStatsViewModel.vb" />
     <Compile Include="ViewModel\NotificationViewModel.vb" />
@@ -161,7 +139,7 @@
     <Compile Include="ViewModel\DiskSpaceUpdateViewModel.vb" />
     <Compile Include="ViewModel\EPGItemListViewModel.vb" />
     <Compile Include="ViewModel\EPGItemViewModel.vb" />
-    <Compile Include="ViewModel\RecordingContentDialogViewModel.vb" />
+    <Compile Include="ViewModel\StartRecordingContentDialogViewModel.vb" />
     <Compile Include="ViewModel\RecordingListViewModel.vb" />
     <Compile Include="ViewModel\RecordingViewModel.vb" />
     <Compile Include="ViewModel\SearchPageViewModel.vb" />
@@ -226,6 +204,7 @@
     <Content Include="Images\player_record.png" />
     <Content Include="Images\player_record_off.png" />
     <Content Include="Images\player_record_small.png" />
+    <Content Include="Images\player_record_small_completed.png" />
     <Content Include="Images\player_record_small_error.png" />
     <Content Include="Images\player_record_small_scheduled.png" />
     <Content Include="Images\refresh.png" />
@@ -300,35 +279,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="EPG_WideView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="HubView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Resources\Dictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SearchPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="RecordingPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="AutoRecordingPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="HubPage.xaml">
+    <Page Include="Resources\MainViews.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
-    <Page Include="Settings.xaml">
+    <Page Include="StartPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -339,14 +299,6 @@
     <Page Include="User Controls\ucAutoRecording.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="User Controls\ucSettings_Menu.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="User Controls\ucSideMenu.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="User Controls\ucChannel.xaml">
       <Generator>MSBuild:Compile</Generator>

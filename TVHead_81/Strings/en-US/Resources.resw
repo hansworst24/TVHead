@@ -486,7 +486,7 @@
   <data name="tbSelectDVRConfig.Text" xml:space="preserve">
     <value>Select recording profile</value>
   </data>
-  <data name="RecordingConfiguration.Text" xml:space="preserve">
+  <data name="RecordingConfiguration" xml:space="preserve">
     <value>Recording configuration</value>
   </data>
   <data name="usePhoneLanguage" xml:space="preserve">
@@ -512,5 +512,11 @@
   </data>
   <data name="tbChannels.Text" xml:space="preserve">
     <value>Channels</value>
+  </data>
+  <data name="RecordingProfile.Text" xml:space="preserve">
+    <value>Recording profile</value>
+  </data>
+  <data name="RecordingType.Text" xml:space="preserve">
+    <value>Recording type</value>
   </data>
 </root>

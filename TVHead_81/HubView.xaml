@@ -7,11 +7,31 @@
     xmlns:Core="using:Microsoft.Xaml.Interactions.Core" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    RequestedTheme="Dark"
     mc:Ignorable="d" >
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" SizeChanged="{x:Bind vm.View_SizeChanged }">
-
+    <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="MenuStates">
+                <VisualState x:Name="ShowMenu">
+                    <Storyboard>
+                        <DoubleAnimation To="0" Storyboard.TargetName="MenuTranslate" Storyboard.TargetProperty="X" Duration="0:0:0.3">
+                            <DoubleAnimation.EasingFunction>
+                                <CircleEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="HideMenu">
+                    <Storyboard>
+                        <DoubleAnimation To="-300" Storyboard.TargetName="MenuTranslate" Storyboard.TargetProperty="X" Duration="0:0:0.3">
+                            <DoubleAnimation.EasingFunction>
+                                <CircleEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Pivot Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}" SelectedIndex="{x:Bind vm.SelectedPivotIndex, Mode=OneWay}">
             <PivotItem Header="Channels" x:Name="hsChannels">
                 <PivotItem.Content>
@@ -56,12 +76,13 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="1"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <Border Grid.Row="0" Height="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}" BorderThickness="1"/>
-                        <ContentControl Grid.Row="1" ContentTemplate="{StaticResource EPGItemDetails}"
-                                    DataContext="{x:Bind vm.selectedEPGItem, Mode=OneWay}"
+                        <ContentControl Grid.Row="1" ContentTemplate="{StaticResource SelectedEPGItemDataTemplate}"
+                                    DataContext="{x:Bind vm}"
                                     HorizontalContentAlignment="Stretch"/>
+
                     </Grid>
                 </PivotItem.Content>
             </PivotItem>
@@ -69,6 +90,20 @@
         <Border Grid.Row="0" VerticalAlignment="Bottom" Height="48" Canvas.ZIndex="100">
             <local:ucNotificationMessage DataContext="{Binding Notify}"/>
         </Border>
+        <ContentControl ContentTemplate="{StaticResource SettingsMenuDataTemplate}" 
+                        DataContext="{x:Bind vm}" Width="300" HorizontalAlignment="Left">
+            <ContentControl.RenderTransform>
+                <TranslateTransform x:Name="MenuTranslate" X="-300"/>
+            </ContentControl.RenderTransform>
+        </ContentControl>
+        <Interactivity:Interaction.Behaviors>
+            <Core:DataTriggerBehavior Binding="{x:Bind vm.MenuIsOpen, Mode=OneWay}" Value="False">
+                <Core:GoToStateAction StateName="HideMenu"/>
+            </Core:DataTriggerBehavior>
+            <Core:DataTriggerBehavior Binding="{x:Bind vm.MenuIsOpen, Mode=OneWay}" Value="True">
+                <Core:GoToStateAction StateName="ShowMenu"/>
+            </Core:DataTriggerBehavior>
+        </Interactivity:Interaction.Behaviors>
     </Grid>
     <Page.BottomAppBar>
         <CommandBar IsOpen="False" IsSticky="False" ClosedDisplayMode="Compact" HorizontalContentAlignment="Stretch" Width="{Binding ElementName=RootSplitView, Path=ActualWidth}">
@@ -85,7 +120,7 @@
                         <AppBarButton x:Name="abbRecordItem" Margin="0" Width="48" Height="48" 
                                       IsEnabled="{x:Bind vm.RecordSelectedEPGItemButtonEnabled, Mode=OneWay}" 
                                       HorizontalAlignment="Left" VerticalAlignment="Center"
-                                      Command="{x:Bind vm.selectedEPGItem.RecordCommand, Mode=OneWay}"
+                                      Click="{x:Bind vm.selectedEPGItem.Record}"
                                       Foreground="{x:Bind vm.selectedEPGItem.RecordingIconColor, Mode=OneWay}">
                             <AppBarButton.Icon>
                                 <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE1D2;"/>
@@ -109,8 +144,9 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <AppBarToggleButton HorizontalAlignment="Right" 
                                             VerticalAlignment="Center" Height="48" Width="48" 
-                                            IsChecked="{x:Bind vm.TVHeadSettings.LongPollingEnabled, FallbackValue=False, Mode=TwoWay}"
+                                            IsChecked="{x:Bind vm.TVHeadSettings.AutoRefreshEnabled, FallbackValue=False, Mode=TwoWay}"                
                                             Style="{StaticResource TVHeadAppBarToggleButton}">
+                            
                             <AppBarToggleButton.Icon>
                                 <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE895;"/>
                             </AppBarToggleButton.Icon>

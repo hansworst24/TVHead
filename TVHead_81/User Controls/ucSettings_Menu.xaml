@@ -39,6 +39,12 @@
                     </Grid>
                     <TextBlock x:Name="tbLanguage" x:Uid="tbLanguage" Margin="0,20,0,0"  Text="Language"/>
                     <ComboBox x:Name="cbLanguage" ItemsSource="{Binding supportedLanguages.languages}"/>
+                    <TextBlock x:Name="tbUseDarkTheme" Margin="0,20,0,0"  Text="Preferred Theme" Style="{StaticResource FlyoutPickerTitleTextBlockStyle}"/>
+                    <TextBlock x:Name="tbUseDarkThemeCaption" Margin="0,5,0,0"  Text="Select the theme color you want to use for TV Head (requires restart)" TextWrapping="WrapWholeWords" Style="{StaticResource CaptionTextBlockStyle}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton Content="Dark" GroupName="ThemeChoices" IsChecked="{Binding TVHeadSettings.UseDarkTheme, Mode=TwoWay}"/>
+                        <RadioButton Content="Light" GroupName="ThemeChoices" IsChecked="{Binding TVHeadSettings.UseLightTheme, Mode=TwoWay}"/>
+                    </StackPanel>
                     <TextBlock x:Name="tbAutoRefreshHeader" x:Uid="tbAutoRefreshHeader" Margin="0,20,0,0" Text="Auto Refresh" Style="{ThemeResource TitleTextBlockStyle}"/>
                     <TextBlock x:Uid="tbAutoRefresh" Text="When Automatic Refresh is enabled, the app listens for incoming status updates from the TVH server. When disabled the app refreshes it's information periodically. Recommended setting is On for TVH 4.x, and Off for anything below." TextWrapping="Wrap" Style="{ThemeResource CaptionTextBlockStyle}"/>
                     <ToggleSwitch IsOn="{Binding TVHeadSettings.LongPollingEnabled, Mode=TwoWay}" Margin="0,0,0,0"/>

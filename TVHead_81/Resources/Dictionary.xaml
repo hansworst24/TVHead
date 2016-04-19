@@ -9,17 +9,106 @@
     xmlns:vm="using:TVHead_81.ViewModels">
 
 
+
+    <DataTemplate x:Key="CommandBarEPGItemSelectedButtons" x:DataType="local:TVHead_ViewModel">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <AppBarButton x:Name="abbRecordItem" Margin="0" Width="48" Height="48" 
+                          IsEnabled="{x:Bind RecordSelectedEPGItemButtonEnabled, Mode=OneWay}" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center"
+                          Click="{x:Bind selectedEPGItem.Record}"
+                          Foreground="{x:Bind selectedEPGItem.RecordingIconColor, Mode=OneWay}">
+                <AppBarButton.Icon>
+                    <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE1D2;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </StackPanel>
+    </DataTemplate>
+
+
+    <DataTemplate x:Key="RecordingListButtons" x:DataType="local:TVHead_ViewModel">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <!-- I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
+                 for the Click Event throws an error. Should be a compiler bug cause like this it works-->
+            <AppBarButton x:Name="abbRecordItem" Click="{x:Bind ToggleMultiSelect}" Margin="0" Width="48" Height="48" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="{x:Bind DummyBoolTrue}">
+                <AppBarButton.Icon>
+                    <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE762;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="RecordingListEditButtons" x:DataType="local:TVHead_ViewModel">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <!-- I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
+                 for the Click Event throws an error. Should be a compiler bug cause like this it works-->
+            <AppBarButton x:Name="abbDeleteItems" Margin="0" Width="48" Height="48" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="{x:Bind DummyBoolTrue}">
+                <AppBarButton.Icon>
+                    <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE107;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="abbCancelItems" Margin="0" Width="48" Height="48" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="{x:Bind DummyBoolTrue}">
+                <AppBarButton.Icon>
+                    <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xEA39;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </StackPanel>
+    </DataTemplate>
+
+    
+
+
+
+
+    <DataTemplate x:Key="StartRecordingContentDialog" x:DataType="local:StartRecordingContentDialogViewModel">
+        <Grid Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <ContentControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" ContentTemplate="{StaticResource EPGItemHeader}" DataContext="{x:Bind epgitem}" HorizontalContentAlignment="Stretch"/>
+            <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" ContentTemplate="{StaticResource ChannelHeaderTemplate}" DataContext="{x:Bind epgitem.Channel, Mode=OneWay}" HorizontalContentAlignment="Stretch"/>
+            <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Height="1" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+            <Border Grid.Row="4" Grid.Column="0" VerticalAlignment="Stretch" Margin="0,10,10,0">
+                <TextBlock Grid.Row="4" Grid.Column="0" x:Uid="RecordingProfile" Text="Recording profile" VerticalAlignment="Center"/>
+            </Border>
+            <ComboBox  Grid.Row="4" Grid.Column="1" x:Name="cbDVRConfig" HorizontalAlignment="Stretch" 
+                       Margin="0,10,0,0" VerticalAlignment="Top" ItemsSource="{x:Bind dvrconfigs, Mode=OneWay}" 
+                       ItemTemplate="{StaticResource DVRConfigTemplate}" SelectedItem="{Binding dvrconfigs[0]}"
+                       SelectionChanged="{x:Bind dvrConfig_SelectionChanged}">
+            </ComboBox>
+            <Border Grid.Row="5" Grid.Column="0" VerticalAlignment="Stretch" Margin="0,10,10,0">
+                <TextBlock x:Uid="RecordingType" Text="Recording type" VerticalAlignment="Center"/>
+            </Border>
+            <ComboBox  Grid.Row="6" Grid.Column="1" x:Name="cbRecordingType" HorizontalAlignment="Stretch"
+                       ItemsSource="{x:Bind RecordingTypes, Mode=OneWay}" SelectedItem="{Binding RecordingTypes[0]}"
+                       Margin="0,10,0,0" VerticalAlignment="Top">
+            </ComboBox>
+        </Grid>
+    </DataTemplate>
+    
+    
     <DataTemplate x:Key="ChannelListDataTemplate" x:DataType="local:ChannelListViewModel">
         <Grid>
             <ListView ItemsSource="{x:Bind items, Mode=OneWay}" 
-                      ScrollViewer.VerticalScrollBarVisibility="Hidden" ItemClick="{x:Bind Channel_Clicked, Mode=OneWay}"
-                      SelectionMode="None" IsItemClickEnabled="True" IsHitTestVisible="True"
+                      ScrollViewer.VerticalScrollBarVisibility="Hidden" ItemClick="{x:Bind Channel_Clicked}" 
+                      SelectionMode="None" IsItemClickEnabled="True" IsHitTestVisible="True" Holding="{x:Bind Channel_Holding}"
                       ItemTemplate="{StaticResource ChannelDataTemplate}">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                         <Setter Property="Padding" Value="0"/>
-                        <Setter Property="Margin" Value="0,0,0,0" />
+                        <Setter Property="Margin" Value="0,0,0,5" />
                     </Style>
                 </ListView.ItemContainerStyle>
             </ListView>
@@ -29,6 +118,7 @@
     <DataTemplate x:Key="ChannelDataTemplate" x:DataType="local:ChannelViewModel">
         <Grid x:Name="mainGrid">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
@@ -44,17 +134,8 @@
                VerticalAlignment="Center" Canvas.ZIndex="99" x:Phase="10"/>
 
             <!-- SMALL RECORDING ICON AS INDICATOR-->
-            <Grid Grid.Row="0" Grid.Column="1">
-                <Image x:Name="RecordingIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small.png"
-					Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
-					Visibility="Visible"/>
-                <Image x:Name="RecordingErrorIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small_error.png"
-					Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
-					Visibility="Visible"/>
-                <Image x:Name="RecordingScheduledIcon" Grid.Column="0" Grid.Row="0" Source="/Images/player_record_small_scheduled.png"
-					Height="20" Margin="0" HorizontalAlignment="Right" Opacity="0" VerticalAlignment="Top"
-					Visibility="Visible"/>
-            </Grid>
+            <Image Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Visibility="{x:Bind epgitems.currentEPGItem.RecordingStatusIndicatorVisibility, Mode=OneWay}"
+                   Height="20" Margin="0" VerticalAlignment="Top" Source="{x:Bind epgitems.currentEPGItem.RecordingIcon, Mode=OneWay}"/>
 
             <!-- CHANNEL CONTENT - TITLE AND SUBTITLE-->
             <Grid x:Name="btnEPGItemButton" Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"
@@ -73,57 +154,58 @@
             <!-- SECOND ROW - PROGRESS BAR-->
             <Grid x:Name="ProgressBar" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="55"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" VerticalAlignment="Center"
+                <!-- CHANNEL NUMBER IS SHOWN ONLY WHEN SELECTED IN THE SETTINGS MENU-->
+                <Border Grid.Column="0" HorizontalAlignment="Stretch" Width="55" Visibility="{x:Bind ChannelNumberVisibility, Mode=OneWay}">
+                    <TextBlock Text="{x:Bind number}" HorizontalAlignment="Center" FontWeight="Bold" Style="{StaticResource CaptionTextBlockStyle}" x:Phase="10"/>
+                </Border>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center"
 					       Text="{x:Bind epgitems.currentEPGItem.startDateString, Mode=OneWay}" HorizontalAlignment="Center" 
 					       Style="{ThemeResource CaptionTextBlockStyle}" x:Phase="1"/>
-                <Rectangle x:Name="progressbackgroundbar" Margin="5,0,5,0" Grid.Column="1" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}"
+                <Rectangle x:Name="progressbackgroundbar" Margin="5,0,5,0" Grid.Column="2" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}"
                                HorizontalAlignment="Stretch" Height="5"  Opacity="0.2"/>
-                <Rectangle x:Name="progress" Margin="5,0,5,0" Grid.Column="1"  Height="5" Fill="{ThemeResource SystemControlBackgroundAccentBrush}">
+                <Rectangle x:Name="progress" Margin="5,0,5,0" Grid.Column="2"  Height="5" Fill="{ThemeResource SystemControlBackgroundAccentBrush}">
                     <Rectangle.RenderTransform>
                         <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0"  ScaleX="{x:Bind epgitems.currentEPGItem.percentcompleted, Mode=OneWay}" />
                     </Rectangle.RenderTransform>
                 </Rectangle>
-                <TextBlock Grid.Column="2" x:Phase="1" HorizontalAlignment="Right" VerticalAlignment="Center"
+                <TextBlock Grid.Column="3" x:Phase="1" HorizontalAlignment="Right" VerticalAlignment="Center"
 					       Text="{x:Bind epgitems.currentEPGItem.endDateString, Mode=OneWay}" 
 					       Style="{ThemeResource CaptionTextBlockStyle}" />
             </Grid>
+            <!-- THIRD ROW, SHOW CURRENT EPGITEM DETAILS WHEN EXPANDED-->
+            <ContentControl Visibility="{x:Bind CurrentEPGItemDetailsVisibility, Mode=OneWay}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" ContentTemplate="{StaticResource ChannelCurrentEPGItemDetails}" 
+                            DataContext="{x:Bind epgitems.currentEPGItem, Mode=OneWay}" HorizontalContentAlignment="Stretch"/>
         </Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="ChannelHeaderTemplate" x:DataType="local:ChannelViewModel">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Image Grid.Column="0" Source="{x:Bind chicon, Mode=OneWay}" Width="32" Height="32" HorizontalAlignment="Center" 
+            <Image Source="{x:Bind chicon, Mode=OneWay}" Width="32" Height="32" HorizontalAlignment="Left" 
                    VerticalAlignment="Center" x:Phase="1"/>
-            <Border Grid.Column="1" Margin="-28,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBlock TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Center" VerticalAlignment="Center"
 					   Text="{x:Bind name}" Style="{ThemeResource SubtitleTextBlockStyle}" x:Phase="0"/>
             </Border>
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChannelTagListDataTemplate" x:DataType="vm:ChannelTagListViewModel">
-        <ComboBox Height="40" ItemsSource="{Binding items}" Margin="0"
-                  HorizontalAlignment="Stretch" Background="{ThemeResource AppBarItemBackgroundThemeBrush}" 
-                  BorderThickness="0" SelectedItem="{Binding selectedChannelTag}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding name}"  Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-            <!--<Interactivity:Interaction.Behaviors>
-                <Core:EventTriggerBehavior EventName="SelectionChanged" SourceObject="{Binding ElementName=ChannelTagList}">
-                    <Core:InvokeCommandAction Command="{Binding ChannelTagListSelectionChanged}" CommandParameter="{Binding ElementName=ChannelTagList, Path=SelectedItem}"/>
-                </Core:EventTriggerBehavior>
-            </Interactivity:Interaction.Behaviors>-->
-        </ComboBox>
+    <DataTemplate x:Key="ChannelTagListDataTemplate" x:DataType="local:ChannelTagListViewModel">
+        <Grid>
+            <ComboBox Height="40" ItemsSource="{x:Bind items, Mode=OneWay}" Margin="0"
+                      HorizontalAlignment="Stretch" Background="{ThemeResource AppBarItemBackgroundThemeBrush}" 
+                      BorderThickness="0" SelectedItem="{x:Bind selectedChannelTag, Mode=OneWay}" SelectionChanged="{x:Bind SelectionChanged}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding name}"  Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </Grid>
     </DataTemplate>
     
     
@@ -145,7 +227,7 @@
                             <Style TargetType="ListViewItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                 <Setter Property="Padding" Value="0"/>
-                                <Setter Property="Margin" Value="0" />
+                                <Setter Property="Margin" Value="0,0,0,5" />
                             </Style>
                         </ListView.ItemContainerStyle>
                     </ListView>
@@ -159,9 +241,106 @@
         </Grid>
     </DataTemplate>
 
+    <DataTemplate x:Key="RecordingsListDataTemplate" x:DataType="local:RecordingListViewModel">
+        <Grid>
+            <SemanticZoom>
+                <SemanticZoom.Resources>
+                    <CollectionViewSource x:Key="csvRecordings" Source="{x:Bind groupeditems, Mode=OneWay}" IsSourceGrouped="True"/>
+                </SemanticZoom.Resources>
+                <SemanticZoom.ZoomedInView>
+                    <ListView ItemsSource="{Binding Source={StaticResource csvRecordings}}"
+                              ContinuumNavigationTransitionInfo.ExitElementContainer="True"
+                              Style="{StaticResource myListViewStyle}"
+                              SelectionMode="{x:Bind MultiSelectMode, Mode=OneWay}">
+                        <ListView.GroupStyle>
+                            <GroupStyle HidesIfEmpty="False" HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
+                        </ListView.GroupStyle>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0,0,0,5" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <ContentControl ContentTemplate="{StaticResource RecordingDataTemplate}" HorizontalContentAlignment="Stretch"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </SemanticZoom.ZoomedInView>
+                <SemanticZoom.ZoomedOutView>
+                    <ListView ItemsSource="{Binding Source={StaticResource csvRecordings}, Path=CollectionGroups}"
+                              ItemTemplate="{StaticResource ListViewJumpListTemplate}">
+                    </ListView>
+                </SemanticZoom.ZoomedOutView>
+            </SemanticZoom>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="RecordingDataTemplate" x:DataType="local:RecordingViewModel">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="55"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Rectangle x:Name="HeaderBackdrop"  Grid.Row="0" Grid.Column="0"  Grid.RowSpan="2" Grid.ColumnSpan="2" Opacity="0"/>
+
+            <!-- RECORDING CHANNEL ICON-->
+            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Source="{x:Bind channel_icon, Mode=OneWay}" Width="50" Height="50" HorizontalAlignment="Center" 
+                   VerticalAlignment="Center" Canvas.ZIndex="99" x:Phase="10"/>
+
+            <!-- RECORDING STATUS INDICATOR-->
+            <Image Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"
+                   Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Source="{x:Bind RecordingIcon, Mode=OneWay}"/>
+
+            <!-- EPG TITLE AND DESCRIPTION-->
+            <Grid Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0" >
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" TextWrapping="NoWrap" TextTrimming="WordEllipsis" 
+                           Text="{x:Bind title}" Margin="0,0,0,0" Style="{StaticResource BaseTextBlockStyle}" x:Phase="0"/>
+                <TextBlock Grid.Row="1" Text="{x:Bind filesizeGB, Mode=OneWay}" Style="{ThemeResource CaptionTextBlockStyle}"
+                           HorizontalAlignment="Right" x:Phase="5"/>
+                <TextBlock Grid.Row="1" TextWrapping="NoWrap" 
+						   Style="{ThemeResource SubTitleAccent}" Text="{x:Bind channelName}" x:Phase="1"/>
+            </Grid>
+
+            <!-- PROGRESS INDICATOR-->
+            <Grid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Margin="5,0,5,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Left" Style="{ThemeResource CaptionTextBlockStyle}"
+					       Text="{x:Bind startDateString}" TextWrapping="NoWrap" HorizontalAlignment="Left"  Margin="0" x:Phase="4" />
+                <Rectangle Grid.Column="1" HorizontalAlignment="Stretch" Height="5" 
+					       Margin="5,0,5,0"  Opacity="0.2" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}"/>
+                <Rectangle Grid.Column="1" Height="5"  Fill="{ThemeResource SystemControlBackgroundAccentBrush}"
+					       Margin="5,0,5,0" Stretch="Fill">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0" ScaleX="{x:Bind percentcompleted, Mode=OneWay}" />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <TextBlock Grid.Column="2" TextAlignment="Right" Text="{x:Bind stopDateString}" TextWrapping="NoWrap" 
+        			       HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" x:Phase="4"/>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
     <DataTemplate x:Key="EPGItem" x:DataType="local:EPGItemViewModel">
         <Grid x:Name="MainGrid" RenderTransformOrigin="0.5,0.5" Background="Transparent">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
@@ -205,8 +384,123 @@
                 <TextBlock Grid.Column="2" TextAlignment="Right" Text="{x:Bind endDateString}" TextWrapping="NoWrap" 
         			       HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" x:Phase="4"/>
             </Grid>
+            <!-- EPG ITEM DETAILS-->
+            <ContentControl Grid.Row="2" Visibility="{x:Bind EPGItemDetailsVisibility, Mode=OneWay}" Grid.Column="0" Grid.ColumnSpan="2" ContentTemplate="{StaticResource ChannelCurrentEPGItemDetails}" 
+                            DataContext="{x:Bind Mode=OneWay}" HorizontalContentAlignment="Stretch"/>
         </Grid>
     </DataTemplate>
+
+    <DataTemplate x:Key="SelectedEPGItemDataTemplate" x:DataType="local:TVHead_ViewModel">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" HorizontalAlignment="Stretch">
+                <TextBlock Text="{x:Bind selectedEPGItem.title, Mode=OneWay}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="1" HorizontalAlignment="Stretch">
+                <TextBlock Text="{x:Bind selectedEPGItem.subtitle, Mode=OneWay}" Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" 
+                           FontWeight="Bold"  Style="{StaticResource BaseTextBlockStyle}" HorizontalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="2" Height="1" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+            <ContentControl Grid.Row="3" ContentTemplate="{StaticResource ChannelHeaderTemplate}" DataContext="{x:Bind SelectedChannel, Mode=OneWay}" HorizontalContentAlignment="Stretch"/>
+            <Border Grid.Row="4" Height="1" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+            <Grid Grid.Row="5" HorizontalAlignment="Stretch" Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Left" Style="{ThemeResource CaptionTextBlockStyle}"
+					       Text="{x:Bind selectedEPGItem.startDateString, Mode=OneWay}" TextWrapping="NoWrap" HorizontalAlignment="Left"  Margin="0" x:Phase="4" />
+                <Rectangle Grid.Column="1" HorizontalAlignment="Stretch" Height="5" 
+					       Margin="5,0,5,0"  Opacity="0.2" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}"/>
+                <Rectangle Grid.Column="1" Height="5"  Fill="{ThemeResource SystemControlBackgroundAccentBrush}"
+					       Margin="5,0,5,0" Stretch="Fill">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0" ScaleX="{x:Bind selectedEPGItem.percentcompleted, Mode=OneWay}" />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <TextBlock Grid.Column="2" TextAlignment="Right" Text="{x:Bind selectedEPGItem.endDateString, Mode=OneWay}" TextWrapping="NoWrap" 
+        			       HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" x:Phase="4"/>
+            </Grid>
+            <Border Grid.Row="6" Height="1" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+            <TextBlock Grid.Row="7"  Text="Genre" 
+                       Margin="0" FontWeight="Bold"  Style="{StaticResource BodyTextBlockStyle}"/>
+            <TextBlock Grid.Row="8" Grid.Column="1" Margin="0,0,10,0"
+                       HorizontalAlignment="Left" Text="{x:Bind selectedEPGItem.genreName, Mode=OneWay}" Style="{ThemeResource CaptionTextBlockStyle}"
+                       VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="9" Grid.Column="0" Margin="0"
+                       Text="Description" FontWeight="Bold" Style="{ThemeResource BodyTextBlockStyle}"/>
+            <TextBlock Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Style="{ThemeResource CaptionTextBlockStyle}"
+                       TextWrapping="WrapWholeWords" HorizontalAlignment="Left" Margin="0,0,10,0" Text="{x:Bind selectedEPGItem.description, Mode=OneWay}" />
+
+        </Grid>
+
+    </DataTemplate>
+
+    <DataTemplate x:Key="EPGItemHeader" x:DataType="local:EPGItemViewModel">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" HorizontalAlignment="Stretch">
+                <TextBlock Text="{x:Bind title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="1" HorizontalAlignment="Stretch">
+                <TextBlock Text="{x:Bind subtitle}" Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" 
+                           FontWeight="Bold"  Style="{StaticResource BaseTextBlockStyle}" HorizontalAlignment="Center"/>
+            </Border>
+
+            <Border Grid.Row="2" Height="1" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+            <Grid Grid.Row="3" HorizontalAlignment="Stretch" Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Left" Style="{ThemeResource CaptionTextBlockStyle}"
+					       Text="{x:Bind startDateString}" TextWrapping="NoWrap" HorizontalAlignment="Left"  Margin="0" x:Phase="4" />
+                <Rectangle Grid.Column="1" HorizontalAlignment="Stretch" Height="5" 
+					       Margin="5,0,5,0"  Opacity="0.2" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}"/>
+                <Rectangle Grid.Column="1" Height="5"  Fill="{ThemeResource SystemControlBackgroundAccentBrush}"
+					       Margin="5,0,5,0" Stretch="Fill">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0" ScaleX="{x:Bind percentcompleted, Mode=OneWay}" />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <TextBlock Grid.Column="2" TextAlignment="Right" Text="{x:Bind endDateString}" TextWrapping="NoWrap" 
+        			       HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" x:Phase="4"/>
+            </Grid>
+            <Border Grid.Row="4" Height="1" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+        </Grid>
+
+    </DataTemplate>
+
+    <DataTemplate x:Key="EPGItemTitle" x:DataType="local:EPGItemViewModel">
+        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TextBlock Text="{x:Bind title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+    </DataTemplate>
+
 
     <DataTemplate x:Key="EPGItemDetails" x:DataType="local:EPGItemViewModel">
         <Grid>
@@ -258,6 +552,30 @@
             <TextBlock Grid.Row="7" Grid.Column="0" Margin="0"
                        Text="Description" FontWeight="Bold" Style="{ThemeResource BodyTextBlockStyle}"/>
             <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Style="{ThemeResource CaptionTextBlockStyle}"
+                       TextWrapping="WrapWholeWords" HorizontalAlignment="Left" Margin="0,0,10,0" Text="{x:Bind description}" />
+
+        </Grid>
+
+    </DataTemplate>
+
+    <DataTemplate x:Key="ChannelCurrentEPGItemDetails" x:DataType="local:EPGItemViewModel">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Height="1" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+            <TextBlock Grid.Row="1"  Text="Genre" 
+                       Margin="0" FontWeight="Bold"  Style="{StaticResource BodyTextBlockStyle}"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,0,10,0"
+                       HorizontalAlignment="Left" Text="{x:Bind genreName}" Style="{ThemeResource CaptionTextBlockStyle}"
+                       VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0"
+                       Text="Description" FontWeight="Bold" Style="{ThemeResource BodyTextBlockStyle}"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Style="{ThemeResource CaptionTextBlockStyle}"
                        TextWrapping="WrapWholeWords" HorizontalAlignment="Left" Margin="0,0,10,0" Text="{x:Bind description}" />
 
         </Grid>
@@ -477,8 +795,70 @@
         </ListView>
     </DataTemplate>
 
+    <DataTemplate x:Key="SettingsMenuDataTemplate" x:DataType="local:TVHead_ViewModel">
+        <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Row="1" Margin="0,0,0,0">
+                <Grid HorizontalAlignment="Center" Margin="10,0,15,0">
+                    <StackPanel Orientation="Vertical" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+                        <TextBlock x:Name="tbServerHeader" Margin="0,5,0,5"  Text="Server settings" Style="{StaticResource FlyoutPickerTitleTextBlockStyle}"/>
+                        <TextBlock x:Uid="ipaddress" Text="IP address or hostname" Name="tbIPAddress2" />
+                        <TextBox   Text="{x:Bind TVHeadSettings.ServerIPSetting, Mode=TwoWay}"  IsTextPredictionEnabled="False" IsSpellCheckEnabled="False"  />
+                        <TextBlock x:Uid="port"  Text="Port" VerticalAlignment="Center"/>
+                        <TextBox   InputScope="Number" Name="port" Text="{x:Bind TVHeadSettings.ServerPortSetting, Mode=TwoWay}" />
+                        <TextBlock x:Uid="username"  Text="Username"/>
+                        <TextBox   Text="{x:Bind TVHeadSettings.UsernameSetting, Mode=TwoWay}"  IsTextPredictionEnabled="False" IsSpellCheckEnabled="False"/>
+                        <TextBlock x:Uid="password"   Text="Password" VerticalAlignment="Center"/>
+                        <PasswordBox Password="{x:Bind TVHeadSettings.PasswordSetting, Mode=TwoWay}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Button x:Uid="btntestconnection" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"  x:Name="btnTestConnection"  Content="Test Connection"/>
+                            <TextBlock x:Name="tbTestResult" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0"  VerticalAlignment="Center" Style="{ThemeResource SubTitleAccent}"/>
+                            <ProgressBar x:Name="pbTestResult" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" Background="Transparent" Height="10" IsIndeterminate="False" VerticalAlignment="Center"/>
+                        </Grid>
+                        <TextBlock x:Name="tbLanguage" x:Uid="tbLanguage" Margin="0,20,0,0"  Text="Language"/>
+                        <ComboBox x:Name="cbLanguage" ItemsSource="{Binding supportedLanguages.languages}"/>
+                        <!--<TextBlock x:Name="tbUseDarkTheme" Margin="0,20,0,0"  Text="Preferred Theme" Style="{StaticResource FlyoutPickerTitleTextBlockStyle}"/>
+                        <TextBlock x:Name="tbUseDarkThemeCaption" Margin="0,5,0,0"  Text="Select the theme color you want to use for TV Head (requires restart)" TextWrapping="WrapWholeWords" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Content="Dark" GroupName="ThemeChoices" IsChecked="{x:Bind TVHeadSettings.UseDarkTheme, Mode=TwoWay}"/>
+                            <RadioButton Content="Light" GroupName="ThemeChoices" IsChecked="{x:Bind TVHeadSettings.UseLightTheme, Mode=TwoWay}"/>
+                        </StackPanel>-->
+                        <TextBlock x:Name="tbAutoRefreshHeader" x:Uid="tbAutoRefreshHeader" Margin="0,20,0,0" Text="Auto Refresh" Style="{StaticResource FlyoutPickerTitleTextBlockStyle}"/>
+                        <TextBlock x:Uid="tbAutoRefresh" Text="When Automatic Refresh is enabled, the app listens for incoming status updates from the TVH server. When disabled the app refreshes it's information periodically. Recommended setting is On for TVH 4.x, and Off for anything below." TextWrapping="Wrap" Style="{ThemeResource CaptionTextBlockStyle}"/>
+                        <ToggleSwitch IsOn="{x:Bind TVHeadSettings.LongPollingEnabled, Mode=TwoWay}" Margin="0,0,0,0"/>
+                        <TextBlock x:Name="tbChannelGroup" x:Uid="tbChannelGroup" Margin="0,20,0,0"  Text="Favourite Channel Tag" Style="{StaticResource FlyoutPickerTitleTextBlockStyle}"/>
+                        <TextBlock x:Name="tbChannelGroupExplanation" x:Uid="tbChannelGroupExplanation"  Text="Select your favourite channel tag. Channels within this tag will be loaded on startup. If no channel tags exist, or all channel tags are disabled, all channels will be loaded by default (not recommended)." Style="{ThemeResource CaptionTextBlockStyle}"/>
+                        <ComboBox x:Name="cbChannelTags" ItemsSource="{x:Bind ChannelTags.items, Mode=OneWay}" 
+                                  SelectedItem="{x:Bind ChannelTags.favouriteChannelTag, Mode=OneWay}" SelectionChanged="{x:Bind ChannelTags.FavouriteChanged}"
+                                  HorizontalAlignment="Stretch" Margin="0,10,0,0" Background="{ThemeResource SystemControlBackgroundListLowBrush}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="local:ChannelTagViewModel">
+                                    <TextBlock Text="{x:Bind name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock x:Uid="tbChannels" Margin="0,20,0,10" Text="Channels" Style="{StaticResource FlyoutPickerTitleTextBlockStyle}"/>
+                        <ToggleSwitch x:Uid="tsHideNumberlessChannels"  Header="Hide Channels without a channel number" IsOn="{x:Bind TVHeadSettings.HideNumberlessChannels, Mode=TwoWay}"/>
+                        <ToggleSwitch x:Uid="tsShowChannelNumbers" Header="Show Channel Numbers" Margin="0" IsOn="{Binding TVHeadSettings.ShowChannelNumbers, Mode=TwoWay}" />
+                        <TextBlock x:Uid="Recordings" Margin="0,20,0,10" Text="Recordings" Style="{StaticResource FlyoutPickerTitleTextBlockStyle}" />
+                        <ToggleSwitch x:Uid="tsConfirmDeletion" Header="Confirm Recording Deletion" Margin="0" IsOn="{x:Bind TVHeadSettings.ConfirmDeletion, Mode=TwoWay}" />
+                        <ToggleSwitch x:Uid="tsShowRecordingOptions" Header="Prompt for recording type (auto or single)" Margin="0" IsOn="{x:Bind TVHeadSettings.ProposeAutoRecording, Mode=TwoWay}" />
+                    </StackPanel>
+                </Grid>
 
-
+            </ScrollViewer>
+        </Grid>
+    </DataTemplate>
 
     <Style x:Key="TVHeadAppBarToggleButton" TargetType="AppBarToggleButton">
         <Setter Property="Background" Value="Transparent"/>

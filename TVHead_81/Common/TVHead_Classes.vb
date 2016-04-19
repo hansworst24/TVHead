@@ -420,15 +420,14 @@ End Class
 
 Public Class RecordingReturnValue
     Public Property tvhResponse As New tvhCommandResponse
-    Public Property recording As New RecordingViewModel
-    Public Property recording_id As String
+    Public Property recording As RecordingViewModel
+    Public Property uuid As String
 End Class
 
 Public Class Downloader
 
-    Private vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
-
     Public Async Function DownloadJSON(url As String) As Task(Of HttpResponseMessage)
+        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
         Using filter As New HttpBaseProtocolFilter
             If vm.TVHeadSettings.UsernameSetting <> "" And vm.TVHeadSettings.PasswordSetting <> "" Then
                 filter.ServerCredential = New Windows.Security.Credentials.PasswordCredential With {.Password = vm.TVHeadSettings.PasswordSetting, .UserName = vm.TVHeadSettings.UsernameSetting}
@@ -458,14 +457,15 @@ Public Class Downloader
     End Function
 
     Public Async Function DownloadComet(cometID As String) As Task(Of Windows.Web.Http.HttpResponseMessage)
+        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
         Using filter As New HttpBaseProtocolFilter
-            filter.ServerCredential = New Windows.Security.Credentials.PasswordCredential With {.Password = vm.appSettings.PasswordSetting, .UserName = vm.appSettings.UsernameSetting}
+            filter.ServerCredential = New Windows.Security.Credentials.PasswordCredential With {.Password = vm.TVHeadSettings.PasswordSetting, .UserName = vm.TVHeadSettings.UsernameSetting}
             filter.CacheControl.ReadBehavior = HttpCacheReadBehavior.MostRecent
             filter.CacheControl.WriteBehavior = HttpCacheWriteBehavior.NoCache
             filter.AllowUI = False
             filter.UseProxy = False
             Using wc As New HttpClient(filter)
-                Dim url As String = String.Format("{0}/comet/poll?boxid={1}&immediate=0", vm.appSettings.GetFullURL(), cometID)
+                Dim url As String = String.Format("{0}/comet/poll?boxid={1}&immediate=0", vm.TVHeadSettings.GetFullURL(), cometID)
                 Dim cts As New CancellationTokenSource(Timeout.Infinite)
                 Dim request = New HttpRequestMessage(HttpMethod.[Get], New Uri(url))
                 Dim response As New HttpResponseMessage

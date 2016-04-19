@@ -89,12 +89,12 @@ Public NotInheritable Class api40
         Return settings.GetFullURL() + "/api/dvr/entry/create_by_event?event_id=" + eventId + "&config_uuid=" + dvruuid
     End Function
 
-    Public Function apiStopRecording(recording_id As String) As String
-        Return settings.GetFullURL() + "/api/dvr/entry/stop?uuid=" + recording_id.ToString
+    Public Function apiStopRecording(uuid As String) As String
+        Return settings.GetFullURL() + "/api/dvr/entry/stop?uuid=" + uuid.ToString
     End Function
 
-    Public Function apiAbortRecording(recording_id As String) As String
-        Return settings.GetFullURL() + "/api/dvr/entry/cancel?uuid=" + recording_id.ToString
+    Public Function apiAbortRecording(uuid As String) As String
+        Return settings.GetFullURL() + "/api/dvr/entry/cancel?uuid=" + uuid.ToString
     End Function
 
     Public Function apiDeleteRecording(uuid As String) As String
@@ -119,35 +119,38 @@ Public NotInheritable Class api40
 
     Public Function apiAddManualRecording(rec As RecordingViewModel) As String
         'conf={"disp_title":"blaat","start":1418170200,"start_extra":0,"stop":1419381600,"stop_extra":0,"channel":"b8f6c9a16f836735bc546b9a51abed26","config_name":"5281d3bed2bb4cff1a70f9f64ab4d760","comment":""}
-        Return settings.GetFullURL() + "/api/dvr/entry/create?conf=" + Uri.EscapeDataString(String.Format("{{""disp_title"":""{0}"",""start"":{1},""stop"":{2},""channel"":""{3}"",""config_name"":""{4}"",""comment"":""{5}""}}",
-                                                             rec.title,
-                                                             TimeToUnix(rec.startDate.Date.Add(New TimeSpan(rec.startTime.Hour, rec.startTime.Minute, rec.startTime.Second)).ToUniversalTime),
-                                                             TimeToUnix(rec.stopDate.Date.Add(New TimeSpan(rec.stopTime.Hour, rec.stopTime.Minute, rec.stopTime.Second)).ToUniversalTime),
-                                                             rec.channelUuid,
-                                                             rec.configUuid,
-                                                             "Created by TV Head"))
+        'Return settings.GetFullURL() + "/api/dvr/entry/create?conf=" + Uri.EscapeDataString(String.Format("{{""disp_title"":""{0}"",""start"":{1},""stop"":{2},""channel"":""{3}"",""config_name"":""{4}"",""comment"":""{5}""}}",
+        '                                                     rec.title,
+        '                                                     TimeToUnix(rec.startDate.Date.Add(New TimeSpan(rec.startTime.Hour, rec.startTime.Minute, rec.startTime.Second)).ToUniversalTime),
+        '                                                     TimeToUnix(rec.stopDate.Date.Add(New TimeSpan(rec.stopTime.Hour, rec.stopTime.Minute, rec.stopTime.Second)).ToUniversalTime),
+        '                                                     rec.channelUuid,
+        '                                                     rec.configUuid,
+        '                                                     "Created by TV Head"))
+        Return ""
 
     End Function
     Public Function apiUpdateManualRecording(r As RecordingViewModel) As String
-        Return settings.GetFullURL() + String.Format("/api/idnode/save?node={{" &
-                    """disp_title"":""{0}""" &
-                    ",""start"":""{1}""" &
-                    ",""start_extra"":""{2}""" &
-                    ",""stop"":""{3}""" &
-                    ",""stop_extra"":""{4}""" &
-                    ",""channel"":{5}" &
-                    ",""config_name"":{6}" &
-                    ",""comment"":""{7}""" &
-                    ",""uuid"":""{8}""}}",
-                    r.title,
-                    TimeToUnix(r.startDate.Date.Add(New TimeSpan(r.startTime.Hour, r.startTime.Minute, r.startTime.Second)).ToUniversalTime),
-                    0,
-                    TimeToUnix(r.stopDate.Date.Add(New TimeSpan(r.stopTime.Hour, r.stopTime.Minute, r.stopTime.Second)).ToUniversalTime),
-                    0,
-                    r.channelUuid,
-                    r.configUuid,
-                    "Edited by TV Head",
-                    r.recording_id)
+        'Return settings.GetFullURL() + String.Format("/api/idnode/save?node={{" &
+        '            """disp_title"":""{0}""" &
+        '            ",""start"":""{1}""" &
+        '            ",""start_extra"":""{2}""" &
+        '            ",""stop"":""{3}""" &
+        '            ",""stop_extra"":""{4}""" &
+        '            ",""channel"":{5}" &
+        '            ",""config_name"":{6}" &
+        '            ",""comment"":""{7}""" &
+        '            ",""uuid"":""{8}""}}",
+        '            r.title,
+        '            TimeToUnix(r.startDate.Date.Add(New TimeSpan(r.startTime.Hour, r.startTime.Minute, r.startTime.Second)).ToUniversalTime),
+        '            0,
+        '            TimeToUnix(r.stopDate.Date.Add(New TimeSpan(r.stopTime.Hour, r.stopTime.Minute, r.stopTime.Second)).ToUniversalTime),
+        '            0,
+        '            r.channelUuid,
+        '            r.configUuid,
+        '            "Edited by TV Head",
+        '            r.uuid)
+
+        Return ""
 
     End Function
     Public Function apiUpdateAutoRecording(r As AutoRecordingViewModel) As String
@@ -474,10 +477,10 @@ Namespace tvh40
     Public Class Recording
         Public Property autorec As String
         Public Property broadcast As Integer
-        Public Property channel As String
+        Public Property channel As String 'Contains the uuid of the recording's channel 
         Public Property channel_icon As String
-        Public Property channelname As String
-        Public Property config_name As String
+        Public Property channelname As String 'Contains the name of the recording's channel
+        Public Property config_name As String 'Actually contains the uuid of the DVR Profile used (not the name)
         Public Property container As Integer
         Public Property content_type As Integer
         Public Property creator As String
@@ -500,7 +503,7 @@ Namespace tvh40
         Public Property start As Long
         Public Property start_extra As Integer
         Public Property start_real As Long
-        Public Property status As String
+        Public Property status As String 'This is a more user-friendly-to-read version of sched_status
         Public Property [stop] As Long
         Public Property stop_extra As Integer
         Public Property stop_real As Long

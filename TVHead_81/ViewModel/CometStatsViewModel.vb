@@ -157,24 +157,24 @@ Public Class CometStatsViewModel
     ''' </summary>
     ''' <param name="s"></param>
     Public Async Sub AddComet(s As String)
-        Await RunOnUIThread(Sub()
-                                Select Case s
-                                    Case "epgcreate" : intEPGCreate += 1
-                                    Case "epgchange" : intEPGChange += 1
-                                    Case "epgupdate" : intEPGUpdate += 1
-                                    Case "epgdelete" : intEPGDelete += 1
-                                    Case "epgdvrupdate" : intEPGDVRUpdate += 1
-                                    Case "epgdrvdelete" : intEPGDVRDelete += 1
-                                    Case "dvrcreate" : intDVRCreate += 1
-                                    Case "dvrchange" : intDVRChange += 1
-                                    Case "dvrupdate" : intDVRUpdate += 1
-                                    Case "dvrdelete" : intDVRDelete += 1
-                                    Case "dvrautorecchange" : intDVRAutoRecChange += 1
-                                    Case "dvrautoreccreate" : intDVRAutoRecCreate += 1
-                                    Case "dvrautorecdelete" : intDVRAutoRecDelete += 1
-                                    Case "dvrautorecupdate" : intDVRAutoRecUpdate += 1
-                                End Select
-                            End Sub)
+        RunOnUIThread(Sub()
+                          Select Case s
+                              Case "epgcreate" : intEPGCreate += 1
+                              Case "epgchange" : intEPGChange += 1
+                              Case "epgupdate" : intEPGUpdate += 1
+                              Case "epgdelete" : intEPGDelete += 1
+                              Case "epgdvrupdate" : intEPGDVRUpdate += 1
+                              Case "epgdrvdelete" : intEPGDVRDelete += 1
+                              Case "dvrcreate" : intDVRCreate += 1
+                              Case "dvrchange" : intDVRChange += 1
+                              Case "dvrupdate" : intDVRUpdate += 1
+                              Case "dvrdelete" : intDVRDelete += 1
+                              Case "dvrautorecchange" : intDVRAutoRecChange += 1
+                              Case "dvrautoreccreate" : intDVRAutoRecCreate += 1
+                              Case "dvrautorecdelete" : intDVRAutoRecDelete += 1
+                              Case "dvrautorecupdate" : intDVRAutoRecUpdate += 1
+                          End Select
+                      End Sub)
     End Sub
 
     Public Sub New()

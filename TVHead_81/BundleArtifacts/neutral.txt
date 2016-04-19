@@ -1,0 +1,6 @@
+MainPackage=C:\Users\frank\Documents\Visual Studio 2015\Projects\TVHead 3.0.0.0\TVHead_81\bin\Debug\TVHead_81_3.0.0.0_AnyCPU_Debug.appx
+SymbolPackage=C:\Users\frank\Documents\Visual Studio 2015\Projects\TVHead 3.0.0.0\TVHead_81\AppPackages\TVHead_81_3.0.0.0_Debug_Test\TVHead_81_3.0.0.0_AnyCPU_Debug.appxsym
+ResourcePack=C:\Users\frank\Documents\Visual Studio 2015\Projects\TVHead 3.0.0.0\TVHead_81\bin\Debug\TVHead_81_3.0.0.0_language-de.appx
+ResourcePack=C:\Users\frank\Documents\Visual Studio 2015\Projects\TVHead 3.0.0.0\TVHead_81\bin\Debug\TVHead_81_3.0.0.0_language-nl.appx
+ResourcePack=C:\Users\frank\Documents\Visual Studio 2015\Projects\TVHead 3.0.0.0\TVHead_81\bin\Debug\TVHead_81_3.0.0.0_scale-100.appx
+ResourcePack=C:\Users\frank\Documents\Visual Studio 2015\Projects\TVHead 3.0.0.0\TVHead_81\bin\Debug\TVHead_81_3.0.0.0_scale-140.appx

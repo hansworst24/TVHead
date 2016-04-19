@@ -24,16 +24,13 @@ Module TVHead_Modules
     End Function
 
 
-    Public Async Function TimeoutAfter(Of T)(task As Task(Of T), delay As Integer) As Task(Of T)
-        Await task.WhenAny(task, task.Delay(delay))
-        If Not task.IsCompleted Then Throw New TimeoutException("Timeout hit.")
-        Return Await task
-    End Function
-
-
-    Public Async Function RunOnUIThread(p As DispatchedHandler) As Task
-        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, p)
-    End Function
+    ''' <summary>
+    ''' Runs P on the UI thread. Normally this would be awaited, but awaiting the call causes memory leaks of Task objects which I couldn't figure out how to overcome
+    ''' </summary>
+    ''' <param name="p"></param>
+    Public Sub RunOnUIThread(p As DispatchedHandler)
+        CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, p)
+    End Sub
 
 #Region "Connectivity Validation"
 
@@ -387,7 +384,7 @@ Module TVHead_Modules
             End If
         Catch ex As Exception
             WriteToDebug("TVHead_Modules.RecordProgramBySeries()", ex.InnerException.ToString)
-            Return New RecordingReturnValue With {.recording_id = "", .tvhResponse = New tvhCommandResponse With {.success = 0}}
+            Return New RecordingReturnValue With {.uuid = "", .tvhResponse = New tvhCommandResponse With {.success = 0}}
         End Try
         Return result
     End Function
@@ -406,14 +403,14 @@ Module TVHead_Modules
             'IF A RECORDING WAS STARTED BUT ENCOUNTERED AN ERROR, THE RECEIVED RESPONSE MIGHT BE TOO FAST AND THE RECORDING WILL SHOW UP AS RECORDING INSTEAD OF ERROR
             ' THIS WILL BE CORRECTED BY A REFRESH OF THE VIEW
             Dim recordings As IEnumerable(Of RecordingViewModel) = Await LoadUpcomingRecordings()
-            Dim rec As New RecordingViewModel
-            Dim matchingRecording = (From r In recordings Where r.broadcast = epgEntry.eventId Select r).FirstOrDefault
+            Dim rec As RecordingViewModel
+            Dim matchingRecording = (From r In recordings Where r.eventid = epgEntry.eventId Select r).FirstOrDefault
             If Not matchingRecording Is Nothing Then
                 rec = matchingRecording
             End If
 
             If Not rec Is Nothing Then
-                rec_id = rec.recording_id
+                rec_id = rec.uuid
                 WriteToDebug("TVHead_Modules.RecordProgram()", deserialized.success.ToString)
                 result = New RecordingReturnValue With {.tvhResponse = New tvhCommandResponse With {.success = 1}, .recording = rec}
 
@@ -426,7 +423,7 @@ Module TVHead_Modules
 
         Catch ex As Exception
             WriteToDebug("TVHead_Modules.RecordProgram()", ex.InnerException.ToString)
-            Return New RecordingReturnValue With {.recording_id = "", .tvhResponse = New tvhCommandResponse With {.success = 0}}
+            Return New RecordingReturnValue With {.uuid = "", .tvhResponse = New tvhCommandResponse With {.success = 0}}
         End Try
         Return result
     End Function
@@ -437,10 +434,10 @@ Module TVHead_Modules
         Dim result As New RecordingReturnValue
         Try
             Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiAbortRecording(uuid))).Content.ReadAsStringAsync
-            result = New RecordingReturnValue With {.recording_id = uuid, .tvhResponse = New tvhCommandResponse With {.success = 1}}
+            result = New RecordingReturnValue With {.uuid = uuid, .tvhResponse = New tvhCommandResponse With {.success = 1}}
         Catch ex As Exception
             WriteToDebug("TVHead_Modules.CancelRecording()", ex.InnerException.ToString)
-            result = New RecordingReturnValue With {.recording_id = uuid, .tvhResponse = New tvhCommandResponse With {.success = 0}}
+            result = New RecordingReturnValue With {.uuid = uuid, .tvhResponse = New tvhCommandResponse With {.success = 0}}
         End Try
         Return result
     End Function
@@ -451,10 +448,10 @@ Module TVHead_Modules
         Dim result As New RecordingReturnValue
         Try
             Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiAbortRecording(uuid))).Content.ReadAsStringAsync
-            result = New RecordingReturnValue With {.recording_id = uuid, .tvhResponse = New tvhCommandResponse With {.success = 1}}
+            result = New RecordingReturnValue With {.uuid = uuid, .tvhResponse = New tvhCommandResponse With {.success = 1}}
         Catch ex As Exception
             WriteToDebug("TVHead_Modules.AbortRecording()", ex.Message.ToString)
-            result = New RecordingReturnValue With {.recording_id = uuid, .tvhResponse = New tvhCommandResponse With {.success = 0}}
+            result = New RecordingReturnValue With {.uuid = uuid, .tvhResponse = New tvhCommandResponse With {.success = 0}}
         End Try
         Return result
     End Function
@@ -467,10 +464,10 @@ Module TVHead_Modules
         Dim result As New RecordingReturnValue
         Try
             Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiDeleteAutoRecording(uuid))).Content.ReadAsStringAsync
-            result = New RecordingReturnValue With {.recording_id = uuid, .tvhResponse = New tvhCommandResponse With {.success = 1}}
+            result = New RecordingReturnValue With {.uuid = uuid, .tvhResponse = New tvhCommandResponse With {.success = 1}}
         Catch ex As Exception
             WriteToDebug("TVHead_Modules.DeleteAutoRecording()", ex.InnerException.ToString)
-            result = New RecordingReturnValue With {.recording_id = uuid, .tvhResponse = New tvhCommandResponse With {.success = 0}}
+            result = New RecordingReturnValue With {.uuid = uuid, .tvhResponse = New tvhCommandResponse With {.success = 0}}
         End Try
         Return result
     End Function
@@ -704,10 +701,9 @@ Module TVHead_Modules
 
 
 
-    Public Async Function LoadIDNode(uuid As String, type As Object) As Task(Of Object)
-        WriteToDebug("Modules.LoadIDNode()", "Loading ID Node : " & uuid)
+    Public Async Function LoadIDNode(uuid As String, ByVal t As Type) As Task(Of Object)
+        WriteToDebug("Modules.LoadIDNode()", "Loading ID Node : " & uuid & " of type " & t.FullName)
         Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
-        'WriteToDebug("Modules.LoadEPGEventByID()", "Loading EPG Entry for channel :" & selectedChannel.name)
         Dim settings As New TVHead_Settings
         Dim result As New List(Of RecordingViewModel)
         Dim json_result As String
@@ -723,8 +719,9 @@ Module TVHead_Modules
             WriteToDebug("Modules.LoadEPGEntry()", ex.InnerException.ToString)
             Return Nothing
         End Try
+
         If Not json_result = "" Then
-            If TypeOf (type) Is RecordingViewModel Then
+            If t Is GetType(RecordingViewModel) Then
                 Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.RecordingList)(json_result)
                 If Not deserialized.entries.Count = 0 Then
                     'Hack to test if the cast resulted in anything sensible
@@ -737,7 +734,7 @@ Module TVHead_Modules
                     End If
                 End If
             End If
-            If TypeOf (type) Is AutoRecordingViewModel Then
+            If t Is GetType(AutoRecordingViewModel) Then
                 Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.AutoRecordingList)(json_result)
                 If Not deserialized.entries.Count = 0 Then
                     'Hack to test if the cast resulted in anything sensible
@@ -751,7 +748,7 @@ Module TVHead_Modules
                 End If
             End If
 
-            If TypeOf (type) Is ChannelViewModel Then
+            If t Is GetType(ChannelViewModel) Then
                 Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.ChannelList)(json_result)
                 If Not deserialized.entries.Count = 0 Then
                     'Hack to test if the cast resulted in anything sensible
@@ -765,8 +762,8 @@ Module TVHead_Modules
                 End If
             End If
         End If
-        WriteToDebug("Modules.LoadIDNode()", "Completed Loading ID Node : " & uuid)
-        'Return result.OrderBy(Function(x) x.recording_id)
+            WriteToDebug("Modules.LoadIDNode()", "Completed Loading ID Node : " & uuid)
+        'Return result.OrderBy(Function(x) x.uuid)
     End Function
 
 
@@ -777,9 +774,6 @@ Module TVHead_Modules
         Dim settings As New TVHead_Settings
         Dim EventIDList As New List(Of Integer)
         EventIDList.Add(eventid)
-
-
-        'If vm.TVHVersion = "3.4" Then strURL = tvh34api.apiGetEPGEvents(selectedChannel.name, loadAll)
         Dim result As New List(Of EPGItemViewModel)
         Dim json_result As String
         Try
@@ -796,8 +790,6 @@ Module TVHead_Modules
             Next
 
         End If
-
-        'WriteToDebug("Modules.LoadEPGEntry()", "Completed Loading EPG Entries. : " & result.Count.ToString & "item(s)")
         Return result.OrderBy(Function(x) x.channelNumber)
     End Function
 
@@ -907,48 +899,48 @@ Module TVHead_Modules
     'End Function
 
 
-    Public Async Function LoadChannelTags() As Task
-        WriteToDebug("Modules.LoadChannelTags()", "start")
-        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
-        Dim settings As New TVHead_Settings
-        Dim chTags As New List(Of ChannelTagViewModel)
-        Dim json_result As String
-        Try
-            json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetChannelTags())).Content.ReadAsStringAsync
-        Catch ex As Exception
-            'Debug.WriteLine("LoadChannelTags() Exception : " + ex.InnerException.ToString)
-            WriteToDebug("Modules.LoadChannelTags()", "stop-error")
-            Return
-        End Try
-        If Not json_result = "" Then
-            Dim dsChannelTagList = JsonConvert.DeserializeObject(Of tvh40.ChannelTagList)(json_result)
-            For Each retrievedChannelTag In dsChannelTagList.entries.OrderBy(Function(x) x.name)
-                chTags.Add(New ChannelTagViewModel(retrievedChannelTag))
-            Next
-        End If
+    'Public Async Function LoadChannelTags() As Task
+    '    WriteToDebug("Modules.LoadChannelTags()", "start")
+    '    Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+    '    Dim settings As New TVHead_Settings
+    '    Dim chTags As New List(Of ChannelTagViewModel)
+    '    Dim json_result As String
+    '    Try
+    '        json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetChannelTags())).Content.ReadAsStringAsync
+    '    Catch ex As Exception
+    '        'Debug.WriteLine("LoadChannelTags() Exception : " + ex.InnerException.ToString)
+    '        WriteToDebug("Modules.LoadChannelTags()", "stop-error")
+    '        Return
+    '    End Try
+    '    If Not json_result = "" Then
+    '        Dim dsChannelTagList = JsonConvert.DeserializeObject(Of tvh40.ChannelTagList)(json_result)
+    '        For Each retrievedChannelTag In dsChannelTagList.entries.OrderBy(Function(x) x.name)
+    '            chTags.Add(New ChannelTagViewModel(retrievedChannelTag))
+    '        Next
+    '    End If
 
-        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                         vm.ChannelTags.items.Clear()
-                                                                                                         For Each c In chTags.OrderBy(Function(x) x.name).ToList()
-                                                                                                             vm.ChannelTags.items.Add(c)
-                                                                                                         Next
-                                                                                                     End Sub)
+    '    Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
+    '                                                                                                     vm.ChannelTags.items.Clear()
+    '                                                                                                     For Each c In chTags.OrderBy(Function(x) x.name).ToList()
+    '                                                                                                         vm.ChannelTags.items.Add(c)
+    '                                                                                                     Next
+    '                                                                                                 End Sub)
 
-        If vm.ChannelTags IsNot Nothing Then
-            'Set the Selected Channel Tag to the one stored in localsettings, if it exists
-            Dim a = (From tags In vm.ChannelTags.items Select tags Where tags.uuid = settings.FavouriteChannelTag).FirstOrDefault
-            If Not a Is Nothing Then
-                vm.selectedChannelTag = a
-            Else
-                If Not vm.ChannelTags.items.Count() = 0 Then
-                    vm.selectedChannelTag = vm.ChannelTags.items(0)
-                End If
+    '    If vm.ChannelTags IsNot Nothing Then
+    '        'Set the Selected Channel Tag to the one stored in localsettings, if it exists
+    '        Dim a = (From tags In vm.ChannelTags.items Select tags Where tags.uuid = settings.FavouriteChannelTag).FirstOrDefault
+    '        If Not a Is Nothing Then
+    '            vm.selectedChannelTag = a
+    '        Else
+    '            If Not vm.ChannelTags.items.Count() = 0 Then
+    '                vm.selectedChannelTag = vm.ChannelTags.items(0)
+    '            End If
 
-            End If
-        End If
-        vm.ChannelTags.dataLoaded = True
-        WriteToDebug("Modules.LoadChannelTags()", "stop")
-    End Function
+    '        End If
+    '    End If
+    '    vm.ChannelTags.dataLoaded = True
+    '    WriteToDebug("Modules.LoadChannelTags()", "stop")
+    'End Function
 
 
     Public Sub WriteToDebug(caller As String, content As String)

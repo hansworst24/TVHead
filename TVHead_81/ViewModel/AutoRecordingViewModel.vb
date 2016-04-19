@@ -160,22 +160,22 @@ Public Class AutoRecordingViewModel
                                         End If
 
                                         If r.success = 1 Then
-                                            If Not vm.appSettings.LongPollingEnabled Then
-                                                vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
-                                                                                .msg = String.Format(vm.loader.GetString("AutoRecordingUpdated"), Me.title)})
+                                            If Not vm.TVHeadSettings.LongPollingEnabled Then
+                                                'vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
+                                                '.msg = String.Format(vm.loader.GetString("AutoRecordingUpdated"), Me.title)})
 
                                             End If
                                             WriteToDebug("TVHead_ViewModel.SaveRecording()", "Recording Saved")
                                         Else
-                                            If Not vm.appSettings.LongPollingEnabled Then
-                                                vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
-                                                                                .msg = String.Format(vm.loader.GetString("AutoRecordingUpdatedError"), Me.title)})
+                                            If Not vm.TVHeadSettings.LongPollingEnabled Then
+                                                'vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
+                                                '.msg = String.Format(vm.loader.GetString("AutoRecordingUpdatedError"), Me.title)})
 
                                             End If
                                             WriteToDebug("TVHead_ViewModel.SaveRecording()", "Recording Failed")
                                         End If
 
-                                        If Not vm.appSettings.LongPollingEnabled Then Await vm.AutoRecordings.Reload()
+                                        If Not vm.TVHeadSettings.LongPollingEnabled Then Await vm.AutoRecordings.Reload()
 
                                         'Move back to the HubPage after Saving
                                         'NavigationService.GoBack()
@@ -219,10 +219,10 @@ Public Class AutoRecordingViewModel
                                         WriteToDebug("AutoRecordingViewModel.EditAutoRecording()", "start")
                                         vm.selectedAutoRecording = Me
                                         Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
-                                        If Not rootFrame.Navigate(GetType(AutoRecordingPage), Me) Then
-                                            Dim resources As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
-                                            Throw New Exception(resources.GetString("NavigationFailedExceptionMessage"))
-                                        End If
+                                        'If Not rootFrame.Navigate(GetType(AutoRecordingPage), Me) Then
+                                        '    Dim resources As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
+                                        '    Throw New Exception(resources.GetString("NavigationFailedExceptionMessage"))
+                                        'End If
                                         WriteToDebug("AutoRecordingViewModel.EditAutoRecording()", "stop")
 
                                     End Sub)

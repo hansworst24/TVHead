@@ -29,7 +29,7 @@ Public Class TVHead_Settings
     Const strProposeAutoRecordingDefault As Boolean = True
     Const blAskConfirmationWhenDeletingDefault As Boolean = True
     Const blHideDisabledServicesDefault = True
-    Const blLongPollingEnabledDefault = False
+    Const blLongPollingEnabledDefault As Boolean = False
     Const strTVHVersionDefault As String = "3.9"
     Const strTVHVersionLongDefault As String = ""
     Const blShowChannelNumbersDefault As Boolean = True
@@ -178,15 +178,61 @@ Public Class TVHead_Settings
         'settings.Save()
     End Sub
 
-    Public Property UseDarkTheme As Boolean
+    Public Property UseDarkTheme As Boolean?
         'DEFINES IF THE APP USES A DARK THEME OR NOT
         Get
-            Return GetValueOrDefault(Of Boolean)(strUseDarkThemeKeyName, strUseDarkThemeDefault)
+            Return GetValueOrDefault(Of Boolean?)(strUseDarkThemeKeyName, strUseDarkThemeDefault)
         End Get
-        Set(value As Boolean)
+        Set(value As Boolean?)
             If AddOrUpdateValue(strUseDarkThemeKeyName, value) Then
                 Save()
             End If
+        End Set
+    End Property
+
+    Public Property UseLightTheme As Boolean?
+        Get
+            Return Not UseDarkTheme
+        End Get
+        Set(value As Boolean?)
+            If AddOrUpdateValue(strUseDarkThemeKeyName, Not value) Then
+                Save()
+            End If
+        End Set
+    End Property
+
+    ''' <summary>
+    ''' Boolean which defines if TVHead will automatically refresh the status of the EPG items based on :
+    ''' - Periodic Refresh of EPG Items
+    ''' - Long Polling Method, which asks the TVHeadend server for status updates
+    ''' The refresh happens in a so-called CometCatcher, which handles both the periodic refresh of EPG items as well as the LongPolling
+    ''' </summary>
+    ''' <returns></returns>
+    Public Property LongPollingEnabled As Boolean
+        'DEFINES IF LONG POLLING SHOULD BE ENABLED
+        Get
+            Return GetValueOrDefault(Of Boolean)(blLongPollingEnabledKeyName, blLongPollingEnabledDefault)
+        End Get
+        Set(value As Boolean)
+            If AddOrUpdateValue(blLongPollingEnabledKeyName, value) Then
+                Save()
+            End If
+            RaisePropertyChanged("LongPollingEnabled")
+            RaisePropertyChanged("AutoRefreshEnabled")
+        End Set
+    End Property
+
+    ''' <summary>
+    ''' Duplicate value for LongPollingEnabled in order to be able to bind a Nullable Boolean with the Refresh Icon in the AppBar - AppBarToggleButton
+    ''' </summary>
+    ''' <returns></returns>
+    Public Property AutoRefreshEnabled As Boolean?
+        Get
+            Return LongPollingEnabled
+        End Get
+        Set(value As Boolean?)
+            LongPollingEnabled = value
+            RaisePropertyChanged("AutoRefreshEnabled")
         End Set
     End Property
 
@@ -205,18 +251,7 @@ Public Class TVHead_Settings
     End Property
 
 
-    Public Property LongPollingEnabled As Nullable(Of Boolean)
-        'DEFINES IF LONG POLLING SHOULD BE ENABLED
-        Get
-            Return GetValueOrDefault(Of Boolean)(blLongPollingEnabledKeyName, blLongPollingEnabledDefault)
-        End Get
-        Set(value As Nullable(Of Boolean))
-            If AddOrUpdateValue(blLongPollingEnabledKeyName, value) Then
-                Save()
-            End If
-            RaisePropertyChanged("LongPollingEnabled")
-        End Set
-    End Property
+
 
     Public Property ProposeAutoRecording As Boolean
         'DEFINES IF WHEN A RECORDING IS STARTED, A POPUP WILL APPEAR ASKING TO MAKE A SINGLE OR AUTORECORDING OF THE RECORDING

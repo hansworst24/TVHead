@@ -183,43 +183,8 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Height="40" Margin="40,0,0,0" Text="{Binding SelectedChannel.name}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap" HorizontalAlignment="Center"/>
                 <Image Grid.Row="0" Width="40" Height="40" Source="{Binding SelectedChannel.chicon}" HorizontalAlignment="Left"/>
-                <SemanticZoom Grid.Row="1">
-                    <SemanticZoom.ZoomedInView>
-                        <ListView x:Name="lstEPGItems" ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Mode=TwoWay}"  
-                                  BorderThickness="0,1,0,0" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
-                                    ContinuumNavigationTransitionInfo.ExitElementContainer="True" ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectionMode="None"
-                                    ItemClick="{x:Bind vm.ChannelEPGListSelectionChangedCommand}" IsItemClickEnabled="True" ItemTemplate="{StaticResource EPGItem}">
-                            <ListView.GroupStyle>
-                                <GroupStyle HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
-                            </ListView.GroupStyle>
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <Setter Property="Padding" Value="0"/>
-                                    <Setter Property="Margin" Value="0" />
-                                </Style>
-                            </ListView.ItemContainerStyle>
-                            <!--<ListView.ItemTemplate>
-                                <DataTemplate>
-                                            <local:ucActiveProgram/>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>-->
-                            <!--<Interactivity:Interaction.Behaviors>
-                                <Core:EventTriggerBehavior EventName="SelectionChanged" SourceObject="{Binding ElementName=lstEPGItems}">
-                                    <Core:InvokeCommandAction Command="{Binding ChannelEPGListSelectionChangedCommand}" CommandParameter="{Binding ElementName=lstEPGItems}"/>
-                                </Core:EventTriggerBehavior>
-                                <Core:DataTriggerBehavior Binding="{Binding MenuIsOpen}" Value="True">
-                                    <Core:GoToStateAction StateName="ShowMenu"/>
-                                </Core:DataTriggerBehavior>
-                            </Interactivity:Interaction.Behaviors>-->
-                        </ListView>
-                    </SemanticZoom.ZoomedInView>
-                    <SemanticZoom.ZoomedOutView>
-                        <ListView ItemsSource="{Binding Source={StaticResource cvsEPGItems}, Path=CollectionGroups}"
-                              ItemTemplate="{StaticResource ListViewJumpListTemplate}">
-                        </ListView>
-                    </SemanticZoom.ZoomedOutView>
-                </SemanticZoom>
+                <ContentControl Grid.Row="1" ContentTemplate="{StaticResource EPGItemListDataTemplate}" DataContext="{x:Bind vm.SelectedChannel.epgitems}"/>
+                
             </Grid>
             <!-- THIS IS THE RIGHT COLUMN WHERE THE SELECTED EPGITEM DETAILS AND ACTIONS (REC, ABORT REC, ETC) APPEAR-->
             <Grid x:Name="EPGItemView" Grid.Column="2" Visibility="Collapsed">
@@ -248,20 +213,21 @@
                 <ContentControl Grid.Row="2" ContentTemplate="{StaticResource CometStatistics}" DataContext="{x:Bind vm.CometCatcher.CometStatistics}" HorizontalContentAlignment="Stretch"/>
                 <ContentControl Grid.Row="3" ContentTemplate="{StaticResource TVHStatus}" HorizontalContentAlignment="Stretch"/>
             </Grid>
-            <local:ucSideMenu Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="300">
-                <local:ucSideMenu.RenderTransform>
+            <ContentControl ContentTemplate="{StaticResource SettingsMenuDataTemplate}" 
+                        DataContext="{x:Bind vm.TVHeadSettings}" Width="300" HorizontalAlignment="Left">
+                <ContentControl.RenderTransform>
                     <TranslateTransform x:Name="MenuTranslate" X="-300"/>
-                </local:ucSideMenu.RenderTransform>
-            </local:ucSideMenu>
+                </ContentControl.RenderTransform>
+            </ContentControl>
+            <Interactivity:Interaction.Behaviors>
+                <Core:DataTriggerBehavior Binding="{x:Bind vm.MenuIsOpen, Mode=OneWay}" Value="False">
+                    <Core:GoToStateAction StateName="HideMenu"/>
+                </Core:DataTriggerBehavior>
+                <Core:DataTriggerBehavior Binding="{x:Bind vm.MenuIsOpen, Mode=OneWay}" Value="True">
+                    <Core:GoToStateAction StateName="ShowMenu"/>
+                </Core:DataTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>
         </Grid>
-        <Interactivity:Interaction.Behaviors>
-            <Core:DataTriggerBehavior Binding="{x:Bind vm.MenuIsOpen, Mode=OneWay}" Value="False">
-                <Core:GoToStateAction StateName="HideMenu"/>
-            </Core:DataTriggerBehavior>
-            <Core:DataTriggerBehavior Binding="{x:Bind vm.MenuIsOpen, Mode=OneWay}" Value="True">
-                <Core:GoToStateAction StateName="ShowMenu"/>
-            </Core:DataTriggerBehavior>
-        </Interactivity:Interaction.Behaviors>
     </Grid>
     <Page.BottomAppBar>
         <CommandBar IsOpen="False" IsSticky="False" ClosedDisplayMode="Compact" HorizontalContentAlignment="Stretch" Width="{Binding ElementName=RootSplitView, Path=ActualWidth}">
@@ -275,14 +241,14 @@
                         </AppBarButton>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <AppBarButton Width="48" Height="48" Margin="0,-20,0,-20" Padding="0,-10,0,-10" VerticalAlignment="Center" IsEnabled="{x:Bind vm.RecordSelectedEPGItemButtonEnabled, Mode=OneWay}" Command="{x:Bind vm.selectedEPGItem.RecordCommand, Mode=OneWay}">
+                        <AppBarButton Width="48" Height="48" Margin="0,-20,0,-20" Padding="0,-10,0,-10" VerticalAlignment="Center" IsEnabled="{x:Bind vm.RecordSelectedEPGItemButtonEnabled, Mode=OneWay}" Click="{x:Bind vm.selectedEPGItem.Record}">
                             <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE1D2;" Foreground="{x:Bind vm.selectedEPGItem.RecordingIconColor, Mode=OneWay}"/>
                         </AppBarButton>
-                        <AppBarButton x:Name="abbEventInfo"  Visibility="Visible" Margin="20,0,0,0" Width="48" Height="48" IsEnabled="{x:Bind vm.RecordSelectedEPGItemButtonEnabled, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" >
+                        <!--<AppBarButton x:Name="abbEventInfo"  Visibility="Visible" Margin="20,0,0,0" Width="48" Height="48" IsEnabled="{x:Bind vm.RecordSelectedEPGItemButtonEnabled, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" >
                             <AppBarButton.Icon>
                                 <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xEC42;"/>
                             </AppBarButton.Icon>
-                        </AppBarButton>
+                        </AppBarButton>-->
                         <AppBarButton x:Name="abbTVHStatus" Visibility="Visible"  Margin="20,0,0,0" Padding="0" Width="48"  Height="48" Click="{x:Bind vm.ShowStreamStatus, Mode=OneWay}">
                             <AppBarButton.Icon>
                                 <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE950;"/>
@@ -292,8 +258,9 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <AppBarToggleButton HorizontalAlignment="Right" 
                                             VerticalAlignment="Center" Height="48" Width="48" 
-                                            IsChecked="{x:Bind vm.TVHeadSettings.LongPollingEnabled, FallbackValue=False, Mode=TwoWay}"
+                                            IsChecked="{x:Bind vm.TVHeadSettings.AutoRefreshEnabled, FallbackValue=False, Mode=TwoWay}"
                                             Style="{StaticResource TVHeadAppBarToggleButton}">
+                         
                             <AppBarToggleButton.Icon>
                                 <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE895;"/>
                             </AppBarToggleButton.Icon>

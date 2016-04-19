@@ -11,58 +11,58 @@ Namespace ViewModels
 
 
 
-    Public Class ToastListViewModel
-        Public Property Messages As ObservableCollection(Of ToastMessageViewModel)
+    'Public Class ToastListViewModel
+    '    Public Property Messages As ObservableCollection(Of ToastMessageViewModel)
 
-        Public Sub New()
-            Messages = New ObservableCollection(Of ToastMessageViewModel)
+    '    Public Sub New()
+    '        Messages = New ObservableCollection(Of ToastMessageViewModel)
 
-        End Sub
+    '    End Sub
 
-        Public Async Sub AddMessage(msg As ToastMessageViewModel)
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                             Messages.Insert(0, msg)
-                                                                                                         End Sub)
-            Await Task.Delay(New TimeSpan(0, 0, msg.secondsToShow))
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                             msg.isGoing = True
-                                                                                                         End Sub)
+    '    Public Async Sub AddMessage(msg As ToastMessageViewModel)
+    '        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
+    '                                                                                                         Messages.Insert(0, msg)
+    '                                                                                                     End Sub)
+    '        Await Task.Delay(New TimeSpan(0, 0, msg.secondsToShow))
+    '        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
+    '                                                                                                         msg.isGoing = True
+    '                                                                                                     End Sub)
 
-            Await Task.Delay(1000)
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                             Messages.Remove(msg)
-                                                                                                         End Sub)
-        End Sub
+    '        Await Task.Delay(1000)
+    '        Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
+    '                                                                                                         Messages.Remove(msg)
+    '                                                                                                     End Sub)
+    '    End Sub
 
-    End Class
+    'End Class
 
-    Public Class ToastMessageViewModel
-        Inherits ViewModelBase
-        Public Property msg As String
-        Public Property isGoing As Boolean
-            Get
-                Return _isGoing
-            End Get
-            Set(value As Boolean)
-                _isGoing = value
-                RaisePropertyChanged("isGoing")
-            End Set
-        End Property
-        Private Property _isGoing As Boolean
+    'Public Class ToastMessageViewModel
+    '    Inherits ViewModelBase
+    '    Public Property msg As String
+    '    Public Property isGoing As Boolean
+    '        Get
+    '            Return _isGoing
+    '        End Get
+    '        Set(value As Boolean)
+    '            _isGoing = value
+    '            RaisePropertyChanged("isGoing")
+    '        End Set
+    '    End Property
+    '    Private Property _isGoing As Boolean
 
-        Public Property isError As Boolean
-            Get
-                Return _isError
-            End Get
-            Set(value As Boolean)
-                _isError = value
-                RaisePropertyChanged("isError")
-            End Set
-        End Property
-        Private Property _isError As Boolean
+    '    Public Property isError As Boolean
+    '        Get
+    '            Return _isError
+    '        End Get
+    '        Set(value As Boolean)
+    '            _isError = value
+    '            RaisePropertyChanged("isError")
+    '        End Set
+    '    End Property
+    '    Private Property _isError As Boolean
 
-        Public Property secondsToShow As Integer
-    End Class
+    '    Public Property secondsToShow As Integer
+    'End Class
 
 
 
@@ -360,19 +360,19 @@ Namespace ViewModels
 
 
         Public Async Function Update(text As String, animated As Boolean, timoutInSeconds As Integer, Optional areWeBusy As Boolean = False, Optional areWeConnected As Boolean = True) As Task
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                             UpdateText = text
-                                                                                                             IsBusy = areWeBusy
-                                                                                                         End Sub)
+            RunOnUIThread(Sub()
+                              UpdateText = text
+                              IsBusy = areWeBusy
+                          End Sub)
 
         End Function
 
         Public Async Function Clean() As Task
             'Dim app As App = CType(Application.Current, Application)
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                             UpdateText = vm.appSettings.TVHVersionLong
-                                                                                                             IsBusy = False
-                                                                                                         End Sub)
+            RunOnUIThread(Sub()
+                              UpdateText = vm.TVHeadSettings.TVHVersionLong
+                              IsBusy = False
+                          End Sub)
 
         End Function
 
@@ -406,22 +406,22 @@ Namespace ViewModels
 
         Public Async Function Reload() As Task
             If Await vm.TVHeadSettings.hasAdminAccess Then
-                Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
-                                                                                                                 If Not items Is Nothing Then
-                                                                                                                     items.Clear()
-                                                                                                                     items = (Await LoadStreams()).ToObservableCollection()
-                                                                                                                 End If
+                RunOnUIThread(Async Sub()
+                                  If Not items Is Nothing Then
+                                      items.Clear()
+                                      items = (Await LoadStreams()).ToObservableCollection()
+                                  End If
 
-                                                                                                             End Sub)
+                              End Sub)
             End If
         End Function
 
         Public Async Function Update(input_message As CometMessages.input_status) As Task
             Dim currentInput = items.Where(Function(y) y.identifier = input_message.uuid).FirstOrDefault()
             If Not currentInput Is Nothing Then
-                Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                 currentInput.Update(input_message)
-                                                                                                             End Sub)
+                RunOnUIThread(Sub()
+                                  currentInput.Update(input_message)
+                              End Sub)
 
             Else
                 Await Me.Reload()
@@ -671,10 +671,10 @@ Namespace ViewModels
             Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
             If Await vm.TVHeadSettings.hasAdminAccess Then
                 If Not items Is Nothing Then
-                    Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
-                                                                                                                     items.Clear()
-                                                                                                                     items = (Await LoadSubscriptions()).ToObservableCollection()
-                                                                                                                 End Sub)
+                    RunOnUIThread(Async Sub()
+                                      items.Clear()
+                                      items = (Await LoadSubscriptions()).ToObservableCollection()
+                                  End Sub)
                 End If
             End If
         End Function
@@ -682,9 +682,9 @@ Namespace ViewModels
         Public Async Function Update(subscription_message As CometMessages.subscription) As Task
             Dim x = items.Where(Function(y) y.id = subscription_message.id).FirstOrDefault()
             If Not x Is Nothing Then
-                Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                                 x.Update(subscription_message)
-                                                                                                             End Sub)
+                RunOnUIThread(Sub()
+                                  x.Update(subscription_message)
+                              End Sub)
             Else
                 Await Me.Reload()
             End If
@@ -1146,12 +1146,10 @@ Namespace ViewModels
         Public Property entries As New ObservableCollection(Of String)
 
         Public Async Sub Add(message As String)
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                             'entries.Add(message)
-                                                                                                             'If entries.Count = 50 Then entries.RemoveAt(0)
-                                                                                                             entries.Insert(0, message)
-                                                                                                             If entries.Count = 50 Then entries.RemoveAt(49)
-                                                                                                         End Sub)
+            RunOnUIThread(Sub()
+                              entries.Insert(0, message)
+                              If entries.Count = 50 Then entries.RemoveAt(49)
+                          End Sub)
         End Sub
 
         Public Sub New()
@@ -1163,11 +1161,11 @@ Namespace ViewModels
         Public Property dataLoaded As Boolean
 
         Public Async Function Load() As Task
-            Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
-                                                                                                             items.Clear()
-                                                                                                             items = (Await LoadDVRConfigs()).ToList()
-                                                                                                             dataLoaded = True
-                                                                                                         End Sub)
+            RunOnUIThread(Async Sub()
+                              items.Clear()
+                              items = (Await LoadDVRConfigs()).ToList()
+                              dataLoaded = True
+                          End Sub)
         End Function
     End Class
 
@@ -1245,7 +1243,7 @@ Namespace ViewModels
         End Property
         Private Property _dvrconfig_name As String
         Public Property dvrconfig_uuid As String
-        Public Property recording_id As String
+        Public Property uuid As String
         Public Property startDate As DateTime
         Public Property endDate As DateTime
         Public Property startTime As DateTime
@@ -1313,163 +1311,6 @@ Namespace ViewModels
         End Sub
     End Class
 
-
-
-    Public Class ChannelTagListViewModel
-        Inherits ViewModelBase
-        Public Property items As New ObservableCollection(Of ChannelTagViewModel)
-        Public Property dataLoaded As Boolean
-        Public Property selectedChannelTag As ChannelTagViewModel
-            Get
-                Return _selectedChannelTag
-            End Get
-            Set(value As ChannelTagViewModel)
-                _selectedChannelTag = value
-                RaisePropertyChanged("selectedChannelTag")
-            End Set
-        End Property
-        Private Property _selectedChannelTag As ChannelTagViewModel
-
-        Public Async Function Load() As Task
-            WriteToDebug("ChannelTagListViewModel.Load()", "executed")
-            Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
-            Dim json_result As String
-            Try
-                json_result = Await (Await (New Downloader).DownloadJSON((New api40).apiGetChannelTags())).Content.ReadAsStringAsync
-            Catch ex As Exception
-                WriteToDebug("ChannelTagListViewModel.Load()", "stop-error")
-                Return
-            End Try
-            If Not json_result = "" Then
-                Dim dsChannelTagList = JsonConvert.DeserializeObject(Of tvh40.ChannelTagList)(json_result)
-                Await RunOnUIThread(Sub()
-                                        Me.items.Clear()
-                                        For Each retrievedChannelTag In dsChannelTagList.entries.OrderBy(Function(x) x.name)
-                                            items.Add(New ChannelTagViewModel(retrievedChannelTag))
-                                        Next
-                                    End Sub)
-            End If
-
-            'Set the Selected Channel Tag to the one stored in localsettings, if it exists
-            Dim favTag = (From tag In items Select tag Where tag.uuid = vm.TVHeadSettings.FavouriteChannelTag).FirstOrDefault
-            If Not favTag Is Nothing Then
-                vm.selectedChannelTag = favTag
-            Else
-                If Not items.Count() = 0 Then
-                    selectedChannelTag = items(0)
-                End If
-            End If
-            dataLoaded = True
-            WriteToDebug("Modules.LoadChannelTags()", "stop")
-        End Function
-
-        Public Sub New()
-            'selectedChannelTag = New ChannelTagViewModel
-        End Sub
-    End Class
-
-
-    Public Class ChannelTagViewModel
-        Inherits ViewModelBase
-
-        Public ReadOnly Property vm As TVHead_ViewModel
-            Get
-                Return CType(Application.Current, Application).DefaultViewModel
-            End Get
-
-        End Property
-
-        Public Property ChannelTagSelected As RelayCommand
-            Get
-                Return New RelayCommand(Async Sub()
-                                            'WriteToDebug("ChannelTagViewModel.ChannelTagSelected", "start")
-                                            'While vm.AppBar.ButtonEnabled.refreshButton = False
-                                            '    WriteToDebug("ChanneltagViewModel.ChannelTagSelected()", "Waiting for refresh to finish...")
-                                            '    Await Task.Delay(100)
-                                            'End While
-                                            'vm.ChannelSelected = False
-                                            'vm.SelectedChannel = Nothing
-                                            'vm.EPGInformationAvailable = False
-                                            'vm.ChannelTagFlyoutIsOpen = False
-                                            'vm.selectedChannelTag = x
-                                            'vm.Channels.dataLoaded = False
-                                            'Task.Run(Function() vm.LoadDataAsync())
-                                            WriteToDebug("ChannelTagViewModel.ChannelTagSelected", "stop")
-                                        End Sub)
-
-            End Get
-            Set(value As RelayCommand)
-            End Set
-        End Property
-
-        Public Property comment As String
-        Public Property enabled As Boolean
-        Public Property icon As String
-        Public Property icon_public_url As String
-            Get
-                If _icon_public_url = "" Then Return "ms-appx:///Images/tvheadend.png" Else Return _icon_public_url
-            End Get
-            Set(value As String)
-                If Not value Is Nothing And Not value = "/Images/tvheadend.png" Then
-                    If value.ToUpper().IndexOf("HTTP:/") >= 0 Then _icon_public_url = value Else _icon_public_url = (New TVHead_Settings).GetFullURL() & "/" & value
-                Else
-                    _icon_public_url = ""
-                End If
-            End Set
-        End Property
-        Private Property _icon_public_url As String
-        Public Property internal As Boolean
-        Public Property name As String
-            Get
-                Return _name
-            End Get
-            Set(value As String)
-                _name = value
-                RaisePropertyChanged("name")
-            End Set
-        End Property
-        Private Property _name As String
-        Public Property numberOfChannels As String
-            Get
-                Return _numberOfChannels
-            End Get
-            Set(value As String)
-                _numberOfChannels = value
-            End Set
-        End Property
-        Private Property _numberOfChannels As String
-
-        Public Property [private] As Boolean
-        Public Property titled_icon As Boolean
-        Public Property uuid As String
-            Get
-                Return _uuid
-            End Get
-            Set(value As String)
-                _uuid = value
-                RaisePropertyChanged("uuid")
-            End Set
-        End Property
-        Private Property _uuid As String
-
-        Public Sub New()
-
-        End Sub
-
-
-
-        Public Sub New(ChannelTag As tvh40.ChannelTag)
-            comment = ChannelTag.comment
-            enabled = ChannelTag.enabled
-            internal = ChannelTag.internal
-            icon = ChannelTag.icon
-            name = ChannelTag.name
-            uuid = ChannelTag.uuid
-        End Sub
-    End Class
-
-
-
     Public Class ConnectionViewModel
         Inherits ViewModelBase
         Public Property id As Integer
@@ -1489,21 +1330,6 @@ Namespace ViewModels
     End Class
 
     'ViewModel of a TVChannel
-
-
-
-    'Public Class FinishedRecordingsViewModel
-    '    Implements INotifyPropertyChanged
-
-    '    Public Event PropertyChanged As PropertyChangedEventHandler _
-    '    Implements INotifyPropertyChanged.PropertyChanged
-
-    '    ' This method is called by the Set accessor of each property. 
-    '    ' The CallerMemberName attribute that is applied to the optional propertyName 
-    '    ' parameter causes the property name of the caller to be substituted as an argument. 
-    '    Private Sub NotifyPropertyChanged(<CallerMemberName()> Optional ByVal propertyName As String = Nothing)
-    '        RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
-    '    End Sub
 
 
 
@@ -1528,25 +1354,25 @@ Namespace ViewModels
             End Try
             If Not json_allitems = "" Then
                 Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.GenreList)(json_allitems)
-                Await RunOnUIThread(Sub()
-                                        For Each f In deserialized.entries
-                                            'Small hack to ensure we avoid having ContentType 0 in the list
-                                            If f.key <> 0 Then
-                                                allitems.Add(New ContentTypeViewModel(f))
-                                            End If
-                                        Next
-                                    End Sub)
+                RunOnUIThread(Sub()
+                                  For Each f In deserialized.entries
+                                      'Small hack to ensure we avoid having ContentType 0 in the list
+                                      If f.key <> 0 Then
+                                          allitems.Add(New ContentTypeViewModel(f))
+                                      End If
+                                  Next
+                              End Sub)
             End If
             If Not json_items = "" Then
                 Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.GenreList)(json_items)
-                Await RunOnUIThread(Sub()
-                                        For Each f In deserialized.entries
-                                            'Small hack to ensure we avoid having ContentType 0 in the list
-                                            If f.key <> 0 Then
-                                                items.Add(New ContentTypeViewModel(f))
-                                            End If
-                                        Next
-                                    End Sub)
+                RunOnUIThread(Sub()
+                                  For Each f In deserialized.entries
+                                      'Small hack to ensure we avoid having ContentType 0 in the list
+                                      If f.key <> 0 Then
+                                          items.Add(New ContentTypeViewModel(f))
+                                      End If
+                                  Next
+                              End Sub)
             End If
             dataLoaded = True
         End Function

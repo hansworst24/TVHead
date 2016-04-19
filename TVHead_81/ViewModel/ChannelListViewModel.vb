@@ -1,17 +1,18 @@
 ﻿Imports GalaSoft.MvvmLight
-Imports Windows.ApplicationModel.Core
-Imports Windows.UI.Core
-Imports TVHead_81.ViewModels
 
 Public Class ChannelListViewModel
     Inherits ViewModelBase
-    Private Property _allchannels As New List(Of ChannelViewModel)
+    Public Property _allchannels As New List(Of ChannelViewModel)
 
     Public ReadOnly Property items As List(Of ChannelViewModel)
         Get
             Dim vm As TVHead_ViewModel = TryCast(CType(Application.Current, Application).DefaultViewModel, TVHead_ViewModel)
             Dim selectedChannelTag As ChannelTagViewModel = vm.ChannelTags.selectedChannelTag
-            Return _allchannels.OrderBy(Function(x) x.number).Where(Function(x) x.tags.Contains(selectedChannelTag.uuid)).ToList()
+            If Not selectedChannelTag Is Nothing Then
+                Return _allchannels.OrderBy(Function(x) x.number).Where(Function(x) x.tags.Contains(selectedChannelTag.uuid)).ToList()
+            Else
+                Return Nothing
+            End If
         End Get
     End Property
     Public Property dataLoaded As Boolean
@@ -26,7 +27,8 @@ Public Class ChannelListViewModel
                 'This should ensure we get the most recent EPG entry for each channel, and avoid hammering the server with individual requests
                 Dim updatedEvents As List(Of EPGItemViewModel) = (Await LoadEPGEntry(New ChannelViewModel, False, Me._allchannels.Count)).ToList()
                 If Not updatedEvents Is Nothing Then
-                    For Each channel In Me._allchannels
+                    Dim selectedChannels As List(Of ChannelViewModel) = Me._allchannels.Where(Function(x) x.tags.Contains(vm.ChannelTags.selectedChannelTag.uuid)).OrderBy(Function(y) y.number).ToList()
+                    For Each channel In selectedChannels
                         Dim currentEPGItem As EPGItemViewModel = updatedEvents.Where(Function(x) x.channelUuid = channel.uuid).FirstOrDefault()
                         If Not currentEPGItem Is Nothing Then
                             Await channel.UpdateCurrentEPGItem(currentEPGItem)
@@ -43,9 +45,9 @@ Public Class ChannelListViewModel
 
     Public Async Function ClearChannels() As Task
         If Not items Is Nothing Then
-            Await RunOnUIThread(Sub()
-                                    items.Clear()
-                                End Sub)
+            RunOnUIThread(Sub()
+                              items.Clear()
+                          End Sub)
 
         End If
     End Function
@@ -53,51 +55,79 @@ Public Class ChannelListViewModel
     Public Async Function Load() As Task
         WriteToDebug("ChannelListViewModel.Load()", "executed")
         Dim vm As TVHead_ViewModel = TryCast(CType(Application.Current, Application).DefaultViewModel, TVHead_ViewModel)
-        Dim selectedChannelTag As ChannelTagViewModel = vm.ChannelTags.selectedChannelTag
         Await vm.Notify.Update(False, vm.loader.GetString("status_RefreshingChannels"), 1, False, 0)
+        Dim selectedChannelTag As ChannelTagViewModel = vm.ChannelTags.selectedChannelTag
         If Me._allchannels.Count = 0 Then
             Me._allchannels = (Await LoadAllChannels()).ToList()
         End If
+        RaisePropertyChanged("items")
         Await Me.RefreshCurrentEvents()
-        'Await RunOnUIThread(Sub()
-        '                        RaisePropertyChanged("items")
-        '                    End Sub)
-
-
-        Dim newChannels = _allchannels.OrderBy(Function(x) x.number).Where(Function(x) x.tags.Contains(selectedChannelTag.uuid)).ToList()
-        items.Clear()
-        For Each channel In newChannels
-            items.Add(channel)
-        Next
-        Await RunOnUIThread(Sub()
-
-                                RaisePropertyChanged("items")
-                            End Sub)
         Me.dataLoaded = True
     End Function
 
+    ''' <summary>
+    ''' Sets a channel within the ChannelListViewModel.items to selected. If the app is not running on a widescreen device, it will also reverse the IsExpanded property
+    ''' so that a ChannelViewModel can be expanded or collapsed by tapping on it multiple times
+    ''' </summary>
+    ''' <param name="c"></param>
+    Public Sub SelectChannel(c As ChannelViewModel)
+        For Each channel In items
+            Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
+            If channel.uuid = c.uuid Then
+                channel.IsSelected = True
+                If Not vm.IsRunningOnWideScreen Then channel.IsExpanded = Not channel.IsExpanded
+            Else
+                channel.IsSelected = False
+                channel.IsExpanded = False
+                If vm.IsRunningOnWideScreen Then channel.epgitems.ClearAllButCurrent()
+            End If
+        Next
+    End Sub
+
+    Public Sub ClearSelection()
+        For Each c In items
+            c.IsExpanded = False
+            c.IsSelected = False
+        Next
+    End Sub
 
 
+    ''' <summary>
+    ''' Used on touch devices. Triggers the loading of the EPG content for this channel. Method is only executed when the HoldingState = Started 
+    ''' and we're not running on a widescreen device
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Public Async Sub Channel_Holding(sender As Object, e As HoldingRoutedEventArgs)
+        WriteToDebug("ChannelListViewModel.Channel_Holding", "executed")
+        Dim source As Object = e.OriginalSource
+        Dim ChannelHolded As ChannelViewModel = TryCast(source.DataContext, ChannelViewModel)
+        If Not ChannelHolded Is Nothing Then
+            Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
+            If e.HoldingState = Windows.UI.Input.HoldingState.Started AndAlso Not vm.IsRunningOnWideScreen Then
+                SelectChannel(ChannelHolded)
+                Await ChannelHolded.LoadEPG()
+                vm.SelectedChannel = ChannelHolded
+                vm.selectedEPGItem = ChannelHolded.currentEPGItem
+                vm.SelectedPivotIndex = 1
+            End If
+        End If
+    End Sub
+
+
+    ''' <summary>
+    ''' When the channel is clicked or tapped, this will select the channel and, if on widescreen, load the channel's EPG
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
     Public Async Sub Channel_Clicked(sender As Object, e As ItemClickEventArgs)
         WriteToDebug("ChannelListViewModel.ChannelClicked", "executed")
         Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
-
         Dim clickedChannel As ChannelViewModel = TryCast(e.ClickedItem, ChannelViewModel)
-        If Not clickedChannel Is Nothing Then
-            For Each c In items
-                If c.uuid = clickedChannel.uuid Then c.IsSelected = True Else c.IsSelected = False
-            Next
-
-            Await vm.Notify.Update(False, vm.loader.GetString("status_RefreshingEPGEntries"), 1, False, 0)
-            Await clickedChannel.LoadEPG()
-            If Not vm.SelectedChannel Is Nothing Then vm.SelectedChannel.epgitems.ClearAllButCurrent()
-            vm.SelectedChannel = clickedChannel
-            vm.selectedEPGItem = clickedChannel.currentEPGItem
-            vm.Notify.Clear()
-            vm.SelectedPivotIndex = 1
-        End If
-        ' Dim new_selected_channel As ChannelViewModel = TryCast(x, ChannelViewModel)
-
+        SelectChannel(clickedChannel)
+        If vm.IsRunningOnWideScreen Then Await clickedChannel.LoadEPG()
+        If vm.IsRunningOnWideScreen Then vm.SelectedChannel = clickedChannel
+        vm.selectedEPGItem = clickedChannel.currentEPGItem
     End Sub
 
 End Class

@@ -13,46 +13,17 @@ Imports Windows.Web.Http
 Public Class TVHead_ViewModel
     Inherits ViewModelBase
 
+    'A Dummy Boolean value which is used as additional binding for ApplicationBarButtons which are x:Binded. 
+    Public Property DummyBoolTrue As Boolean = True
+    'Instance of TVHead_Settings which contains all configuration settings related to TV Head
     Public Property TVHeadSettings As New TVHead_Settings
+    'Instance of NotificationViewModel which handles the creation of notifications towards the user
     Public Property Notify As New NotificationViewModel
-    Public Property DiskSpaceStats As New DiskSpaceUpdateViewModel
-
-
-    Public Property HubSectionWidth As Integer
-        Get
-            Return _HubSectionWidth
-        End Get
-        Set(value As Integer)
-            _HubSectionWidth = value
-            RaisePropertyChanged("HubSectionWidth")
-        End Set
-    End Property
-    Private Property _HubSectionWidth As Integer
-
-    Public Property SelectedPivotIndex As Integer
-        Get
-            Return _SelectedPivotIndex
-        End Get
-        Set(value As Integer)
-            _SelectedPivotIndex = value
-            RaisePropertyChanged("SelectedPivotIndex")
-        End Set
-    End Property
-    Private Property _SelectedPivotIndex As Integer
-    'Properties for running the background task that handles updating the current EPG event of each channel, and the EPG info if a channel is selected
-    Public Property EPGRefresher As New BackgroundEPGRefresher
-
-    'Properties for running a background task that performs long polling towards TVH server to catch any updates it sends out
+    'Instance of a CometCatcher, which handles the periodic update of EPGItems as well as the longpolling mechanism to receive and process TVHeadend updates sent through comets
     Public Property CometCatcher As New CometCatcher
+    'Instance of CometStatistics, which is mainly used for debugging purposes, to visualize how many comets were received through the CometCatcher
     Public Property CometStatistics As New CometStatsViewModel
-    'Public CatchCometsBoxID As String
-    'Public ct As CancellationToken
-    'Public tokenSource As New CancellationTokenSource()
-    'Public CometCatcher As Task
-
-
-    Public myCultureInfoHelper As CultureInfoHelper = New CultureInfoHelper
-
+    'Bool which triggers/tells if the side menu is visible or not
     Public Property MenuIsOpen As Boolean
         Get
             Return _MenuIsOpen
@@ -63,7 +34,7 @@ Public Class TVHead_ViewModel
         End Set
     End Property
     Private Property _MenuIsOpen As Boolean
-
+    'Reference to the selectedEPGItem
     Public Property selectedEPGItem As EPGItemViewModel
         Get
             Return _selectedEPGItem
@@ -75,6 +46,61 @@ Public Class TVHead_ViewModel
         End Set
     End Property
     Private Property _selectedEPGItem As EPGItemViewModel
+
+
+
+
+    Public Property SelectedPivotIndex As Integer
+        Get
+            Return _SelectedPivotIndex
+        End Get
+        Set(value As Integer)
+            _SelectedPivotIndex = value
+            UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
+            FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None
+            FailedRecordings.MultiSelectMode = ListViewSelectionMode.None
+            RaisePropertyChanged("SelectedPivotIndex")
+            RaisePropertyChanged("CommandBarButtonCollection")
+        End Set
+    End Property
+    Private Property _SelectedPivotIndex As Integer
+
+    Public ReadOnly Property CommandBarButtonCollection As DataTemplate
+        Get
+            Select Case SelectedPivotIndex
+                Case 2
+                    Select Case UpcomingRecordings.MultiSelectMode
+                        Case ListViewSelectionMode.None
+                            Return CType(Application.Current.Resources("RecordingListButtons"), DataTemplate)
+                        Case ListViewSelectionMode.Multiple
+                            Return CType(Application.Current.Resources("RecordingListEditButtons"), DataTemplate)
+                    End Select
+                Case 3
+                    Select Case FinishedRecordings.MultiSelectMode
+                        Case ListViewSelectionMode.None
+                            Return CType(Application.Current.Resources("RecordingListButtons"), DataTemplate)
+                        Case ListViewSelectionMode.Multiple
+                            Return CType(Application.Current.Resources("RecordingListEditButtons"), DataTemplate)
+                    End Select
+                Case 4
+                    Select Case FailedRecordings.MultiSelectMode
+                        Case ListViewSelectionMode.None
+                            Return CType(Application.Current.Resources("RecordingListButtons"), DataTemplate)
+                        Case ListViewSelectionMode.Multiple
+                            Return CType(Application.Current.Resources("RecordingListEditButtons"), DataTemplate)
+                    End Select
+                Case Else
+                    Return CType(Application.Current.Resources("CommandBarEPGItemSelectedButtons"), DataTemplate)
+            End Select
+        End Get
+
+    End Property
+
+
+
+
+    Public myCultureInfoHelper As CultureInfoHelper = New CultureInfoHelper
+
 
     Public ReadOnly Property RecordSelectedEPGItemButtonEnabled As Boolean
         Get
@@ -96,16 +122,16 @@ Public Class TVHead_ViewModel
 
 #Region "Properties"
 
-    Private Property _selectedChannelTag As ChannelTagViewModel
-    Public Property selectedChannelTag As ChannelTagViewModel
-        Get
-            Return _selectedChannelTag
-        End Get
-        Set(value As ChannelTagViewModel)
-            _selectedChannelTag = value
-            RaisePropertyChanged("selectedChannelTag")
-        End Set
-    End Property
+    'Private Property _selectedChannelTag As ChannelTagViewModel
+    'Public Property selectedChannelTag As ChannelTagViewModel
+    '    Get
+    '        Return _selectedChannelTag
+    '    End Get
+    '    Set(value As ChannelTagViewModel)
+    '        _selectedChannelTag = value
+    '        RaisePropertyChanged("selectedChannelTag")
+    '    End Set
+    'End Property
 
 
 
@@ -121,9 +147,9 @@ Public Class TVHead_ViewModel
             _totalBytesReceived = value
             If totalBytesReceivedUpdates > 5 Then
                 totalBytesReceivedUpdates = 0
-                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Sub()
-                                                                                                           RaisePropertyChanged("totalBytesReceived")
-                                                                                                       End Sub)
+                RunOnUIThread(Sub()
+                                  RaisePropertyChanged("totalBytesReceived")
+                              End Sub)
             Else
                 totalBytesReceivedUpdates += 1
             End If
@@ -166,19 +192,19 @@ Public Class TVHead_ViewModel
     End Property
     Private Property _ConnectedRotation As Integer
 
-    Public Property ToastMessages As New ToastListViewModel
+    'Public Property ToastMessages As New ToastListViewModel
 
 
 
-    Public Property appSettings As TVHead_Settings
-        Get
-            Return New TVHead_Settings
-        End Get
-        Set(value As TVHead_Settings)
-            _appSettings = value
-        End Set
-    End Property
-    Private Property _appSettings As TVHead_Settings
+    'Public Property appSettings As TVHead_Settings
+    '    Get
+    '        Return New TVHead_Settings
+    '    End Get
+    '    Set(value As TVHead_Settings)
+    '        _appSettings = value
+    '    End Set
+    'End Property
+    'Private Property _appSettings As TVHead_Settings
 
 
     Public Property logmessages As New LogViewModel
@@ -291,27 +317,27 @@ Public Class TVHead_ViewModel
 
 
 
-    Private Property _StatusPivotSelectedIndex As Integer
-    Public Property StatusPivotSelectedIndex As Integer
-        Get
-            Return _StatusPivotSelectedIndex
-        End Get
-        Set(value As Integer)
-            _StatusPivotSelectedIndex = value
-            RaisePropertyChanged()
-        End Set
-    End Property
+    'Private Property _StatusPivotSelectedIndex As Integer
+    'Public Property StatusPivotSelectedIndex As Integer
+    '    Get
+    '        Return _StatusPivotSelectedIndex
+    '    End Get
+    '    Set(value As Integer)
+    '        _StatusPivotSelectedIndex = value
+    '        RaisePropertyChanged()
+    '    End Set
+    'End Property
 
-    Private Property _PivotSelectedIndex As Integer
-    Public Property PivotSelectedIndex As Integer
-        Get
-            Return _PivotSelectedIndex
-        End Get
-        Set(value As Integer)
-            _PivotSelectedIndex = value
-            RaisePropertyChanged()
-        End Set
-    End Property
+    'Private Property _PivotSelectedIndex As Integer
+    'Public Property PivotSelectedIndex As Integer
+    '    Get
+    '        Return _PivotSelectedIndex
+    '    End Get
+    '    Set(value As Integer)
+    '        _PivotSelectedIndex = value
+    '        RaisePropertyChanged("PivotSelectedIndex")
+    '    End Set
+    'End Property
 
     Private Property _CommandBarVisibility As Visibility
     Public Property CommandBarVisibility As Visibility
@@ -563,11 +589,30 @@ Public Class TVHead_ViewModel
         End Get
     End Property
 
+
+
+
+    Public Sub ToggleMultiSelect(sender As Object, e As RoutedEventArgs)
+        WriteToDebug("TVHead_ViewModel.ToggleMultiSelect", "executed")
+        Select Case SelectedPivotIndex
+            Case 2 : UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
+            Case 3 : FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
+            Case 4 : FailedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
+            Case Else : Return
+        End Select
+        RaisePropertyChanged("CommandBarButtonCollection")
+    End Sub
+
+
+
+
+
+
     Public Async Sub ShowStreamStatus(sender As Object, e As RoutedEventArgs)
         WriteToDebug("TVHead_ViewMode.ShowHideStreamStatus", "executed")
         Dim cDialog As New ContentDialog
         cDialog.Style = CType(Application.Current.Resources("TVHeadContentDialog"), Style)
-        cDialog.RequestedTheme = ElementTheme.Light
+        If TVHeadSettings.UseDarkTheme Then cDialog.RequestedTheme = ElementTheme.Dark Else cDialog.RequestedTheme = ElementTheme.Light
         cDialog.ContentTemplate = CType(Application.Current.Resources("TVHStatus"), DataTemplate)
         cDialog.DataContext = Me
         Await cDialog.ShowAsync()
@@ -577,67 +622,29 @@ Public Class TVHead_ViewModel
 
 
 
-    Public Sub ChannelEPGListSelectionChangedCommand(sender As Object, e As ItemClickEventArgs)
-        'WriteToDebug("TVHead_ViewModel.EPGListSelectionChangedCommand()", "executed")
-        'Dim ClickedEPGItem As EPGItemViewModel = TryCast(e.ClickedItem, EPGItemViewModel)
-        'If Not ClickedEPGItem Is Nothing Then
-        '    If ClickedEPGItem.EPGItemDetailsVisibility = "Visible" Then ClickedEPGItem.EPGItemDetailsVisibility = "Collapsed" Else ClickedEPGItem.EPGItemDetailsVisibility = "Visible"
-        '    ClickedEPGItem.IsSelected = True
-        '    selectedEPGItem = ClickedEPGItem
-        'End If
-        'If Not SelectedChannel Is Nothing Then
-        '    For Each g In SelectedChannel.groupeditems
-        '        For Each i In g
-        '            If i.eventId <> ClickedEPGItem.eventId Then
-        '                i.IsSelected = False
-        '                If i.EPGItemDetailsVisibility = "Visible" Then i.EPGItemDetailsVisibility = "Collapsed"
-        '            End If
-        '        Next
-        '    Next
-        'End If
+    'Public Sub ChannelEPGListSelectionChangedCommand(sender As Object, e As ItemClickEventArgs)
+    '    'WriteToDebug("TVHead_ViewModel.EPGListSelectionChangedCommand()", "executed")
+    '    'Dim ClickedEPGItem As EPGItemViewModel = TryCast(e.ClickedItem, EPGItemViewModel)
+    '    'If Not ClickedEPGItem Is Nothing Then
+    '    '    If ClickedEPGItem.EPGItemDetailsVisibility = "Visible" Then ClickedEPGItem.EPGItemDetailsVisibility = "Collapsed" Else ClickedEPGItem.EPGItemDetailsVisibility = "Visible"
+    '    '    ClickedEPGItem.IsSelected = True
+    '    '    selectedEPGItem = ClickedEPGItem
+    '    'End If
+    '    'If Not SelectedChannel Is Nothing Then
+    '    '    For Each g In SelectedChannel.groupeditems
+    '    '        For Each i In g
+    '    '            If i.eventId <> ClickedEPGItem.eventId Then
+    '    '                i.IsSelected = False
+    '    '                If i.EPGItemDetailsVisibility = "Visible" Then i.EPGItemDetailsVisibility = "Collapsed"
+    '    '            End If
+    '    '        Next
+    '    '    Next
+    '    'End If
 
 
-        'WriteToDebug("TVHead_ViewModel.EPGListSelectionChangedCommand()", "end")
-    End Sub
+    '    'WriteToDebug("TVHead_ViewModel.EPGListSelectionChangedCommand()", "end")
+    'End Sub
 
-
-
-
-    'Public ReadOnly Property ChannelEPGListSelectionChangedCommand As RelayCommand(Of SelectionChangedEventHandler)
-    '    Get
-    '        Return New RelayCommand(Of SelectionChangedEventHandler)(Sub(x)
-    '                                                                     WriteToDebug("TVHead_ViewModel.EPGListSelectionChangedCommand()", "executed")
-    '                                                                     'Dim s As EPGItemViewModel = TryCast(x, EPGItemViewModel)
-    '                                                                     Dim s As EPGItemViewModel
-    '                                                                     If Not s Is Nothing Then
-    '                                                                         Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
-    '                                                                         For Each group In SelectedChannel.groupeditems
-    '                                                                             For Each epgitem In group
-    '                                                                                 If epgitem Is s Then
-    '                                                                                     If rectie.Width < 720 Then
-    '                                                                                         If (s.ExpandedView = "Collapsed" Or s.ExpandedView = "") Then
-    '                                                                                             s.ExpandedView = "Expanded"
-    '                                                                                         Else
-    '                                                                                             s.ExpandedView = "Collapsed"
-    '                                                                                         End If
-    '                                                                                     End If
-    '                                                                                     epgitem.IsSelected = True
-    '                                                                                 Else
-    '                                                                                     epgitem.IsSelected = False
-    '                                                                                     If epgitem.ExpandedView = "Expanded" Then
-    '                                                                                         epgitem.ExpandedView = "Collapsed"
-    '                                                                                     End If
-    '                                                                                 End If
-    '                                                                             Next
-    '                                                                         Next
-    '                                                                         selectedEPGItem = s
-    '                                                                     End If
-    '                                                                     For Each c In Channels.items
-    '                                                                         c.IsSelected = False
-    '                                                                     Next
-    '                                                                 End Sub)
-    '    End Get
-    'End Property
 
 
     Public ReadOnly Property MenuButtonClickedCommand As RelayCommand
@@ -689,50 +696,30 @@ Public Class TVHead_ViewModel
         Get
             Return New RelayCommand(Sub()
                                         'Navigate Away to the Add AutoRecording Page
-                                        If PivotSelectedIndex = 5 Then
-                                            selectedAutoRecording = New AutoRecordingViewModel
-                                            Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
-                                            If Not rootFrame.Navigate(GetType(AutoRecordingPage), selectedAutoRecording) Then
-                                                Dim resources As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
-                                                Throw New Exception(resources.GetString("NavigationFailedExceptionMessage"))
-                                            End If
-                                        End If
+                                        'If PivotSelectedIndex = 5 Then
+                                        '    selectedAutoRecording = New AutoRecordingViewModel
+                                        '    Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
+                                        '    'If Not rootFrame.Navigate(GetType(AutoRecordingPage), selectedAutoRecording) Then
+                                        '    '    Dim resources As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
+                                        '    '    Throw New Exception(resources.GetString("NavigationFailedExceptionMessage"))
+                                        '    'End If
+                                        'End If
 
-                                        'Navigate Away to the Add Recording Page
-                                        If PivotSelectedIndex = 2 Then
-                                            Dim recording As New RecordingViewModel
-                                            Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
-                                            If Not rootFrame.Navigate(GetType(RecordingPage), recording) Then
-                                                Dim resources As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
-                                                Throw New Exception(resources.GetString("NavigationFailedExceptionMessage"))
-                                            End If
-                                        End If
+                                        ''Navigate Away to the Add Recording Page
+                                        'If PivotSelectedIndex = 2 Then
+                                        '    Dim recording As New RecordingViewModel
+                                        '    Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
+                                        '    'If Not rootFrame.Navigate(GetType(RecordingPage), recording) Then
+                                        '    '    Dim resources As ResourceLoader = ResourceLoader.GetForCurrentView("Resources")
+                                        '    '    Throw New Exception(resources.GetString("NavigationFailedExceptionMessage"))
+                                        '    'End If
+                                        'End If
                                     End Sub)
 
         End Get
         Set(value As RelayCommand)
         End Set
     End Property
-
-
-    Public Sub View_SizeChanged(sender As Object, e As SizeChangedEventArgs)
-        If Window.Current.Bounds.Width > 720 Then
-            WriteToDebug("TVHead_ViewModel.View_SizeChanged()", String.Format("{0} / {1}", Window.Current.Bounds.Width, Window.Current.Bounds.Width / 3))
-            Dim sWidth As Integer = Window.Current.Bounds.Width
-            Dim ColumnWidth As Integer = sWidth / 3
-            HubSectionWidth = Math.Round(ColumnWidth)
-        Else
-            WriteToDebug("TVHead_ViewModel.View_SizeChanged()", String.Format("{0}", Window.Current.Bounds.Width))
-            HubSectionWidth = Window.Current.Bounds.Width
-        End If
-
-
-
-
-
-    End Sub
-
-
 
     Public Property SearchTextChangedCommand As RelayCommand
         Get
@@ -754,9 +741,9 @@ Public Class TVHead_ViewModel
                                         WriteToDebug("TVHead_ViewModel.SearchCommand()", "SearchCommand Executed")
                                         'Me.StopRefresh()
                                         Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
-                                        If Not rootFrame.Navigate(GetType(SearchPage), Me.SearchPage) Then
-                                            Throw New Exception("Failed to create initial page")
-                                        End If
+                                        'If Not rootFrame.Navigate(GetType(SearchPage), Me.SearchPage) Then
+                                        '    Throw New Exception("Failed to create initial page")
+                                        'End If
                                     End Sub)
 
         End Get
@@ -767,7 +754,7 @@ Public Class TVHead_ViewModel
     Public Property GoToRecordingsCommand As RelayCommand
         Get
             Return New RelayCommand(Sub()
-                                        PivotSelectedIndex = 2
+                                        'PivotSelectedIndex = 2
                                     End Sub)
 
         End Get
@@ -778,7 +765,7 @@ Public Class TVHead_ViewModel
     Public Property GoToChannelsCommand As RelayCommand
         Get
             Return New RelayCommand(Sub()
-                                        PivotSelectedIndex = 0
+                                        'PivotSelectedIndex = 0
                                     End Sub)
 
         End Get
@@ -826,11 +813,11 @@ Public Class TVHead_ViewModel
         Get
             Return New RelayCommand(Sub()
                                         'Me.StopRefresh()
-                                        Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
-                                        If Not rootFrame.Navigate(GetType(AppSettingsPage)) Then
-                                            Throw New Exception("Failed to create initial page")
-                                        End If
-                                        WriteToDebug("TVHead_ViewModel.SettingsCommand()", "SettingsCommand Executed")
+                                        'Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
+                                        'If Not rootFrame.Navigate(GetType(AppSettingsPage)) Then
+                                        '    Throw New Exception("Failed to create initial page")
+                                        'End If
+                                        'WriteToDebug("TVHead_ViewModel.SettingsCommand()", "SettingsCommand Executed")
                                     End Sub)
 
         End Get
@@ -849,13 +836,13 @@ Public Class TVHead_ViewModel
         Get
             Return New RelayCommand(Async Sub()
                                         'Handle the deletion of Autorecording Entries
-                                        If PivotSelectedIndex = 5 Then
+                                        If SelectedPivotIndex = 5 Then
                                             Dim myList As New AutoRecordingListViewModel
                                             myList = AutoRecordings
                                             Dim succesfulDeletions As Integer = 0
                                             Dim ContinueWithDeletion As Boolean = False
                                             If Not myList Is Nothing Then
-                                                If appSettings.ConfirmDeletion Then
+                                                If TVHeadSettings.ConfirmDeletion Then
                                                     Dim strheader As String = loader.GetString("AutoRecordingDeleteHeader")
                                                     Dim strMessage As String = String.Format(loader.GetString("AutoRecordingDeleteContent"),
                                                                                              myList.items.Where(Function(y) y.IsSelected).Count.ToString,
@@ -904,15 +891,12 @@ Public Class TVHead_ViewModel
                                         End If
 
                                         'Handle the deletion of Upcoming, failed or finished recordings
-                                        If PivotSelectedIndex = 2 Or PivotSelectedIndex = 3 Or PivotSelectedIndex = 4 Then
+                                        If SelectedPivotIndex = 2 Or SelectedPivotIndex = 3 Or SelectedPivotIndex = 4 Then
                                             Dim myRecList As New RecordingListViewModel
                                             'Dirty way to identify in which RecordingViewmodel we're working
-                                            If PivotSelectedIndex = 2 Then Await UpcomingRecordings.AbortSelectedRecordings()
-                                            If PivotSelectedIndex = 3 Then Await FinishedRecordings.AbortSelectedRecordings()
-                                            If PivotSelectedIndex = 4 Then Await FailedRecordings.AbortSelectedRecordings()
-                                            UpcomingRecordings.SetExpanseCollapseEnabled(True)
-                                            FinishedRecordings.SetExpanseCollapseEnabled(True)
-                                            FailedRecordings.SetExpanseCollapseEnabled(True)
+                                            If SelectedPivotIndex = 2 Then Await UpcomingRecordings.AbortSelectedRecordings()
+                                            If SelectedPivotIndex = 3 Then Await FinishedRecordings.AbortSelectedRecordings()
+                                            If SelectedPivotIndex = 4 Then Await FailedRecordings.AbortSelectedRecordings()
                                             SetApplicationBarButtons()
                                         End If
                                     End Sub)
@@ -971,35 +955,29 @@ Public Class TVHead_ViewModel
         Get
             Return New RelayCommand(Sub()
                                         WriteToDebug("TVHead_ViewModel.MultiSelectCommand", "start")
-                                        Select Case Me.PivotSelectedIndex
+                                        Select Case Me.SelectedPivotIndex
                                             Case 2 'When the view is on the Upcoming Recordings Listview
                                                 If UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None Then
                                                     UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
-                                                    UpcomingRecordings.SetExpanseCollapseEnabled(False)
                                                     SetApplicationBarButtons("manage")
                                                 Else
                                                     UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                                    UpcomingRecordings.SetExpanseCollapseEnabled(True)
                                                     SetApplicationBarButtons()
                                                 End If
                                             Case 3 'When the view is on the Finished Recordings Listview
                                                 If FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None Then
                                                     FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
-                                                    FinishedRecordings.SetExpanseCollapseEnabled(False)
                                                     SetApplicationBarButtons("manage")
                                                 Else
                                                     FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                                    FinishedRecordings.SetExpanseCollapseEnabled(True)
                                                     SetApplicationBarButtons()
                                                 End If
                                             Case 4 'When the view is on the Failed Recordings Listview
                                                 If FailedRecordings.MultiSelectMode = ListViewSelectionMode.None Then
                                                     FailedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
-                                                    FailedRecordings.SetExpanseCollapseEnabled(False)
                                                     SetApplicationBarButtons("manage")
                                                 Else
                                                     FailedRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                                    FailedRecordings.SetExpanseCollapseEnabled(True)
                                                     SetApplicationBarButtons()
                                                 End If
                                             Case 5 'When the view is on the AutoRecordings Listview
@@ -1022,33 +1000,50 @@ Public Class TVHead_ViewModel
         End Set
     End Property
 
-    Public Property PivotSelectionChanged As RelayCommand
-        Get
-            Return New RelayCommand(Async Sub()
-                                        SetApplicationBarButtons()
-                                        'Dim app As App = CType(Application.Current, Application)
-                                        WriteToDebug("TVHead_ViewModel.PivotSelectionChanged()", "PivotSelectionChanged - Executed")
 
-                                        'Remove MultiSelect for all recording lists
-                                        UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                        FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                        FailedRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                        AutoRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                        UpcomingRecordings.SetExpanseCollapseEnabled(True)
-                                        FinishedRecordings.SetExpanseCollapseEnabled(True)
-                                        FailedRecordings.SetExpanseCollapseEnabled(True)
-                                        AutoRecordings.SetExpanseCollapseEnabled(True)
-                                        SetApplicationBarButtons()
 
-                                        'If Me.PivotSelectedIndex = 2 And Me.UpcomingRecordings.dataLoaded Then Await Me.UpcomingRecordings.Reload()
-                                        'If Me.PivotSelectedIndex = 3 And Me.FinishedRecordings.dataLoaded Then Await Me.FinishedRecordings.Reload()
-                                        'If Me.PivotSelectedIndex = 4 And Me.FailedRecordings.dataLoaded Then Await Me.FailedRecordings.Reload()
-                                    End Sub)
 
-        End Get
-        Set(value As RelayCommand)
-        End Set
-    End Property
+    ''' <summary>
+    ''' Executes when the pivot index in the PhoneView main layout is changed
+    ''' </summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    Public Sub PhoneViewPivotSelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+        'When we change from one pivotitem to another, we want any possible multiselectmode that is active on any recordings list to be set to none.
+        UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
+        FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None
+        FailedRecordings.MultiSelectMode = ListViewSelectionMode.None
+        AutoRecordings.MultiSelectMode = ListViewSelectionMode.None
+        'Then we want to set the CommandBar's button's actions according to what needs to be available for the selected Pivot Index (view)
+        SetApplicationBarButtons()
+    End Sub
+
+
+
+    'Public Property PivotSelectionChanged As RelayCommand
+    '    Get
+    '        Return New RelayCommand(Async Sub()
+
+    '                                    'Dim app As App = CType(Application.Current, Application)
+    '                                    WriteToDebug("TVHead_ViewModel.PivotSelectionChanged()", "PivotSelectionChanged - Executed")
+
+    '                                    'Remove MultiSelect for all recording lists
+
+    '                                    UpcomingRecordings.SetExpanseCollapseEnabled(True)
+    '                                    FinishedRecordings.SetExpanseCollapseEnabled(True)
+    '                                    FailedRecordings.SetExpanseCollapseEnabled(True)
+    '                                    AutoRecordings.SetExpanseCollapseEnabled(True)
+    '                                    SetApplicationBarButtons()
+
+    '                                    'If Me.PivotSelectedIndex = 2 And Me.UpcomingRecordings.dataLoaded Then Await Me.UpcomingRecordings.Reload()
+    '                                    'If Me.PivotSelectedIndex = 3 And Me.FinishedRecordings.dataLoaded Then Await Me.FinishedRecordings.Reload()
+    '                                    'If Me.PivotSelectedIndex = 4 And Me.FailedRecordings.dataLoaded Then Await Me.FailedRecordings.Reload()
+    '                                End Sub)
+
+    '    End Get
+    '    Set(value As RelayCommand)
+    '    End Set
+    'End Property
 
 
 #End Region
@@ -1059,178 +1054,62 @@ Public Class TVHead_ViewModel
 #Region "Methods"
 
     Public Sub SetApplicationBarButtons(Optional mode As String = "")
-        If mode = "" Then
-            Select Case Me.PivotSelectedIndex
-                Case 0
-                    With Me.AppBar.ButtonVisibility
-                        .refreshButton = Visibility.Visible
-                        .recordingsButton = Visibility.Visible
-                        .epgButton = Visibility.Collapsed
-                        .tagsButton = Visibility.Visible
-                        .manageButton = Visibility.Collapsed
-                        .searchButton = Visibility.Visible
-                        .addButton = Visibility.Collapsed
-                        .deleteButton = Visibility.Collapsed
-                        .saveButton = Visibility.Collapsed
-                        .cancelButton = Visibility.Collapsed
-                    End With
-                    Me.AppBar.CommandBarVisibility = Visibility.Visible
-                Case 1
-                    With Me.AppBar.ButtonVisibility
-                        .refreshButton = Visibility.Visible
-                        .recordingsButton = Visibility.Visible
-                        .epgButton = Visibility.Collapsed
-                        .tagsButton = Visibility.Collapsed
-                        .manageButton = Visibility.Collapsed
-                        .searchButton = Visibility.Visible
-                        .addButton = Visibility.Collapsed
-                        .deleteButton = Visibility.Collapsed
-                        .saveButton = Visibility.Collapsed
-                        .cancelButton = Visibility.Collapsed
-                    End With
-                    Me.AppBar.CommandBarVisibility = Visibility.Visible
-                Case 2
-                    With Me.AppBar.ButtonVisibility
-                        .refreshButton = Visibility.Visible
-                        .recordingsButton = Visibility.Collapsed
-                        .epgButton = Visibility.Visible
-                        .tagsButton = Visibility.Collapsed
-                        .manageButton = Visibility.Visible
-                        .searchButton = Visibility.Collapsed
-                        .addButton = Visibility.Visible
-                        .deleteButton = Visibility.Collapsed
-                        .saveButton = Visibility.Collapsed
-                        .cancelButton = Visibility.Collapsed
-                    End With
-                    Me.AppBar.CommandBarVisibility = Visibility.Visible
-                Case 3
-                    With Me.AppBar.ButtonVisibility
-                        .refreshButton = Visibility.Visible
-                        .recordingsButton = Visibility.Collapsed
-                        .epgButton = Visibility.Visible
-                        .tagsButton = Visibility.Collapsed
-                        .manageButton = Visibility.Visible
-                        .searchButton = Visibility.Collapsed
-                        .addButton = Visibility.Collapsed
-                        .deleteButton = Visibility.Collapsed
-                        .saveButton = Visibility.Collapsed
-                        .cancelButton = Visibility.Collapsed
-                    End With
-                    Me.AppBar.CommandBarVisibility = Visibility.Visible
-                Case 4
-                    With Me.AppBar.ButtonVisibility
-                        .refreshButton = Visibility.Visible
-                        .recordingsButton = Visibility.Collapsed
-                        .epgButton = Visibility.Visible
-                        .tagsButton = Visibility.Collapsed
-                        .manageButton = Visibility.Visible
-                        .searchButton = Visibility.Collapsed
-                        .addButton = Visibility.Collapsed
-                        .deleteButton = Visibility.Collapsed
-                        .saveButton = Visibility.Collapsed
-                        .cancelButton = Visibility.Collapsed
-                    End With
-                    Me.AppBar.CommandBarVisibility = Visibility.Visible
-                Case 5
-                    With Me.AppBar.ButtonVisibility
-                        .refreshButton = Visibility.Visible
-                        .recordingsButton = Visibility.Collapsed
-                        .epgButton = Visibility.Visible
-                        .tagsButton = Visibility.Collapsed
-                        .manageButton = Visibility.Visible
-                        .searchButton = Visibility.Collapsed
-                        .addButton = Visibility.Visible
-                        .deleteButton = Visibility.Collapsed
-                        .saveButton = Visibility.Collapsed
-                        .cancelButton = Visibility.Collapsed
-                    End With
-                    Me.AppBar.CommandBarVisibility = Visibility.Visible
-            End Select
-        End If
-        Select Case mode
-            Case "manage"
-                With Me.AppBar.ButtonVisibility
-                    .deleteButton = Visibility.Visible
-                    .refreshButton = Visibility.Collapsed
-                    .recordingsButton = Visibility.Collapsed
-                    .epgButton = Visibility.Collapsed
-                    .tagsButton = Visibility.Collapsed
-                    .manageButton = Visibility.Collapsed
-                    .searchButton = Visibility.Collapsed
-                    .addButton = Visibility.Collapsed
-                    .saveButton = Visibility.Collapsed
-                    .cancelButton = Visibility.Collapsed
-                    '.deleteButton = Visibility.Visible
-
-                End With
-            Case "add"
-                With Me.AppBar.ButtonVisibility
-                    .recordingsButton = Visibility.Collapsed
-                    .epgButton = Visibility.Collapsed
-                    .tagsButton = Visibility.Collapsed
-                    .manageButton = Visibility.Collapsed
-                    .searchButton = Visibility.Collapsed
-                    .addButton = Visibility.Collapsed
-                    .deleteButton = Visibility.Collapsed
-                    .saveButton = Visibility.Visible
-                    .cancelButton = Visibility.Visible
-                End With
-        End Select
+        RaisePropertyChanged("CommandBarButtonCollection")
 
     End Sub
 
 
 
 
-    Public Async Function LoadCurrentEPGEventForChannels(easyOnBandwidth As Boolean) As Task
-        WriteToDebug("ChannelViewModel.LoadCurrentEPGEventForChannels()", "start")
+    'Public Async Function LoadCurrentEPGEventForChannels(easyOnBandwidth As Boolean) As Task
+    '    WriteToDebug("ChannelViewModel.LoadCurrentEPGEventForChannels()", "start")
 
-        'We have a choice of retrieving all current EPG Events from the TVH server each time when doing a refresh, or only pull the current EPG event for each channel for which 
-        'the percentcompleted = 1.
-        'The latter will cause less bandwidth usage, but will not retreive any updates for the existing EPG event, for example when it has been changed through another app)
-        'Alternatively we can combine currently scheduled recordings with the local EPG info on the phone, to only update Recording status and percentcompleted
+    '    'We have a choice of retrieving all current EPG Events from the TVH server each time when doing a refresh, or only pull the current EPG event for each channel for which 
+    '    'the percentcompleted = 1.
+    '    'The latter will cause less bandwidth usage, but will not retreive any updates for the existing EPG event, for example when it has been changed through another app)
+    '    'Alternatively we can combine currently scheduled recordings with the local EPG info on the phone, to only update Recording status and percentcompleted
 
-        If Not easyOnBandwidth Then
-            'Initial load of the current EPG Events for all channels.
+    '    If Not easyOnBandwidth Then
+    '        'Initial load of the current EPG Events for all channels.
 
-            Dim currentEPGItems = Await LoadEPGEntry(New ChannelViewModel, False, AllChannels.items.Count)
-            If Not currentEPGItems Is Nothing Then
-                For Each c In Channels.items
-                    Dim newItemForChannel = (From p In currentEPGItems Where p.channelUuid = c.uuid Select p).OrderBy(Function(x) x.startDate).FirstOrDefault
-                    If Not newItemForChannel Is Nothing Then
-                        Await c.RefreshCurrentEPGItem(newItemForChannel)
-                        'Else
-                        '    If c.epgitems.currentEPGItem Is Nothing Then c.epgitems.currentEPGItem = New EPGItemViewModel()
-                        '    'c.AddEmptyEPGDetails()
-                    End If
+    '        Dim currentEPGItems = Await LoadEPGEntry(New ChannelViewModel, False, AllChannels.items.Count)
+    '        If Not currentEPGItems Is Nothing Then
+    '            For Each c In Channels.items
+    '                Dim newItemForChannel = (From p In currentEPGItems Where p.channelUuid = c.uuid Select p).OrderBy(Function(x) x.startDate).FirstOrDefault
+    '                If Not newItemForChannel Is Nothing Then
+    '                    Await c.RefreshCurrentEPGItem(newItemForChannel)
+    '                    'Else
+    '                    '    If c.epgitems.currentEPGItem Is Nothing Then c.epgitems.currentEPGItem = New EPGItemViewModel()
+    '                    '    'c.AddEmptyEPGDetails()
+    '                End If
 
-                Next
-            End If
-        Else
-            'Dim recordings = Await LoadUpcomingRecordings()
+    '            Next
+    '        End If
+    '    Else
+    '        'Dim recordings = Await LoadUpcomingRecordings()
 
-            For Each c In Channels.items
-                If Not c.currentEPGItem Is Nothing Then
-                    If c.currentEPGItem.percentcompleted = 1 Then
-                        Await c.RefreshCurrentEPGItem()
-                        'Don't hammer the server too much during initial load, add a pause for each request
-                        'Await Task.Delay(100)
-                    Else
-                        If c.currentEPGItem.eventId <> 0 Then
-                            'c.currentEPGItem.percentcompleted = 1
-                        End If
+    '        For Each c In Channels.items
+    '            If Not c.currentEPGItem Is Nothing Then
+    '                If c.currentEPGItem.percentcompleted = 1 Then
+    '                    Await c.RefreshCurrentEPGItem()
+    '                    'Don't hammer the server too much during initial load, add a pause for each request
+    '                    'Await Task.Delay(100)
+    '                Else
+    '                    If c.currentEPGItem.eventId <> 0 Then
+    '                        'c.currentEPGItem.percentcompleted = 1
+    '                    End If
 
-                    End If
-                Else
-                    Await c.RefreshCurrentEPGItem()
-                End If
+    '                End If
+    '            Else
+    '                Await c.RefreshCurrentEPGItem()
+    '            End If
 
 
-            Next
-        End If
-        WriteToDebug("ChannelViewModel.LoadCurrentEPGEventForChannels()", "stop")
-        'Me.Channels = (From c In AllChannels Where c.tags.ToList.IndexOf(selectedChannelTag.uuid) > -1 Select c Order By c.number).ToObservableCollection()
-    End Function
+    '        Next
+    '    End If
+    '    WriteToDebug("ChannelViewModel.LoadCurrentEPGEventForChannels()", "stop")
+    '    'Me.Channels = (From c In AllChannels Where c.tags.ToList.IndexOf(selectedChannelTag.uuid) > -1 Select c Order By c.number).ToObservableCollection()
+    'End Function
 
     ''' <summary>
     ''' FUNCTION THAT TALKS TO THE TVHEADEND SERVER AND RETRIEVES THE SERVER INFORMATION
@@ -1255,13 +1134,22 @@ Public Class TVHead_ViewModel
         End Try
     End Function
 
+    Public Function IsRunningOnWideScreen() As Boolean
+        Dim rectie As Rect = ApplicationView.GetForCurrentView.VisibleBounds
+        If rectie.Width > 720 Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
 
     Public Async Function IsConnected(Optional showmessages As Boolean = False) As Task(Of Boolean)
         If showmessages Then Await Notify.Update(False, loader.GetString("status_Connecting"), 1, 0, 0)
         Try
             Dim sInfo As ServerInfoViewModel = Await GetServerInfo()
             If Not sInfo Is Nothing Then
-                appSettings.TVHVersionLong = String.Format("{0} {1}", sInfo.name, sInfo.sw_versionlong)
+                TVHeadSettings.TVHVersionLong = String.Format("{0} {1}", sInfo.name, sInfo.sw_versionlong)
                 TVHVersion = sInfo.sw_version
                 If showmessages Then Await Notify.Update(False, loader.GetString("status_Connected"), 1, 0, 0)
                 Return True
@@ -1325,7 +1213,7 @@ Public Class TVHead_ViewModel
     Public Async Function checkCapabilities() As Task
         If Await IsConnected() Then
             If Not Me.AllChannels Is Nothing AndAlso Me.AllChannels.items.Count > 0 Then
-                Dim testChannel As ChannelViewModel = CType(Await LoadIDNode(AllChannels.items(0).uuid, New ChannelViewModel), ChannelViewModel)
+                Dim testChannel As ChannelViewModel = CType(Await LoadIDNode(AllChannels.items(0).uuid, GetType(ChannelViewModel)), ChannelViewModel)
                 If Not testChannel Is Nothing Then
                     WriteToDebug("TVHead_ViewModel.checkCapabilities()", "LoadIDNode passed for test channel " + testChannel.name)
                 Else
@@ -1333,15 +1221,15 @@ Public Class TVHead_ViewModel
                 End If
             End If
             If Not Me.UpcomingRecordings Is Nothing AndAlso Me.UpcomingRecordings.groupeditems.Count > 0 Then
-                Dim testRecording As RecordingViewModel = CType(Await LoadIDNode(Me.UpcomingRecordings.groupeditems(0)(0).recording_id, New RecordingViewModel), RecordingViewModel)
-                If Not testRecording Is Nothing Then
-                    WriteToDebug("TVHead_ViewModel.checkCapabilities()", "LoadIDNode passed for test recording " + testRecording.title)
-                Else
-                    WriteToDebug("TVHead_ViewModel.checkCapabilities()", "LoadIDNode FAILED for test recording ")
-                End If
+                'Dim testRecording As RecordingViewModel = CType(Await LoadIDNode(Me.UpcomingRecordings.groupeditems(0)(0).uuid, New RecordingViewModel), RecordingViewModel)
+                'If Not testRecording Is Nothing Then
+                '    WriteToDebug("TVHead_ViewModel.checkCapabilities()", "LoadIDNode passed for test recording " + testRecording.title)
+                'Else
+                '    WriteToDebug("TVHead_ViewModel.checkCapabilities()", "LoadIDNode FAILED for test recording ")
+                'End If
             End If
             If Not Me.AutoRecordings Is Nothing AndAlso Me.AutoRecordings.items.Count > 0 Then
-                Dim testAutoRecording As AutoRecordingViewModel = CType(Await LoadIDNode(Me.AutoRecordings.items(0).id, New AutoRecordingViewModel), AutoRecordingViewModel)
+                Dim testAutoRecording As AutoRecordingViewModel = CType(Await LoadIDNode(Me.AutoRecordings.items(0).id, GetType(AutoRecordingViewModel)), AutoRecordingViewModel)
                 If Not testAutoRecording Is Nothing Then
                     WriteToDebug("TVHead_ViewModel.checkCapabilities()", "LoadIDNode passed for test auto recording " + testAutoRecording.title)
                 Else
@@ -1380,15 +1268,14 @@ Public Class TVHead_ViewModel
         If Me.ChannelTags.dataLoaded = False Then Await Me.ChannelTags.Load()
         If Me.DVRConfigs.dataLoaded = False Then Await Me.DVRConfigs.Load()
         If Me.ContentTypes.dataLoaded = False Then Await Me.ContentTypes.Load()
-        If Me.Channels.dataLoaded = False Then Await Task.Run(Function() Me.Channels.Load())
+        If Me.Channels.dataLoaded = False Then Await Me.Channels.Load()
         'Await Task.Delay(3000)
         'For Each c In Channels.items
         '    Await c.LoadEPG()
         'Next
         'Await Task.Delay(3000)
-        EPGRefresher.StartRefresh()
-        Await Task.Delay(1000)
-        CometCatcher.StartRefresh()
+        'EPGRefresher.StartRefresh()
+
 
         If Await TVHeadSettings.hasAdminAccess Then
             Streams.items = (Await LoadStreams()).ToObservableCollection()
@@ -1418,35 +1305,34 @@ Public Class TVHead_ViewModel
         '    Await Task.Run(Function() Me.SelectedChannel.RefreshEPG(False))
         'End If
 
+        'TODO VALIDATE FOR DVR ACCESS
+        If 1 = 1 Then
+            'LOAD UPCOMING RECORDINGS, OR REFRESH IF THE PIVOT ON THE UPCOMINGS RECORDINGS PAGE
+            If UpcomingRecordings.dataLoaded = False Then Await Me.UpcomingRecordings.Load()
 
-        'If hasDVRAccess Then
-        '    'LOAD UPCOMING RECORDINGS, OR REFRESH IF THE PIVOT ON THE UPCOMINGS RECORDINGS PAGE
-        '    If UpcomingRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 2 Then
-        '        Await Me.UpcomingRecordings.Load()
+        End If
+        'LOAD FINISHED RECORDINGS, OR REFRESH IF THE PIVOT ON THE FINISHED RECORDINGS PAGE
+        If FinishedRecordings.dataLoaded = False Then Await Me.FinishedRecordings.Load()
+        'Await StatusBar.Update(loader.GetString("status_RefreshingFinishedRecordings"), True, 0, True)
+        'Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
 
-        '    End If
-        '    'LOAD FINISHED RECORDINGS, OR REFRESH IF THE PIVOT ON THE FINISHED RECORDINGS PAGE
-        '    If FinishedRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 3 Then
-        '        'Await StatusBar.Update(loader.GetString("status_RefreshingFinishedRecordings"), True, 0, True)
-        '        'Await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, Async Sub()
-        '        Await Me.FinishedRecordings.Load()
-        '        'End Sub)
+        'End Sub)
 
-        '    End If
 
-        '    'LOAD FAILED RECORDINGS, OR REFRESH IF THE PIVOT ON THE FAILED RECORDINGS PAGE
-        '    ''TODO : RE-ENABLE DVR STUFF
-        '    If FailedRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 4 Then
-        '        Await Me.FailedRecordings.Load()
-        '    End If
-        '    ''LOAD AUTO RECORDINGS, OR REFRESH IF THE PIVOT ON THE AUTO RECORDINGS PAGE
-        '    If AutoRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 5 Then
-        '        Await StatusBar.Update(loader.GetString("status_RefreshingAutoRecordings"), True, 0, True)
-        '        Await Me.AutoRecordings.Load()
-        '    End If
+        ''LOAD FAILED RECORDINGS, OR REFRESH IF THE PIVOT ON THE FAILED RECORDINGS PAGE
+        '''TODO : RE-ENABLE DVR STUFF
+        If FailedRecordings.dataLoaded = False Then Await Me.FailedRecordings.Load()
+
+        '''LOAD AUTO RECORDINGS, OR REFRESH IF THE PIVOT ON THE AUTO RECORDINGS PAGE
+        'If AutoRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 5 Then
+        '    Await StatusBar.Update(loader.GetString("status_RefreshingAutoRecordings"), True, 0, True)
+        '    Await Me.AutoRecordings.Load()
+        'End If
 
         'End If
 
+        Await Task.Delay(1000)
+        CometCatcher.StartRefresh()
         'Await checkCapabilities()
         'Await StatusBar.Clean()
         Notify.Clear()
@@ -1470,7 +1356,7 @@ Public Class TVHead_ViewModel
 
         'Show a MessageBox, asking for the user to confirm whether a single or an auto-recording / Series should be created
 
-        If appSettings.ProposeAutoRecording Then
+        If TVHeadSettings.ProposeAutoRecording Then
             Dim strMessage As String = ""
             Dim strheader As String = ""
 
@@ -1577,7 +1463,7 @@ Public Class TVHead_ViewModel
 
     Public Async Sub RefreshMe()
 
-        Await Me.LoadDataAsync()
+        ' Await Me.LoadDataAsync()
 
         'WriteToDebug("TVHead_ViewModel.RefreshMe()", "start")
         'If Not app.isConnected Then
