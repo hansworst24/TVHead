@@ -47,18 +47,36 @@ Public Class TVHead_ViewModel
     End Property
     Private Property _selectedEPGItem As EPGItemViewModel
 
+    'Public ReadOnly Property selectedRecordingList As RecordingListViewModel
+    '    Get
+    '        If SelectedPivotIndex = 2 Then Return UpcomingRecordings
+    '        If SelectedPivotIndex = 3 Then Return FinishedRecordings
+    '        If SelectedPivotIndex = 4 Then Return FailedRecordings
+    '        If SelectedPivotIndex = 5 Then Return AutoRecordings
+    '    End Get
+    'End Property
 
 
 
+
+    ''' <summary>
+    ''' Follows the Index of the Pivot View used in PhoneView. Resets any selection or selectionmode to defaults
+    ''' </summary>
+    ''' <returns></returns>
     Public Property SelectedPivotIndex As Integer
         Get
             Return _SelectedPivotIndex
         End Get
         Set(value As Integer)
             _SelectedPivotIndex = value
-            UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
-            FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None
-            FailedRecordings.MultiSelectMode = ListViewSelectionMode.None
+            If Not SelectedChannel Is Nothing Then
+                SelectedChannel.epgitems.ClearSelections()
+            End If
+            If Not selectedEPGItem Is Nothing Then selectedEPGItem = Nothing
+            UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Single : UpcomingRecordings.ClearSelections()
+            FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Single : FinishedRecordings.ClearSelections()
+            FailedRecordings.MultiSelectMode = ListViewSelectionMode.Single : FailedRecordings.ClearSelections()
+            AutoRecordings.MultiSelectMode = ListViewSelectionMode.Single : AutoRecordings.ClearSelections()
             RaisePropertyChanged("SelectedPivotIndex")
             RaisePropertyChanged("CommandBarButtonCollection")
         End Set
@@ -70,24 +88,31 @@ Public Class TVHead_ViewModel
             Select Case SelectedPivotIndex
                 Case 2
                     Select Case UpcomingRecordings.MultiSelectMode
-                        Case ListViewSelectionMode.None
-                            Return CType(Application.Current.Resources("RecordingListButtons"), DataTemplate)
+                        Case ListViewSelectionMode.Single
+                            Return CType(Application.Current.Resources("UpcomingRecordingListButtons"), DataTemplate)
                         Case ListViewSelectionMode.Multiple
-                            Return CType(Application.Current.Resources("RecordingListEditButtons"), DataTemplate)
+                            Return CType(Application.Current.Resources("UpcomingRecordingListEditButtons"), DataTemplate)
                     End Select
                 Case 3
                     Select Case FinishedRecordings.MultiSelectMode
-                        Case ListViewSelectionMode.None
+                        Case ListViewSelectionMode.Single
                             Return CType(Application.Current.Resources("RecordingListButtons"), DataTemplate)
                         Case ListViewSelectionMode.Multiple
-                            Return CType(Application.Current.Resources("RecordingListEditButtons"), DataTemplate)
+                            Return CType(Application.Current.Resources("FinishedRecordingListEditButtons"), DataTemplate)
                     End Select
                 Case 4
                     Select Case FailedRecordings.MultiSelectMode
-                        Case ListViewSelectionMode.None
+                        Case ListViewSelectionMode.Single
                             Return CType(Application.Current.Resources("RecordingListButtons"), DataTemplate)
                         Case ListViewSelectionMode.Multiple
-                            Return CType(Application.Current.Resources("RecordingListEditButtons"), DataTemplate)
+                            Return CType(Application.Current.Resources("FailedRecordingListEditButtons"), DataTemplate)
+                    End Select
+                Case 5
+                    Select Case AutoRecordings.MultiSelectMode
+                        Case ListViewSelectionMode.Single
+                            Return CType(Application.Current.Resources("AutoRecordingListButtons"), DataTemplate)
+                        Case ListViewSelectionMode.Multiple
+                            Return CType(Application.Current.Resources("AutoRecordingListEditButtons"), DataTemplate)
                     End Select
                 Case Else
                     Return CType(Application.Current.Resources("CommandBarEPGItemSelectedButtons"), DataTemplate)
@@ -304,7 +329,7 @@ Public Class TVHead_ViewModel
     Public Property FinishedRecordings As New RecordingListViewModel With {.SortingOrder = .Descending, .RecordingType = .finishedRecordings}
     Public Property FailedRecordings As New RecordingListViewModel With {.SortingOrder = .Descending, .RecordingType = .failedRecordings}
     Public Property allEPGEvents As New List(Of EPGItemViewModel) 'Temp/Debug list not to be used (big memory)
-    Public Property AutoRecordings As New AutoRecordingListViewModel
+    Public Property AutoRecordings As New AutoRecordingListViewModel With {.RecordingType = .autoRecordings}
     Public Property StatusBar As New StatusUpdateViewModel
     Public Property AllChannels As New ChannelListViewModel
     Public Property Channels As New ChannelListViewModel
@@ -581,7 +606,7 @@ Public Class TVHead_ViewModel
                                                        Await new_selected_channel.LoadEPG()
                                                        If Not SelectedChannel Is Nothing Then SelectedChannel.epgitems.ClearAllButCurrent()
                                                        SelectedChannel = new_selected_channel
-                                                       selectedEPGItem = new_selected_channel.currentEPGItem
+                                                       selectedEPGItem = new_selected_channel.epgitems.currentEPGItem
                                                        Notify.Clear()
                                                    End If
                                                    'End If
@@ -595,9 +620,10 @@ Public Class TVHead_ViewModel
     Public Sub ToggleMultiSelect(sender As Object, e As RoutedEventArgs)
         WriteToDebug("TVHead_ViewModel.ToggleMultiSelect", "executed")
         Select Case SelectedPivotIndex
-            Case 2 : UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
-            Case 3 : FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
-            Case 4 : FailedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
+            Case 2 : UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Multiple : UpcomingRecordings.ClearSelections()
+            Case 3 : FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple : FinishedRecordings.ClearSelections()
+            Case 4 : FailedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple : FailedRecordings.ClearSelections()
+            Case 5 : AutoRecordings.MultiSelectMode = ListViewSelectionMode.Multiple : AutoRecordings.ClearSelections()
             Case Else : Return
         End Select
         RaisePropertyChanged("CommandBarButtonCollection")
@@ -794,13 +820,13 @@ Public Class TVHead_ViewModel
     Public Property AboutCommand As RelayCommand
         Get
             Return New RelayCommand(Sub()
-                                        WriteToDebug("TVHead_ViewModel.AboutCommand", "start")
-                                        'Me.StopRefresh()
-                                        Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
-                                        If Not rootFrame.Navigate(GetType(AboutPage)) Then
-                                            Throw New Exception("Failed to create initial page")
-                                        End If
-                                        WriteToDebug("TVHead_ViewModel.AboutCommand", "stop")
+                                        'WriteToDebug("TVHead_ViewModel.AboutCommand", "start")
+                                        ''Me.StopRefresh()
+                                        'Dim rootFrame As Frame = TryCast(Window.Current.Content, Frame)
+                                        'If Not rootFrame.Navigate(GetType(AboutPage)) Then
+                                        '    Throw New Exception("Failed to create initial page")
+                                        'End If
+                                        'WriteToDebug("TVHead_ViewModel.AboutCommand", "stop")
                                     End Sub)
 
         End Get
@@ -832,79 +858,79 @@ Public Class TVHead_ViewModel
 
 
 
-    Public Property DeleteSelectedRecordings As RelayCommand
-        Get
-            Return New RelayCommand(Async Sub()
-                                        'Handle the deletion of Autorecording Entries
-                                        If SelectedPivotIndex = 5 Then
-                                            Dim myList As New AutoRecordingListViewModel
-                                            myList = AutoRecordings
-                                            Dim succesfulDeletions As Integer = 0
-                                            Dim ContinueWithDeletion As Boolean = False
-                                            If Not myList Is Nothing Then
-                                                If TVHeadSettings.ConfirmDeletion Then
-                                                    Dim strheader As String = loader.GetString("AutoRecordingDeleteHeader")
-                                                    Dim strMessage As String = String.Format(loader.GetString("AutoRecordingDeleteContent"),
-                                                                                             myList.items.Where(Function(y) y.IsSelected).Count.ToString,
-                                                                                             myList.items.Count)
-                                                    Dim msgBox As New MessageDialog(strMessage, strheader)
-                                                    msgBox.Commands.Add(New UICommand(loader.GetString("OK"), Sub()
-                                                                                                                  ContinueWithDeletion = True
-                                                                                                              End Sub))
-                                                    msgBox.Commands.Add(New UICommand(loader.GetString("Cancel"), Sub()
-                                                                                                                      ContinueWithDeletion = False
-                                                                                                                  End Sub))
+    '    Public Property DeleteSelectedRecordings As RelayCommand
+    '        Get
+    '            Return New RelayCommand(Async Sub()
+    '                                        'Handle the deletion of Autorecording Entries
+    '                                        If SelectedPivotIndex = 5 Then
+    '                                            Dim myList As New AutoRecordingListViewModel
+    '                                            myList = AutoRecordings
+    '                                            Dim succesfulDeletions As Integer = 0
+    '                                            Dim ContinueWithDeletion As Boolean = False
+    '                                            If Not myList Is Nothing Then
+    '                                                If TVHeadSettings.ConfirmDeletion Then
+    '                                                    Dim strheader As String = loader.GetString("AutoRecordingDeleteHeader")
+    '                                                    Dim strMessage As String = String.Format(loader.GetString("AutoRecordingDeleteContent"),
+    '                                                                                             myList.items.Where(Function(y) y.IsSelected).Count.ToString,
+    '                                                                                             myList.items.Count)
+    '                                                    Dim msgBox As New MessageDialog(strMessage, strheader)
+    '                                                    msgBox.Commands.Add(New UICommand(loader.GetString("OK"), Sub()
+    '                                                                                                                  ContinueWithDeletion = True
+    '                                                                                                              End Sub))
+    '                                                    msgBox.Commands.Add(New UICommand(loader.GetString("Cancel"), Sub()
+    '                                                                                                                      ContinueWithDeletion = False
+    '                                                                                                                  End Sub))
 
-                                                    Await msgBox.ShowAsync()
-                                                Else
-                                                    ContinueWithDeletion = True
-                                                End If
+    '                                                    Await msgBox.ShowAsync()
+    '                                                Else
+    '                                                    ContinueWithDeletion = True
+    '                                                End If
 
-                                            End If
-                                            If ContinueWithDeletion Then
-                                                For Each recording In myList.items.Where(Function(y) y.IsSelected)
-#If DEBUG Then
-                                                    Dim retValue As RecordingReturnValue = New RecordingReturnValue With {.tvhResponse = New tvhCommandResponse With {.success = 1}}
-#Else
-                                                        Dim retValue As RecordingReturnValue = Await DeleteAutoRecording(recording.id)
-#End If
-                                                    If retValue.tvhResponse.success = 1 Then
-                                                        succesfulDeletions += 1
-                                                    Else
-                                                        Dim strheader As String = loader.GetString("AutoRecordingDeleteErrorHeader")
-                                                        Dim strMessage As String = String.Format(loader.GetString("AutoRecordingDeleteErrorContent"),
-                                                                                                 recording.title)
-                                                        Dim msgBox As New MessageDialog(strMessage, strheader)
-                                                        msgBox.Commands.Add(New UICommand(loader.GetString("OK")))
-                                                        recording.IsSelected = False
-                                                        Await msgBox.ShowAsync()
+    '                                            End If
+    '                                            If ContinueWithDeletion Then
+    '                                                For Each recording In myList.items.Where(Function(y) y.IsSelected)
+    '#If DEBUG Then
+    '                                                    Dim retValue As RecordingReturnValue = New RecordingReturnValue With {.tvhResponse = New tvhCommandResponse With {.success = 1}}
+    '#Else
+    '                                                        Dim retValue As RecordingReturnValue = Await DeleteAutoRecording(recording.id)
+    '#End If
+    '                                                    If retValue.tvhResponse.success = 1 Then
+    '                                                        succesfulDeletions += 1
+    '                                                    Else
+    '                                                        Dim strheader As String = loader.GetString("AutoRecordingDeleteErrorHeader")
+    '                                                        Dim strMessage As String = String.Format(loader.GetString("AutoRecordingDeleteErrorContent"),
+    '                                                                                                 recording.title)
+    '                                                        Dim msgBox As New MessageDialog(strMessage, strheader)
+    '                                                        msgBox.Commands.Add(New UICommand(loader.GetString("OK")))
+    '                                                        recording.IsSelected = False
+    '                                                        Await msgBox.ShowAsync()
 
-                                                    End If
-                                                Next
-                                                'Reload the Autorecordings, and Upcoming Recordings
-                                                myList.items = (Await LoadAutoRecordings()).ToObservableCollection()
-                                                WriteToDebug("TVHead_ViewModel.DeleteSelectedRecordings()", String.Format("DeleteSelectedRecordings - {0} items deleted...", succesfulDeletions.ToString))
-                                            End If
-                                            myList.MultiSelectMode = ListViewSelectionMode.None
-                                            AutoRecordings.SetExpanseCollapseEnabled(True)
-                                            SetApplicationBarButtons()
-                                        End If
+    '                                                    End If
+    '                                                Next
+    '                                                'Reload the Autorecordings, and Upcoming Recordings
+    '                                                myList.items = (Await LoadAutoRecordings()).ToObservableCollection()
+    '                                                WriteToDebug("TVHead_ViewModel.DeleteSelectedRecordings()", String.Format("DeleteSelectedRecordings - {0} items deleted...", succesfulDeletions.ToString))
+    '                                            End If
+    '                                            myList.MultiSelectMode = ListViewSelectionMode.None
+    '                                            AutoRecordings.SetExpanseCollapseEnabled(True)
+    '                                            SetApplicationBarButtons()
+    '                                        End If
 
-                                        'Handle the deletion of Upcoming, failed or finished recordings
-                                        If SelectedPivotIndex = 2 Or SelectedPivotIndex = 3 Or SelectedPivotIndex = 4 Then
-                                            Dim myRecList As New RecordingListViewModel
-                                            'Dirty way to identify in which RecordingViewmodel we're working
-                                            If SelectedPivotIndex = 2 Then Await UpcomingRecordings.AbortSelectedRecordings()
-                                            If SelectedPivotIndex = 3 Then Await FinishedRecordings.AbortSelectedRecordings()
-                                            If SelectedPivotIndex = 4 Then Await FailedRecordings.AbortSelectedRecordings()
-                                            SetApplicationBarButtons()
-                                        End If
-                                    End Sub)
+    '                                        'Handle the deletion of Upcoming, failed or finished recordings
+    '                                        If SelectedPivotIndex = 2 Or SelectedPivotIndex = 3 Or SelectedPivotIndex = 4 Then
+    '                                            Dim myRecList As New RecordingListViewModel
+    '                                            'Dirty way to identify in which RecordingViewmodel we're working
+    '                                            If SelectedPivotIndex = 2 Then Await UpcomingRecordings.AbortSelectedRecordings()
+    '                                            If SelectedPivotIndex = 3 Then Await FinishedRecordings.AbortSelectedRecordings()
+    '                                            If SelectedPivotIndex = 4 Then Await FailedRecordings.AbortSelectedRecordings()
+    '                                            SetApplicationBarButtons()
+    '                                        End If
+    '                                    End Sub)
 
-        End Get
-        Set(value As RelayCommand)
-        End Set
-    End Property
+    '        End Get
+    '        Set(value As RelayCommand)
+    '        End Set
+    '    End Property
 
 
     Public Property SearchResults As New ObservableCollection(Of ChannelViewModel)
@@ -951,54 +977,54 @@ Public Class TVHead_ViewModel
 
 
 
-    Public Property MultiSelectCommand As RelayCommand
-        Get
-            Return New RelayCommand(Sub()
-                                        WriteToDebug("TVHead_ViewModel.MultiSelectCommand", "start")
-                                        Select Case Me.SelectedPivotIndex
-                                            Case 2 'When the view is on the Upcoming Recordings Listview
-                                                If UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None Then
-                                                    UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
-                                                    SetApplicationBarButtons("manage")
-                                                Else
-                                                    UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                                    SetApplicationBarButtons()
-                                                End If
-                                            Case 3 'When the view is on the Finished Recordings Listview
-                                                If FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None Then
-                                                    FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
-                                                    SetApplicationBarButtons("manage")
-                                                Else
-                                                    FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                                    SetApplicationBarButtons()
-                                                End If
-                                            Case 4 'When the view is on the Failed Recordings Listview
-                                                If FailedRecordings.MultiSelectMode = ListViewSelectionMode.None Then
-                                                    FailedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
-                                                    SetApplicationBarButtons("manage")
-                                                Else
-                                                    FailedRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                                    SetApplicationBarButtons()
-                                                End If
-                                            Case 5 'When the view is on the AutoRecordings Listview
-                                                If AutoRecordings.MultiSelectMode = ListViewSelectionMode.None Then
-                                                    AutoRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
-                                                    AutoRecordings.SetExpanseCollapseEnabled(False)
-                                                    SetApplicationBarButtons("manage")
-                                                Else
-                                                    AutoRecordings.MultiSelectMode = ListViewSelectionMode.None
-                                                    AutoRecordings.SetExpanseCollapseEnabled(True)
-                                                    SetApplicationBarButtons()
-                                                End If
-                                        End Select
+    'Public Property MultiSelectCommand As RelayCommand
+    '    Get
+    '        Return New RelayCommand(Sub()
+    '                                    WriteToDebug("TVHead_ViewModel.MultiSelectCommand", "start")
+    '                                    Select Case Me.SelectedPivotIndex
+    '                                        Case 2 'When the view is on the Upcoming Recordings Listview
+    '                                            If UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None Then
+    '                                                UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
+    '                                                SetApplicationBarButtons("manage")
+    '                                            Else
+    '                                                UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
+    '                                                SetApplicationBarButtons()
+    '                                            End If
+    '                                        Case 3 'When the view is on the Finished Recordings Listview
+    '                                            If FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None Then
+    '                                                FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
+    '                                                SetApplicationBarButtons("manage")
+    '                                            Else
+    '                                                FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None
+    '                                                SetApplicationBarButtons()
+    '                                            End If
+    '                                        Case 4 'When the view is on the Failed Recordings Listview
+    '                                            If FailedRecordings.MultiSelectMode = ListViewSelectionMode.None Then
+    '                                                FailedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
+    '                                                SetApplicationBarButtons("manage")
+    '                                            Else
+    '                                                FailedRecordings.MultiSelectMode = ListViewSelectionMode.None
+    '                                                SetApplicationBarButtons()
+    '                                            End If
+    '                                        Case 5 'When the view is on the AutoRecordings Listview
+    '                                            If AutoRecordings.MultiSelectMode = ListViewSelectionMode.None Then
+    '                                                AutoRecordings.MultiSelectMode = ListViewSelectionMode.Multiple
+    '                                                AutoRecordings.SetExpanseCollapseEnabled(False)
+    '                                                SetApplicationBarButtons("manage")
+    '                                            Else
+    '                                                AutoRecordings.MultiSelectMode = ListViewSelectionMode.None
+    '                                                AutoRecordings.SetExpanseCollapseEnabled(True)
+    '                                                SetApplicationBarButtons()
+    '                                            End If
+    '                                    End Select
 
-                                        WriteToDebug("TVHead_ViewModel.MultiSelectCommand", "stop")
-                                    End Sub)
+    '                                    WriteToDebug("TVHead_ViewModel.MultiSelectCommand", "stop")
+    '                                End Sub)
 
-        End Get
-        Set(value As RelayCommand)
-        End Set
-    End Property
+    '    End Get
+    '    Set(value As RelayCommand)
+    '    End Set
+    'End Property
 
 
 
@@ -1010,10 +1036,10 @@ Public Class TVHead_ViewModel
     ''' <param name="e"></param>
     Public Sub PhoneViewPivotSelectionChanged(sender As Object, e As SelectionChangedEventArgs)
         'When we change from one pivotitem to another, we want any possible multiselectmode that is active on any recordings list to be set to none.
-        UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
-        FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None
-        FailedRecordings.MultiSelectMode = ListViewSelectionMode.None
-        AutoRecordings.MultiSelectMode = ListViewSelectionMode.None
+        UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Single
+        FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Single
+        FailedRecordings.MultiSelectMode = ListViewSelectionMode.Single
+        AutoRecordings.MultiSelectMode = ListViewSelectionMode.Single
         'Then we want to set the CommandBar's button's actions according to what needs to be available for the selected Pivot Index (view)
         SetApplicationBarButtons()
     End Sub
@@ -1124,7 +1150,7 @@ Public Class TVHead_ViewModel
             response = Await (New Downloader).DownloadJSON(strURL)
             If response.IsSuccessStatusCode Then
                 json_result = Await response.Content.ReadAsStringAsync
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.ServerInfo)(json_result)
+                Dim deserialized = JsonConvert.DeserializeObject(Of TVHServerInfo)(json_result)
                 Return New ServerInfoViewModel(deserialized)
             Else
                 Throw New ArgumentException(response.ReasonPhrase)
@@ -1229,7 +1255,7 @@ Public Class TVHead_ViewModel
                 'End If
             End If
             If Not Me.AutoRecordings Is Nothing AndAlso Me.AutoRecordings.items.Count > 0 Then
-                Dim testAutoRecording As AutoRecordingViewModel = CType(Await LoadIDNode(Me.AutoRecordings.items(0).id, GetType(AutoRecordingViewModel)), AutoRecordingViewModel)
+                Dim testAutoRecording As AutoRecordingViewModel = CType(Await LoadIDNode(Me.AutoRecordings.items(0).uuid, GetType(AutoRecordingViewModel)), AutoRecordingViewModel)
                 If Not testAutoRecording Is Nothing Then
                     WriteToDebug("TVHead_ViewModel.checkCapabilities()", "LoadIDNode passed for test auto recording " + testAutoRecording.title)
                 Else
@@ -1326,7 +1352,7 @@ Public Class TVHead_ViewModel
         '''LOAD AUTO RECORDINGS, OR REFRESH IF THE PIVOT ON THE AUTO RECORDINGS PAGE
         'If AutoRecordings.dataLoaded = False Or Me.PivotSelectedIndex = 5 Then
         '    Await StatusBar.Update(loader.GetString("status_RefreshingAutoRecordings"), True, 0, True)
-        '    Await Me.AutoRecordings.Load()
+        Await Me.AutoRecordings.Load()
         'End If
 
         'End If
@@ -1350,7 +1376,7 @@ Public Class TVHead_ViewModel
         If TypeOf (item) Is EPGItemViewModel Then
             epgitem = item
         Else
-            epgitem = CType(item, ChannelViewModel).currentEPGItem
+            epgitem = CType(item, ChannelViewModel).epgitems.currentEPGItem
         End If
 
 

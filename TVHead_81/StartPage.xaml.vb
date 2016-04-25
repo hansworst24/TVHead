@@ -138,7 +138,7 @@ Public NotInheritable Class StartPage
 
     Protected Overrides Sub OnNavigatedFrom(e As NavigationEventArgs)
         _navigationHelper.OnNavigatedFrom(e)
-        RemoveHandler Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf HubBackPressed
+        RemoveHandler SystemNavigationManager.GetForCurrentView().BackRequested, AddressOf HubBackPressed
     End Sub
 
 #End Region
@@ -147,27 +147,36 @@ Public NotInheritable Class StartPage
         ''Override certain BackKeyPresses
         WriteToDebug("HubPage.OnBackPressed()", "start")
 
+        If vm.MenuIsOpen Then
+            vm.MenuIsOpen = False
+            e.Handled = True
+            Exit Sub
+        End If
+
         If vm.UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Multiple Then
-            vm.UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.None
+            vm.UpcomingRecordings.MultiSelectMode = ListViewSelectionMode.Single
+            vm.UpcomingRecordings.ClearSelections()
             vm.SetApplicationBarButtons()
             e.Handled = True
             Exit Sub
         End If
         If vm.FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple Then
-            vm.FinishedRecordings.MultiSelectMode = ListViewSelectionMode.None
+            vm.FinishedRecordings.MultiSelectMode = ListViewSelectionMode.Single
+            vm.FinishedRecordings.ClearSelections()
             vm.SetApplicationBarButtons()
             e.Handled = True
             Exit Sub
         End If
         If vm.FailedRecordings.MultiSelectMode = ListViewSelectionMode.Multiple Then
-            vm.FailedRecordings.MultiSelectMode = ListViewSelectionMode.None
+            vm.FailedRecordings.MultiSelectMode = ListViewSelectionMode.Single
+            vm.FailedRecordings.ClearSelections()
             vm.SetApplicationBarButtons()
             e.Handled = True
             Exit Sub
         End If
         If vm.AutoRecordings.MultiSelectMode = ListViewSelectionMode.Multiple Then
-            vm.AutoRecordings.MultiSelectMode = ListViewSelectionMode.None
-            vm.AutoRecordings.SetExpanseCollapseEnabled(True)
+            vm.AutoRecordings.MultiSelectMode = ListViewSelectionMode.Single
+            vm.AutoRecordings.ClearSelections()
             vm.SetApplicationBarButtons()
             e.Handled = True
             Exit Sub
@@ -183,11 +192,4 @@ Public NotInheritable Class StartPage
         WriteToDebug("HubPage.OnBackPressed()", "stop")
     End Sub
 
-    Private Sub Page_SizeChanged(sender As Object, e As SizeChangedEventArgs)
-
-    End Sub
-
-    Private Sub Page_Loaded(sender As Object, e As RoutedEventArgs)
-
-    End Sub
 End Class

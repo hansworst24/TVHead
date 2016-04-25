@@ -522,4 +522,34 @@
   <data name="RecordingType.Text" xml:space="preserve">
     <value>Aufnahme Type</value>
   </data>
+  <data name="RecordingDeleteMultipleContent" xml:space="preserve">
+    <value>Bist du sicher, dass du {0} von {1} Aufnahmen enfernen möchtest ?</value>
+  </data>
+  <data name="RecordingDeleteMultipleHeader" xml:space="preserve">
+    <value>Aufnahme löschen</value>
+  </data>
+  <data name="RecordingStopMultipleContent" xml:space="preserve">
+    <value>Bist du sicher, dass du {0} von {1} Aufnahmen stoppen möchtest ?</value>
+  </data>
+  <data name="RecordingStopMultipleHeader" xml:space="preserve">
+    <value>Aufnahme stoppen</value>
+  </data>
+  <data name="AutoRecordingConfiguration" xml:space="preserve">
+    <value>Auto-Aufnahme Konfiguration</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Sichern</value>
+  </data>
+  <data name="AutoRecordingDeleteFailure" xml:space="preserve">
+    <value>Fehler beim löschen der Auto-Aufnahme(n)</value>
+  </data>
+  <data name="AutoRecordingDeleteSuccess" xml:space="preserve">
+    <value>Auto-Aunahme(n) erfolgreich gelöscht</value>
+  </data>
+  <data name="tsEnabled.OffContent" xml:space="preserve">
+    <value>Deaktiviert</value>
+  </data>
+  <data name="tsEnabled.OnContent" xml:space="preserve">
+    <value>Aktiviert</value>
+  </data>
 </root>

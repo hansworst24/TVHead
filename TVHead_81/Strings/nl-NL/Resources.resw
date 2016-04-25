@@ -481,7 +481,7 @@
     <value>Fout</value>
   </data>
   <data name="RecordingAbortMultipleHeader" xml:space="preserve">
-    <value>Opname annuleren</value>
+    <value>Opname(s) annuleren</value>
   </data>
   <data name="updated" xml:space="preserve">
     <value>geaktualiseerd</value>
@@ -521,5 +521,35 @@
   </data>
   <data name="RecordingType.Text" xml:space="preserve">
     <value>Opname type</value>
+  </data>
+  <data name="RecordingDeleteMultipleContent" xml:space="preserve">
+    <value>Weet je zeker dat je {0} van {1} opnames wilt verwijderen ?</value>
+  </data>
+  <data name="RecordingDeleteMultipleHeader" xml:space="preserve">
+    <value>Opname(s) verwijderen</value>
+  </data>
+  <data name="RecordingStopMultipleContent" xml:space="preserve">
+    <value>Weet je zeker dat je {0} van {1} opnames wilt stoppen?</value>
+  </data>
+  <data name="RecordingStopMultipleHeader" xml:space="preserve">
+    <value>Opname(s) stoppen</value>
+  </data>
+  <data name="AutoRecordingConfiguration" xml:space="preserve">
+    <value>Auto opname configuratie</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Opslaan</value>
+  </data>
+  <data name="AutoRecordingDeleteFailure" xml:space="preserve">
+    <value>Fout bij het verwijderen van Auto opname(s)</value>
+  </data>
+  <data name="AutoRecordingDeleteSuccess" xml:space="preserve">
+    <value>Auto opname(s) succesvol verwijderd</value>
+  </data>
+  <data name="tsEnabled.OffContent" xml:space="preserve">
+    <value>Uitgeschakeld</value>
+  </data>
+  <data name="tsEnabled.OnContent" xml:space="preserve">
+    <value>Ingeschakeld</value>
   </data>
 </root>

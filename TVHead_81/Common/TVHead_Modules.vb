@@ -39,12 +39,25 @@ Module TVHead_Modules
 #End Region
 
     ''' <summary>
+    ''' CONVERTOR THAT CONVERTS A UNIX EPOCH DATE INTEGER TO A DATETIMEVALUE in UTC
+    ''' </summary>
+    ''' <param name="intUnixTime"></param>
+    ''' <returns>DATETIME</returns>
+    ''' <remarks></remarks>
+    Public Function UnixToUniversalDateTime(ByVal intUnixTime As Long) As Date
+        Dim unixDate As New Date(1970, 1, 1)
+        Dim dtDateTime As Date
+        dtDateTime = unixDate.AddSeconds(intUnixTime)
+        Return dtDateTime
+    End Function
+
+    ''' <summary>
     ''' CONVERTOR THAT CONVERTS A UNIX EPOCH DATE INTEGER TO A DATETIMEVALUE
     ''' </summary>
     ''' <param name="intUnixTime"></param>
     ''' <returns>DATETIME</returns>
     ''' <remarks></remarks>
-    Public Function UnixToDateTime(ByVal intUnixTime As Integer) As Date
+    Public Function UnixToLocalDateTime(ByVal intUnixTime As Long) As Date
         Dim unixDate As New Date(1970, 1, 1)
         Dim dtDateTime As Date
         dtDateTime = unixDate.AddSeconds(intUnixTime)
@@ -60,7 +73,7 @@ Module TVHead_Modules
     Public Function UnixToDate(ByVal strUnixTime As String) As Date
         Dim unixDate As New Date(1970, 1, 1)
         Dim dtDateTime As Date
-        dtDateTime = unixDate.AddSeconds(CType(strUnixTime, Integer))
+        dtDateTime = unixDate.AddSeconds(CType(strUnixTime, Long))
         'If dtDateTime.IsDaylightSavingTime = True Then
         '	dtDateTime = dtDateTime.AddHours(1)
         'End If
@@ -72,7 +85,7 @@ Module TVHead_Modules
     ''' <param name="parDate"></param>
     ''' <returns>INTEGER</returns>
     ''' <remarks></remarks>
-    Public Function TimeToUnix(ByVal parDate As Date) As Integer
+    Public Function TimeToUnix(ByVal parDate As Date) As Long
         If parDate.IsDaylightSavingTime = True Then
             'parDate.AddHours(-1)
         End If
@@ -114,7 +127,7 @@ Module TVHead_Modules
             'Return result
         End Try
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.RecordingList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHRecordingList)(json_result)
             For Each f In deserialized.entries
                 result.Add(New RecordingViewModel(f))
             Next
@@ -141,7 +154,7 @@ Module TVHead_Modules
             'Return result
         End Try
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.RecordingList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHRecordingList)(json_result)
             For Each f In deserialized.entries
                 result.Add(New RecordingViewModel(f))
             Next
@@ -169,7 +182,7 @@ Module TVHead_Modules
             'Return result
         End Try
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.RecordingList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHRecordingList)(json_result)
             For Each f In deserialized.entries
                 result.Add(New RecordingViewModel(f))
             Next
@@ -196,7 +209,7 @@ Module TVHead_Modules
             Return result
         End Try
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.AutoRecordingList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHAutoRecordingList)(json_result)
             For Each retrievedAutoRecording In deserialized.entries
                 result.Add(New AutoRecordingViewModel(retrievedAutoRecording))
             Next
@@ -222,7 +235,7 @@ Module TVHead_Modules
             Return response
         End Try
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.AdapterList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHAdapterList)(json_result)
             For Each a In deserialized.entries
                 response.Add(New StreamViewModel(a))
             Next
@@ -241,7 +254,7 @@ Module TVHead_Modules
             Return response
         End Try
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.CometPollResponse)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHCometPollResponse)(json_result)
             response = deserialized.boxid
         End If
         Return response
@@ -262,7 +275,7 @@ Module TVHead_Modules
             Return response
         End Try
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.MuxList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHMuxList)(json_result)
             For Each a In deserialized.entries
                 response.Add(New MuxViewModel(a))
             Next
@@ -287,7 +300,7 @@ Module TVHead_Modules
             Return response
         End Try
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.ServiceList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHServiceList)(json_result)
             For Each a In deserialized.entries
                 response.Add(New ServiceViewModel(a))
             Next
@@ -309,7 +322,7 @@ Module TVHead_Modules
             Dim json_result As String = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetConnections())).Content.ReadAsStringAsync
             If Not json_result = "" Then
 
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.ConnectionList)(json_result)
+                Dim deserialized = JsonConvert.DeserializeObject(Of TVHConnectionList)(json_result)
                 For Each a In deserialized.entries
                     response.Add(New ConnectionViewModel(a))
                 Next
@@ -330,9 +343,9 @@ Module TVHead_Modules
     Public Async Function LoadServiceDetails(service As ServiceViewModel) As Task(Of List(Of ServiceDetailViewModel))
         Dim response As New List(Of ServiceDetailViewModel)
         Try
-            Dim json_result As String = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetServiceDetails(service))).Content.ReadAsStringAsync
+            Dim json_result As String = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetServiceDetails(service.uuid))).Content.ReadAsStringAsync
             If Not json_result = "" Then
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.ServiceDetailList)(json_result)
+                Dim deserialized = JsonConvert.DeserializeObject(Of TVHServiceDetailList)(json_result)
                 For Each a In deserialized.fstreams
                     response.Add(New ServiceDetailViewModel(a))
                 Next
@@ -355,7 +368,7 @@ Module TVHead_Modules
         Try
             Dim json_result As String = Await (Await (New Downloader).DownloadJSON(tvh40api.apiGetSubscriptions())).Content.ReadAsStringAsync
             If Not json_result = "" Then
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.SubscriptionList)(json_result)
+                Dim deserialized = JsonConvert.DeserializeObject(Of TVHSubscriptionList)(json_result)
                 For Each a In deserialized.entries
                     response.Add(New SubscriptionViewModel(a))
                 Next
@@ -444,6 +457,20 @@ Module TVHead_Modules
 
 
     Public Async Function AbortRecording(uuid As String) As Task(Of RecordingReturnValue)
+        Dim tvh40api As New api40
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+        Dim result As New RecordingReturnValue
+        Try
+            Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiAbortRecording(uuid))).Content.ReadAsStringAsync
+            result = New RecordingReturnValue With {.uuid = uuid, .tvhResponse = New tvhCommandResponse With {.success = 1}}
+        Catch ex As Exception
+            WriteToDebug("TVHead_Modules.AbortRecording()", ex.Message.ToString)
+            result = New RecordingReturnValue With {.uuid = uuid, .tvhResponse = New tvhCommandResponse With {.success = 0}}
+        End Try
+        Return result
+    End Function
+
+    Public Async Function DeleteRecording(uuid As String) As Task(Of RecordingReturnValue)
         Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         Dim result As New RecordingReturnValue
         Try
@@ -482,7 +509,7 @@ Module TVHead_Modules
         Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         Dim settings As New TVHead_Settings
         'Make the autorecording ready for saving, by making adjustments to how the values look. Depends on 3.4 / 3.9 differences
-        newAutoRecording.ReadyForSaving()
+        ' newAutoRecording.ReadyForSaving()
         Dim response As New tvhCommandResponse
         Try
             Dim json_result As String = Await (Await (New Downloader).DownloadJSON(tvh40api.apiCreateAutoRecording(newAutoRecording))).Content.ReadAsStringAsync
@@ -502,7 +529,7 @@ Module TVHead_Modules
     Public Async Function UpdateAutoRecording(updatedAutoRecording As AutoRecordingViewModel) As Task(Of tvhCommandResponse)
         Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
         Dim settings As New TVHead_Settings
-        updatedAutoRecording.ReadyForSaving()
+        'updatedAutoRecording.ReadyForSaving()
         Dim response As New tvhCommandResponse
         Try
             Dim json_result As String = Await (Await (New Downloader).DownloadJSON(tvh40api.apiUpdateAutoRecording(updatedAutoRecording))).Content.ReadAsStringAsync
@@ -570,7 +597,7 @@ Module TVHead_Modules
             Return Nothing
         End Try
         If Not json_result = "" Then
-            Dim dsChannelList = JsonConvert.DeserializeObject(Of tvh40.ChannelList)(json_result)
+            Dim dsChannelList = JsonConvert.DeserializeObject(Of TVHChannelList)(json_result)
             For Each c In dsChannelList.entries
                 result.Add(New ChannelViewModel(c))
             Next
@@ -673,7 +700,7 @@ Module TVHead_Modules
         Try
             Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiSearchEPGEvents(searchString, UseFulltext))).Content.ReadAsStringAsync
             If Not json_result = "" Then
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.EPGEventList)(json_result)
+                Dim deserialized = JsonConvert.DeserializeObject(Of TVHEPGEventList)(json_result)
                 For Each entry In deserialized.entries
                     'If Not entry.genre Is Nothing Then
                     'entry.genreName = (From c In ContentTypes Where c.uuid = entry.genre.First Select c.name).FirstOrDefault
@@ -696,7 +723,7 @@ Module TVHead_Modules
             WriteToDebug("Modules.SearchEPGEntry()", ex.InnerException.ToString())
         End Try
         WriteToDebug("Modules.SearchEPGEntry()", result.Count())
-        Return result.OrderBy(Function(x) x.currentEPGItem.startDate)
+        Return result.OrderBy(Function(x) x.epgitems.currentEPGItem.startDate)
     End Function
 
 
@@ -722,7 +749,7 @@ Module TVHead_Modules
 
         If Not json_result = "" Then
             If t Is GetType(RecordingViewModel) Then
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.RecordingList)(json_result)
+                Dim deserialized = JsonConvert.DeserializeObject(Of TVHRecordingList)(json_result)
                 If Not deserialized.entries.Count = 0 Then
                     'Hack to test if the cast resulted in anything sensible
                     If Not deserialized.entries(0).start = 0 Then
@@ -735,7 +762,7 @@ Module TVHead_Modules
                 End If
             End If
             If t Is GetType(AutoRecordingViewModel) Then
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.AutoRecordingList)(json_result)
+                Dim deserialized = JsonConvert.DeserializeObject(Of TVHAutoRecordingList)(json_result)
                 If Not deserialized.entries.Count = 0 Then
                     'Hack to test if the cast resulted in anything sensible
                     If Not deserialized.entries(0).title = "" Then
@@ -749,7 +776,7 @@ Module TVHead_Modules
             End If
 
             If t Is GetType(ChannelViewModel) Then
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.ChannelList)(json_result)
+                Dim deserialized = JsonConvert.DeserializeObject(Of TVHChannelList)(json_result)
                 If Not deserialized.entries.Count = 0 Then
                     'Hack to test if the cast resulted in anything sensible
                     If Not deserialized.entries(0).name = "" Then
@@ -762,7 +789,7 @@ Module TVHead_Modules
                 End If
             End If
         End If
-            WriteToDebug("Modules.LoadIDNode()", "Completed Loading ID Node : " & uuid)
+        WriteToDebug("Modules.LoadIDNode()", "Completed Loading ID Node : " & uuid)
         'Return result.OrderBy(Function(x) x.uuid)
     End Function
 
@@ -784,7 +811,7 @@ Module TVHead_Modules
         End Try
         If Not json_result = "" Then
 
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.EPGEventList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHEPGEventList)(json_result)
             For Each entry In deserialized.entries
                 result.Add(New EPGItemViewModel(entry))
             Next
@@ -806,7 +833,7 @@ Module TVHead_Modules
             Return result
         End Try
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.EPGEventList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHEPGEventList)(json_result)
             For Each entry In deserialized.entries
                 result.Add(entry.eventId)
             Next
@@ -829,7 +856,7 @@ Module TVHead_Modules
             Return result
         End Try
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.EPGEventList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHEPGEventList)(json_result)
             For Each entry In deserialized.entries
                 result.Add(New EPGItemViewModel(entry))
             Next
@@ -850,7 +877,7 @@ Module TVHead_Modules
         End Try
 
         If Not json_result = "" Then
-            Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.DVRConfigList)(json_result)
+            Dim deserialized = JsonConvert.DeserializeObject(Of TVHDVRConfigList)(json_result)
             If Not deserialized.entries.Count = 0 Then
                 For Each entry In deserialized.entries
                     'vm.DVRConfigs.items.Add(New DVRConfigViewModel(entry))
@@ -877,7 +904,7 @@ Module TVHead_Modules
     '    End Try
     '    If Not json_result = "" Then
 
-    '        Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.GenreList)(json_result)
+    '        Dim deserialized = JsonConvert.DeserializeObject(Of TVHGenreList)(json_result)
     '        For Each f In deserialized.entries
     '            'Small hack to ensure we avoid having ContentType 0 in the list
     '            If f.key <> 0 Then
@@ -913,7 +940,7 @@ Module TVHead_Modules
     '        Return
     '    End Try
     '    If Not json_result = "" Then
-    '        Dim dsChannelTagList = JsonConvert.DeserializeObject(Of tvh40.ChannelTagList)(json_result)
+    '        Dim dsChannelTagList = JsonConvert.DeserializeObject(Of TVHChannelTagList)(json_result)
     '        For Each retrievedChannelTag In dsChannelTagList.entries.OrderBy(Function(x) x.name)
     '            chTags.Add(New ChannelTagViewModel(retrievedChannelTag))
     '        Next

@@ -82,11 +82,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\ObservableDictionary.vb" />
-    <Compile Include="about.xaml.vb">
-      <DependentUpon>about.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Resources\Dictionary.xaml.vb">
       <DependentUpon>Dictionary.xaml</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Common\NavigationHelper.vb" />
     <Compile Include="Common\SuspensionManager.vb" />
@@ -98,23 +96,8 @@
     <Compile Include="StartPage.xaml.vb">
       <DependentUpon>StartPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="User Controls\cDialogRecordEPGItem.xaml.vb">
-      <DependentUpon>cDialogRecordEPGItem.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="User Controls\ucAutoRecording.xaml.vb">
-      <DependentUpon>ucAutoRecording.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="User Controls\ucChannel.xaml.vb">
-      <DependentUpon>ucChannel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="User Controls\ucChannelEPGDetail.xaml.vb">
-      <DependentUpon>ucChannelEPGDetail.xaml</DependentUpon>
-    </Compile>
     <Compile Include="User Controls\ucMux.xaml.vb">
       <DependentUpon>ucMux.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="User Controls\ucRecording.xaml.vb">
-      <DependentUpon>ucRecording.xaml</DependentUpon>
     </Compile>
     <Compile Include="User Controls\ucService.xaml.vb">
       <DependentUpon>ucService.xaml</DependentUpon>
@@ -122,15 +105,16 @@
     <Compile Include="User Controls\ucNotificationMessage.xaml.vb">
       <DependentUpon>ucNotificationMessage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="User Controls\ucTopHeader.xaml.vb">
-      <DependentUpon>ucTopHeader.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ViewModel\AutoRecordingEditViewModel.vb" />
     <Compile Include="ViewModel\BackgroundEPGRefresher.vb" />
     <Compile Include="ViewModel\ChannelTagListViewModel.vb" />
     <Compile Include="ViewModel\ChannelTagViewModel.vb" />
     <Compile Include="ViewModel\CometCatcher.vb" />
     <Compile Include="ViewModel\CometStatsViewModel.vb" />
+    <Compile Include="ViewModel\ContentTypeViewModel.vb" />
+    <Compile Include="ViewModel\DVRConfigViewModel.vb" />
     <Compile Include="ViewModel\NotificationViewModel.vb" />
+    <Compile Include="ViewModel\RecordingEditViewModel.vb" />
     <Compile Include="ViewModel\TVHead_Settings.vb" />
     <Compile Include="ViewModel\AutoRecordingListViewModel.vb" />
     <Compile Include="ViewModel\AutoRecordingViewModel.vb" />
@@ -275,13 +259,15 @@
     <Import Include="Windows.UI.Xaml.Navigation" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="about.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Resources\ControlStyles.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Resources\Dictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Resources\MainViews.xaml">
       <SubType>Designer</SubType>
@@ -292,39 +278,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="User Controls\cDialogRecordEPGItem.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="User Controls\ucAutoRecording.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="User Controls\ucChannel.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="User Controls\ucChannelEPGDetail.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="User Controls\ucMux.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="User Controls\ucRecording.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="User Controls\ucService.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="User Controls\ucNotificationMessage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="User Controls\ucTopHeader.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

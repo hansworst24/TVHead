@@ -14,7 +14,7 @@
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="720"/>
+                        <AdaptiveTrigger MinWindowWidth="1200"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="MainContent.ContentTemplate" Value="{StaticResource WideViewMainWindow}"/>
@@ -64,7 +64,7 @@
 
     </Grid>
     <Page.BottomAppBar>
-        <CommandBar IsOpen="False" IsSticky="False" ClosedDisplayMode="Compact" HorizontalContentAlignment="Stretch" Width="{Binding ElementName=RootSplitView, Path=ActualWidth}">
+        <CommandBar IsOpen="False" IsSticky="False" ClosedDisplayMode="Compact" BorderBrush="{ThemeResource SystemControlBackgroundAltMediumLowBrush}" BorderThickness="0,1,0,0" HorizontalContentAlignment="Stretch" Width="{Binding ElementName=RootSplitView, Path=ActualWidth}">
             <CommandBar.Content>
                 <Grid HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal">

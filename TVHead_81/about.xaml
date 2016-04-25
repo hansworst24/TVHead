@@ -76,7 +76,7 @@
                 <Image Grid.Row="5" Source="/Images/github.png" Margin="0,20,0,0" HorizontalAlignment="Left" Height="30"/>
                 <HyperlinkButton Grid.Row="5" HorizontalAlignment="Left" Margin="40,20,0,0" NavigateUri="https://github.com/hansworst24/TVHead" Content="Source Code on GitHub" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
 
-                <TextBlock Grid.Row="6" Margin="0,20,0,0" Text="Long polling stats:" Style="{ThemeResource SubTitleAccent}" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
+                <TextBlock Grid.Row="6" Margin="0,20,0,0" Text="Long polling stats:" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
                 <Grid Grid.Row="7" Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -121,7 +121,7 @@
 
 
                 </Grid>
-                <TextBlock Grid.Row="8" Margin="0,20,0,0" Text="total bytes received :" Style="{ThemeResource SubTitleAccent}" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
+                <TextBlock Grid.Row="8" Margin="0,20,0,0" Text="total bytes received :"  TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}"/>
                 <TextBlock Grid.Row="9" Margin="0,0,0,0" Text="{Binding totalBytesReceived}" TextWrapping="Wrap" FontSize="{ThemeResource TextStyleLargeFontSize}" VerticalAlignment="Top"/>
 
             </Grid>

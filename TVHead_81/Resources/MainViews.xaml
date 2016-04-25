@@ -5,9 +5,8 @@
     xmlns:local="using:TVHead_81">
 
     <DataTemplate x:Key="PhoneViewMainWindow" x:DataType="local:TVHead_ViewModel">
-        <Pivot Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" 
-               SelectedIndex="{x:Bind SelectedPivotIndex, Mode=TwoWay}">
-            <PivotItem Header="Channels" x:Name="hsChannels">
+        <Pivot Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}" SelectedIndex="{x:Bind SelectedPivotIndex, Mode=TwoWay}">
+            <PivotItem Header="Channels" x:Name="hsChannels" Margin="5,0,5,0">
                 <PivotItem.Content>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -26,7 +25,7 @@
 
                 </PivotItem.Content>
             </PivotItem>
-            <PivotItem Header="EPG" x:Name="hsEPG">
+            <PivotItem Header="EPG" x:Name="hsEPG" Margin="5,0,5,0">
                 <PivotItem.Content>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -45,22 +44,7 @@
                     </Grid>
                 </PivotItem.Content>
             </PivotItem>
-            <!--<PivotItem Header="Broadcast Details" x:Name="hsDetails">
-                <PivotItem.Content>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <Border Grid.Row="0" Height="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}" BorderThickness="1"/>
-                        <ContentControl Grid.Row="1" ContentTemplate="{StaticResource SelectedEPGItemDataTemplate}"
-                                    DataContext="{x:Bind}"
-                                    HorizontalContentAlignment="Stretch"/>
-
-                    </Grid>
-                </PivotItem.Content>
-            </PivotItem>-->
-            <PivotItem Header="Upcoming recordings">
+            <PivotItem Header="Upcoming recordings" Margin="5,0,5,0">
                 <PivotItem.Content>
                     <Grid>
                         <ContentControl ContentTemplate="{StaticResource RecordingsListDataTemplate}" 
@@ -69,7 +53,7 @@
                     </Grid>    
                 </PivotItem.Content>
             </PivotItem>
-            <PivotItem Header="Finished recordings">
+            <PivotItem Header="Finished recordings" Margin="5,0,5,0">
                 <PivotItem.Content>
                     <Grid>
                         <ContentControl ContentTemplate="{StaticResource RecordingsListDataTemplate}" 
@@ -78,7 +62,7 @@
                     </Grid>
                 </PivotItem.Content>
             </PivotItem>
-            <PivotItem Header="Failed recordings">
+            <PivotItem Header="Failed recordings" Margin="5,0,5,0">
                 <PivotItem.Content>
                     <Grid>
                         <ContentControl ContentTemplate="{StaticResource RecordingsListDataTemplate}" 
@@ -87,7 +71,15 @@
                     </Grid>
                 </PivotItem.Content>
             </PivotItem>
-            <PivotItem Header="Auto recordings"/>
+            <PivotItem Header="Auto recordings" Margin="5,0,5,0">
+                <PivotItem.Content>
+                    <Grid>
+                        <ContentControl ContentTemplate="{StaticResource AutoRecordingsListDataTemplate}" 
+                                        DataContext="{x:Bind AutoRecordings, Mode=OneWay}" 
+                                        HorizontalContentAlignment="Stretch"/>
+                    </Grid>
+                </PivotItem.Content>
+            </PivotItem>
         </Pivot>
     </DataTemplate>
 
@@ -115,8 +107,6 @@
                 <ContentControl ContentTemplate="{StaticResource EPGItemTitle}" DataContext="{x:Bind selectedEPGItem, Mode=OneWay}" VerticalContentAlignment="Stretch" 
                                 HorizontalContentAlignment="Stretch" BorderThickness="10" BorderBrush="{StaticResource SystemControlBackgroundAccentBrush}"/>
             </Border>
-
-
             <!-- THE CONTENT PART-->
             <ContentControl Grid.Row="1" Grid.Column="0" ContentTemplate="{StaticResource ChannelListDataTemplate}" DataContext="{x:Bind Channels}" 
                             HorizontalContentAlignment="Stretch"/>
@@ -124,10 +114,6 @@
                             HorizontalContentAlignment="Stretch"/>
             <ContentControl Grid.Row="1" Grid.Column="2" ContentTemplate="{StaticResource EPGItemDetails}" DataContext="{x:Bind selectedEPGItem, Mode=OneWay}" 
                             HorizontalContentAlignment="Stretch"/>
-            
-                
-                <!--<ContentControl Grid.Row="2" Margin="5,20,5,0" ContentTemplate="{StaticResource CometStatistics}" DataContext="{x:Bind CometCatcher.CometStatistics}" HorizontalContentAlignment="Stretch"/>-->
-                <!--<ContentControl Grid.Row="3" ContentTemplate="{StaticResource TVHStatus}" HorizontalContentAlignment="Stretch"/>-->
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

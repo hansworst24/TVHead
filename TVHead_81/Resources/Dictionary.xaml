@@ -8,7 +8,177 @@
     xmlns:local="using:TVHead_81"
     xmlns:vm="using:TVHead_81.ViewModels">
 
+    <DataTemplate x:Key="ContentDialogEditAutoRecording" x:DataType="local:AutoRecordingEditViewModel">
+        <Grid VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Hidden" Margin="0,0,0,0">
+                <Grid>
+                <StackPanel>
+                    <TextBlock x:Uid="tbName" VerticalAlignment="Center" Text="Name" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBox x:Name="tbNameEdit" HorizontalAlignment="Stretch"
+                             Text="{Binding name, Mode=TwoWay}"  VerticalAlignment="Center"
+                             HorizontalContentAlignment="Right" />
+                    <TextBlock x:Uid="tbTitleRegExp" VerticalAlignment="Center" Text="Title (regexp)" Style="{StaticResource BodyTextBlockStyle}" Margin="0,20,0,0"/>
+                    <TextBox x:Name="tbTitleEdit"  Visibility="Visible" Margin="0,0,0,0"
+                        Text="{Binding title, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                     HorizontalContentAlignment="Right"/>
+                    <ToggleSwitch x:Uid="tsEnabled" HorizontalAlignment="Stretch" OffContent="disabled" OnContent="enabled" 
+                                  IsOn="{Binding enabled, Mode=TwoWay}"/>
+                    <TextBlock x:Uid="tbWeekDays" VerticalAlignment="Center" Text="Weekdays" Margin="0,20,0,0"  Style="{StaticResource BodyTextBlockStyle}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" IsChecked="{x:Bind RecordingOnDay[0], Mode=TwoWay}" IsEnabled="True" Style="{StaticResource DayCheckBoxStyle}">
+                            <TextBlock Text="{x:Bind RecordingDays[0]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </CheckBox>
+                        <CheckBox Grid.Column="1" IsChecked="{x:Bind RecordingOnDay[1], Mode=TwoWay}" IsEnabled="True" Style="{StaticResource DayCheckBoxStyle}">
+                            <TextBlock Text="{x:Bind RecordingDays[1]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </CheckBox>
+                        <CheckBox Grid.Column="2" IsChecked="{x:Bind RecordingOnDay[2], Mode=TwoWay}" IsEnabled="True" Style="{StaticResource DayCheckBoxStyle}">
+                            <TextBlock Text="{x:Bind RecordingDays[2]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </CheckBox>
+                        <CheckBox Grid.Column="3" IsChecked="{x:Bind RecordingOnDay[3], Mode=TwoWay}" IsEnabled="True" Style="{StaticResource DayCheckBoxStyle}">
+                            <TextBlock Text="{x:Bind RecordingDays[3]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </CheckBox>
+                        <CheckBox Grid.Column="4" IsChecked="{x:Bind RecordingOnDay[4], Mode=TwoWay}" IsEnabled="True" Style="{StaticResource DayCheckBoxStyle}">
+                            <TextBlock Text="{x:Bind RecordingDays[4]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </CheckBox>
+                        <CheckBox Grid.Column="5" IsChecked="{x:Bind RecordingOnDay[5], Mode=TwoWay}" IsEnabled="True" Style="{StaticResource DayCheckBoxStyle}">
+                            <TextBlock Text="{x:Bind RecordingDays[5]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </CheckBox>
+                        <CheckBox Grid.Column="6" IsChecked="{x:Bind RecordingOnDay[6], Mode=TwoWay}" IsEnabled="True" Style="{StaticResource DayCheckBoxStyle}">
+                            <TextBlock Text="{x:Bind RecordingDays[6]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        </CheckBox>
+                    </Grid>
+                    <TextBlock VerticalAlignment="Center" Text="DVR Config" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding dvrconfiglist}" SelectedItem="{Binding selecteddvrconfig, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock VerticalAlignment="Center" Text="Content Type" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding contenttypelist}" SelectedItem="{Binding selectedcontenttype, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock VerticalAlignment="Center" Text="Channel" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding channellist}" SelectedItem="{Binding selectedchannel, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl ContentTemplate="{StaticResource ChannelListItemTemplate}" HorizontalContentAlignment="Stretch"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock VerticalAlignment="Center" Text="Channel Tag" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding channeltaglist}" SelectedItem="{Binding selectedchanneltag, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock x:Uid="tbStartAfter" VerticalAlignment="Center" Text="Start After" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding StartAfterEnabled, Mode=TwoWay}"/>
+                        <TimePicker Margin="-80,0,0,0"  IsEnabled="{Binding StartAfterEnabled, Mode=OneWay}" 
+                                    Time="{Binding startTime, Mode=TwoWay}"/>
+                    </StackPanel>
+                    <TextBlock x:Uid="tbStartBefore" VerticalAlignment="Center" Text="Start Before" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox  IsChecked="{Binding StartBeforeEnabled, Mode=TwoWay}"/>
+                        <TimePicker Margin="-80,0,0,0" IsEnabled="{Binding StartBeforeEnabled, Mode=OneWay}" 
+                                    Time="{Binding start_window_Time, Mode=TwoWay}"/>
+                    </StackPanel>
+                    <TextBlock x:Uid="tbComment" VerticalAlignment="Center" Text="Comment" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBox HorizontalAlignment="Stretch"
+                             Text="{Binding comment, Mode=TwoWay}"  VerticalAlignment="Center"
+                             HorizontalContentAlignment="Right" />
 
+                        <!--<TextBlock x:Uid="tbStartAfter" VerticalAlignment="Center" Text="Start After" FontSize="20"/>
+                    <CheckBox x:Name="cbStartAfterEnabled" Margin="0,-15,0,0"  VerticalAlignment="Center"
+                               IsChecked="{Binding selectedAutoRecording.startafter_isenabled, Mode=TwoWay}" HorizontalAlignment="Stretch">
+                        <CheckBox.Content>
+                            <TimePicker x:Name="tpTimePicker" IsEnabled="{Binding ElementName=cbStartAfterEnabled,Path=IsChecked}" 
+                                            Width="180" Margin="0,-10,0,0" Language="ru-RU"
+                                            BorderThickness="2" FontSize="20" HorizontalAlignment="Stretch" 
+                                            Time="{Binding selectedAutoRecording.startTime, Mode=TwoWay}"/>
+                        </CheckBox.Content>
+                    </CheckBox>
+                    <TextBlock x:Uid="tbStartBefore" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Start Before" FontSize="20"/>
+                    <CheckBox x:Name="cbStartBeforeEnabled" VerticalAlignment="Center" Margin="0,-15,0,0"
+                               IsChecked="{Binding selectedAutoRecording.startbefore_isenabled, Mode=TwoWay}" HorizontalAlignment="Stretch">
+                        <CheckBox.Content>
+                            <TimePicker x:Name="tpStartWindow" IsEnabled="{Binding ElementName=cbStartBeforeEnabled,Path=IsChecked}"
+                                        Width="180" Margin="0,-10,0,0"
+                                        BorderThickness="2" FontSize="20"
+                                        HorizontalAlignment="Right" Time="{Binding selectedAutoRecording.start_window_Time, Mode=TwoWay}"/>
+                        </CheckBox.Content>
+                    </CheckBox>-->
+                </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ContentDialogAddRecording" x:DataType="local:RecordingEditViewModel">
+        <Grid VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Hidden" Margin="0,0,0,0">
+                <Grid>
+                    <StackPanel>
+                        <TextBlock x:Uid="tbTitle" VerticalAlignment="Center" Text="Name" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <TextBox x:Name="tbTitleEdit" HorizontalAlignment="Stretch"
+                             Text="{Binding title, Mode=TwoWay}"  VerticalAlignment="Center"
+                             HorizontalContentAlignment="Right" />
+                        <TextBlock VerticalAlignment="Center" Text="Channel" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding channellist}" SelectedItem="{Binding selectedchannel, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <ContentControl ContentTemplate="{StaticResource ChannelListItemTemplate}" HorizontalContentAlignment="Stretch"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock VerticalAlignment="Center" Text="Start Date" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <DatePicker Date="{Binding start_date, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
+                        <TextBlock VerticalAlignment="Center" Text="Start Time" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <TimePicker Time="{Binding startTime, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
+                        <TextBlock VerticalAlignment="Center" Text="End Date" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <DatePicker Date="{Binding stop_date, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
+                        <TextBlock VerticalAlignment="Center" Text="End Time" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <TimePicker Time="{Binding stopTime, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
+                        <TextBlock VerticalAlignment="Center" Text="DVR Config" Margin="0,10,0,0" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding dvrconfiglist}" SelectedItem="{Binding selecteddvrconfig, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock x:Uid="tbComment" VerticalAlignment="Center" Text="Comment" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <TextBox HorizontalAlignment="Stretch"
+                             Text="{Binding comment, Mode=TwoWay}"  VerticalAlignment="Center"
+                             HorizontalContentAlignment="Right" />
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </DataTemplate>
 
     <DataTemplate x:Key="CommandBarEPGItemSelectedButtons" x:DataType="local:TVHead_ViewModel">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -24,10 +194,25 @@
         </StackPanel>
     </DataTemplate>
 
-
+    <DataTemplate x:Key="UpcomingRecordingListButtons" x:DataType="local:TVHead_ViewModel">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <!-- TODO : I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
+                 for the Click Event throws an error. Should be a compiler bug cause like this it works-->
+            <AppBarButton x:Name="abbAddButton" Margin="0" Width="48" Height="48" Icon="Add" Click="{x:Bind UpcomingRecordings.AddNewRecording, Mode=OneWay}"
+                          HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="True">
+            </AppBarButton>
+            <AppBarButton x:Name="abbRecordItem" Click="{x:Bind ToggleMultiSelect}" Margin="0" Width="48" Height="48" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="{x:Bind DummyBoolTrue}">
+                <AppBarButton.Icon>
+                    <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE762;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </StackPanel>
+    </DataTemplate>
+    
     <DataTemplate x:Key="RecordingListButtons" x:DataType="local:TVHead_ViewModel">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <!-- I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
+            <!-- TODO : I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
                  for the Click Event throws an error. Should be a compiler bug cause like this it works-->
             <AppBarButton x:Name="abbRecordItem" Click="{x:Bind ToggleMultiSelect}" Margin="0" Width="48" Height="48" 
                           HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="{x:Bind DummyBoolTrue}">
@@ -38,26 +223,97 @@
         </StackPanel>
     </DataTemplate>
 
-    <DataTemplate x:Key="RecordingListEditButtons" x:DataType="local:TVHead_ViewModel">
+    <DataTemplate x:Key="UpcomingRecordingListEditButtons" x:DataType="local:TVHead_ViewModel">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <!-- I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
+            <!-- TODO : I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
                  for the Click Event throws an error. Should be a compiler bug cause like this it works-->
             <AppBarButton x:Name="abbDeleteItems" Margin="0" Width="48" Height="48" 
-                          HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="{x:Bind DummyBoolTrue}">
+                          HorizontalAlignment="Left" VerticalAlignment="Center" 
+                          IsEnabled="{x:Bind UpcomingRecordings.ItemSelected, Mode=OneWay}"
+                          Click="{x:Bind UpcomingRecordings.ShowConfirmDeletePrompt}">
                 <AppBarButton.Icon>
                     <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE107;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="abbCancelItems" Margin="0" Width="48" Height="48" 
-                          HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="{x:Bind DummyBoolTrue}">
+            <AppBarButton x:Name="abbAbortItems" Margin="0" Width="48" Height="48" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" 
+                          IsEnabled="{x:Bind UpcomingRecordings.ItemSelected, Mode=OneWay}"
+                          Click="{x:Bind UpcomingRecordings.ShowConfirmCancelPrompt}">
                 <AppBarButton.Icon>
                     <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xEA39;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="abbStopItems" Margin="0" Width="48" Height="48" Icon="Stop" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" 
+                          IsEnabled="{x:Bind UpcomingRecordings.ItemSelected, Mode=OneWay}"
+                          Click="{x:Bind UpcomingRecordings.ShowConfirmStopPrompt}">
+            </AppBarButton>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="FinishedRecordingListEditButtons" x:DataType="local:TVHead_ViewModel">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <!-- TODO : I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
+                 for the Click Event throws an error. Should be a compiler bug cause like this it works-->
+            <AppBarButton x:Name="abbDeleteItems" Margin="0" Width="48" Height="48" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" 
+                          IsEnabled="{x:Bind FinishedRecordings.ItemSelected, Mode=OneWay}"
+                          Click="{x:Bind FinishedRecordings.ShowConfirmDeletePrompt}">
+                <AppBarButton.Icon>
+                    <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE107;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
         </StackPanel>
     </DataTemplate>
 
-    
+    <DataTemplate x:Key="FailedRecordingListEditButtons" x:DataType="local:TVHead_ViewModel">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <!-- TODO : I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
+                 for the Click Event throws an error. Should be a compiler bug cause like this it works-->
+            <AppBarButton x:Name="abbDeleteItems" Margin="0" Width="48" Height="48" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" 
+                          IsEnabled="{x:Bind FailedRecordings.ItemSelected, Mode=OneWay}"
+                          Click="{x:Bind FailedRecordings.ShowConfirmDeletePrompt}">
+                <AppBarButton.Icon>
+                    <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE107;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="AutoRecordingListEditButtons" x:DataType="local:TVHead_ViewModel">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <!-- TODO : I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
+                 for the Click Event throws an error. Should be a compiler bug cause like this it works-->
+            <AppBarButton x:Name="abbDeleteItems" Margin="0" Width="48" Height="48" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" 
+                          IsEnabled="{x:Bind AutoRecordings.ItemSelected, Mode=OneWay}"
+                          Click="{x:Bind AutoRecordings.ShowConfirmDeleteAutoRecordingsPrompt}">
+                <AppBarButton.Icon>
+                    <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE107;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="AutoRecordingListButtons" x:DataType="local:TVHead_ViewModel">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <!-- TODO : I'm Binding an extra Dummy Boolean Value to IsEnabled, because otherwise the binding 
+                 for the Click Event throws an error. Should be a compiler bug cause like this it works-->
+            <AppBarButton x:Name="abbAddButton" Margin="0" Width="48" Height="48" Icon="Add" Click="{x:Bind AutoRecordings.AddNewAutoRecording, Mode=OneWay}"
+                          HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="True">
+            </AppBarButton>
+            <AppBarButton x:Name="abbEditButton" Margin="0" Width="48" Height="48" Icon="Edit" Click="{x:Bind AutoRecordings.EditAutoRecording, Mode=OneWay}"
+                          HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="{x:Bind AutoRecordings.ItemSelected, Mode=OneWay}">
+            </AppBarButton>
+            <AppBarButton x:Name="abbRecordItem" Click="{x:Bind ToggleMultiSelect}" Margin="0" Width="48" Height="48" 
+                          HorizontalAlignment="Left" VerticalAlignment="Center" IsEnabled="{x:Bind DummyBoolTrue}">
+                <AppBarButton.Icon>
+                    <FontIcon Margin="-10" FontFamily="Segoe MDL2 Assets" FontSize="26" Glyph="&#xE762;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </StackPanel>
+    </DataTemplate>
 
 
 
@@ -84,8 +340,13 @@
             </Border>
             <ComboBox  Grid.Row="4" Grid.Column="1" x:Name="cbDVRConfig" HorizontalAlignment="Stretch" 
                        Margin="0,10,0,0" VerticalAlignment="Top" ItemsSource="{x:Bind dvrconfigs, Mode=OneWay}" 
-                       ItemTemplate="{StaticResource DVRConfigTemplate}" SelectedItem="{Binding dvrconfigs[0]}"
+                       SelectedItem="{Binding dvrconfigs[0]}"
                        SelectionChanged="{x:Bind dvrConfig_SelectionChanged}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
             </ComboBox>
             <Border Grid.Row="5" Grid.Column="0" VerticalAlignment="Stretch" Margin="0,10,10,0">
                 <TextBlock x:Uid="RecordingType" Text="Recording type" VerticalAlignment="Center"/>
@@ -115,8 +376,20 @@
         </Grid>
     </DataTemplate>
     
-    <DataTemplate x:Key="ChannelDataTemplate" x:DataType="local:ChannelViewModel">
-        <Grid x:Name="mainGrid">
+    <DataTemplate x:Key="ChannelDataTemplate" x:DataType="local:ChannelViewModel" >
+        <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" 
+              BorderBrush="{ThemeResource SystemControlBackgroundBaseMediumLowBrush}" BorderThickness="1" Padding="4">
+            <Grid.Resources>
+                <Storyboard x:Name="PulseRecordingIcon">
+                    <DoubleAnimation From="1" To="0" Duration="0:0:1" AutoReverse="True" 
+                                     RepeatBehavior="Forever" Storyboard.TargetProperty="Opacity" 
+                                     Storyboard.TargetName="RecordingIcon"/>
+                </Storyboard>
+                <Storyboard x:Name="StaticRecordingIcon">
+                    <DoubleAnimation To="1" Duration="0:0:0" Storyboard.TargetProperty="Opacity" 
+                                     Storyboard.TargetName="RecordingIcon"/>
+                </Storyboard>
+            </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
@@ -128,14 +401,23 @@
             </Grid.ColumnDefinitions>
 
             <!-- BACKDROP, USED FOR SHOWING IF THE CHANNEL IS SELECTED OR NOT-->
-            <Rectangle x:Name="HeaderBackdrop" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Opacity="0.5" Fill="{x:Bind ChannelBackground, Mode=OneWay}"/>
+            <Rectangle x:Name="HeaderBackdrop" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Margin="-4" Opacity="0.5" Fill="{x:Bind ChannelBackground, Mode=OneWay}"/>
             <!-- CHANNEL ICON-->
             <Image x:Name="rowChannelIcon" Grid.Column="0" Grid.Row="0" Source="{x:Bind chicon}" Width="50" Height="50" HorizontalAlignment="Center" 
                VerticalAlignment="Center" Canvas.ZIndex="99" x:Phase="10"/>
 
             <!-- SMALL RECORDING ICON AS INDICATOR-->
-            <Image Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Visibility="{x:Bind epgitems.currentEPGItem.RecordingStatusIndicatorVisibility, Mode=OneWay}"
-                   Height="20" Margin="0" VerticalAlignment="Top" Source="{x:Bind epgitems.currentEPGItem.RecordingIcon, Mode=OneWay}"/>
+            <Image x:Name="RecordingIcon" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" Visibility="{x:Bind epgitems.currentEPGItem.RecordingStatusIndicatorVisibility, Mode=OneWay}"
+                   Height="20" Margin="0" VerticalAlignment="Top" Source="{x:Bind epgitems.currentEPGItem.RecordingIcon, Mode=OneWay}">
+                <Interactivity:Interaction.Behaviors>
+                    <Core:DataTriggerBehavior Binding="{Binding epgitems.currentEPGItem.dvrState, Mode=OneWay}"  Value="recording">
+                        <Media:ControlStoryboardAction Storyboard="{StaticResource PulseRecordingIcon}" />
+                    </Core:DataTriggerBehavior>
+                    <Core:DataTriggerBehavior Binding="{Binding epgitems.currentEPGItem.dvrState, Mode=OneWay}"  Value="scheduled">
+                        <Media:ControlStoryboardAction Storyboard="{StaticResource StaticRecordingIcon}" />
+                    </Core:DataTriggerBehavior>
+                </Interactivity:Interaction.Behaviors>
+            </Image>
 
             <!-- CHANNEL CONTENT - TITLE AND SUBTITLE-->
             <Grid x:Name="btnEPGItemButton" Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"
@@ -146,7 +428,6 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
 					   Text="{x:Bind name}" Style="{ThemeResource BaseTextBlockStyle}" x:Phase="0"/>
-                <TextBlock Grid.Row="0" FontSize="10" Text="{x:Bind epgitems.currentEPGItem.eventId, Mode=OneWay}" HorizontalAlignment="Right"/>
                 <TextBlock Grid.Row="1" Style="{ThemeResource BodyTextBlockStyle}" 
                        Foreground="{ThemeResource SystemControlForegroundAccentBrush}" Text="{x:Bind epgitems.currentEPGItem.title, Mode=OneWay}" 
                        TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" x:Phase="0"/>
@@ -190,6 +471,25 @@
             <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBlock TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" HorizontalAlignment="Center" VerticalAlignment="Center"
 					   Text="{x:Bind name}" Style="{ThemeResource SubtitleTextBlockStyle}" x:Phase="0"/>
+            </Border>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ChannelListItemTemplate" x:DataType="local:ChannelViewModel">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Image Grid.Column="0 " Source="{x:Bind chicon, Mode=OneWay}" Width="16" Height="16" HorizontalAlignment="Left" 
+                   VerticalAlignment="Center" x:Phase="1"/>
+            <Border Grid.Column="1" Margin="4,0,4,0">
+                <TextBlock Text="{x:Bind number}" Style="{StaticResource BaseTextBlockStyle}" x:Phase="0"/>
+            </Border>
+            <Border Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" 
+					       Text="{x:Bind name}" Style="{StaticResource BaseTextBlockStyle}" x:Phase="0"/>
             </Border>
         </Grid>
     </DataTemplate>
@@ -251,6 +551,8 @@
                     <ListView ItemsSource="{Binding Source={StaticResource csvRecordings}}"
                               ContinuumNavigationTransitionInfo.ExitElementContainer="True"
                               Style="{StaticResource myListViewStyle}"
+                              ItemClick="{x:Bind Recording_Clicked}"
+                              IsItemClickEnabled="True"
                               SelectionMode="{x:Bind MultiSelectMode, Mode=OneWay}">
                         <ListView.GroupStyle>
                             <GroupStyle HidesIfEmpty="False" HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
@@ -281,8 +583,21 @@
     </DataTemplate>
 
     <DataTemplate x:Key="RecordingDataTemplate" x:DataType="local:RecordingViewModel">
-        <Grid>
+        <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" 
+              BorderBrush="{ThemeResource SystemControlBackgroundBaseMediumLowBrush}" BorderThickness="1" Padding="4">
+            <Grid.Resources>
+                <Storyboard x:Name="PulseRecordingIcon">
+                    <DoubleAnimation From="1" To="0" Duration="0:0:1" AutoReverse="True" 
+                                     RepeatBehavior="Forever" Storyboard.TargetProperty="Opacity" 
+                                     Storyboard.TargetName="RecordingIcon"/>
+                </Storyboard>
+                <Storyboard x:Name="StaticRecordingIcon">
+                    <DoubleAnimation To="1" Duration="0:0:0" Storyboard.TargetProperty="Opacity" 
+                                     Storyboard.TargetName="RecordingIcon"/>
+                </Storyboard>
+            </Grid.Resources>
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
@@ -290,39 +605,49 @@
                 <ColumnDefinition Width="55"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Rectangle x:Name="HeaderBackdrop"  Grid.Row="0" Grid.Column="0"  Grid.RowSpan="2" Grid.ColumnSpan="2" Opacity="0"/>
+            <Rectangle x:Name="HeaderBackdrop"  Grid.Row="0" Grid.Column="0"  Grid.RowSpan="2" Grid.ColumnSpan="2" Opacity="0.5" Margin="-4"  Fill="{x:Bind RecordingBackground, Mode=OneWay}"/>
 
             <!-- RECORDING CHANNEL ICON-->
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Source="{x:Bind channel_icon, Mode=OneWay}" Width="50" Height="50" HorizontalAlignment="Center" 
+            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Source="{x:Bind channel_icon, Mode=OneWay}" 
+                   Width="50" Height="50" HorizontalAlignment="Center" 
                    VerticalAlignment="Center" Canvas.ZIndex="99" x:Phase="10"/>
 
             <!-- RECORDING STATUS INDICATOR-->
-            <Image Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"
-                   Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Source="{x:Bind RecordingIcon, Mode=OneWay}"/>
+            <Image x:Name="RecordingIcon" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right"
+                   Height="20" VerticalAlignment="Top" Source="{x:Bind RecordingIcon, Mode=OneWay}">
+                <Interactivity:Interaction.Behaviors>
+                    <Core:DataTriggerBehavior Binding="{Binding sched_status, Mode=OneWay}"  Value="recording">
+                        <Media:ControlStoryboardAction Storyboard="{StaticResource PulseRecordingIcon}" />
+                    </Core:DataTriggerBehavior>
+                    <Core:DataTriggerBehavior Binding="{Binding sched_status, Mode=OneWay}"  Value="scheduled">
+                        <Media:ControlStoryboardAction Storyboard="{StaticResource StaticRecordingIcon}" />
+                    </Core:DataTriggerBehavior>
+                </Interactivity:Interaction.Behaviors>
+            </Image>
 
             <!-- EPG TITLE AND DESCRIPTION-->
-            <Grid Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0" >
+            <Grid Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" TextWrapping="NoWrap" TextTrimming="WordEllipsis" 
-                           Text="{x:Bind title}" Margin="0,0,0,0" Style="{StaticResource BaseTextBlockStyle}" x:Phase="0"/>
+                           Text="{x:Bind title}" Style="{StaticResource BaseTextBlockStyle}" x:Phase="0"/>
                 <TextBlock Grid.Row="1" Text="{x:Bind filesizeGB, Mode=OneWay}" Style="{ThemeResource CaptionTextBlockStyle}"
                            HorizontalAlignment="Right" x:Phase="5"/>
                 <TextBlock Grid.Row="1" TextWrapping="NoWrap" 
-						   Style="{ThemeResource SubTitleAccent}" Text="{x:Bind channelName}" x:Phase="1"/>
+						   Text="{x:Bind channelName}" Style="{StaticResource BaseTextBlockStyle}" Foreground="{ThemeResource SystemControlForegroundAccentBrush}" x:Phase="1"/>
             </Grid>
 
             <!-- PROGRESS INDICATOR-->
-            <Grid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Margin="5,0,5,0">
+            <Grid Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" TextAlignment="Left" Style="{ThemeResource CaptionTextBlockStyle}"
-					       Text="{x:Bind startDateString}" TextWrapping="NoWrap" HorizontalAlignment="Left"  Margin="0" x:Phase="4" />
+					       Text="{x:Bind startTimeString}" TextWrapping="NoWrap" HorizontalAlignment="Left" x:Phase="4" />
                 <Rectangle Grid.Column="1" HorizontalAlignment="Stretch" Height="5" 
 					       Margin="5,0,5,0"  Opacity="0.2" Fill="{StaticResource SystemControlBackgroundChromeBlackMediumBrush}"/>
                 <Rectangle Grid.Column="1" Height="5"  Fill="{ThemeResource SystemControlBackgroundAccentBrush}"
@@ -331,25 +656,83 @@
                         <ScaleTransform x:Name="ProgressBarScale" CenterX="0" CenterY="0" ScaleX="{x:Bind percentcompleted, Mode=OneWay}" />
                     </Rectangle.RenderTransform>
                 </Rectangle>
-                <TextBlock Grid.Column="2" TextAlignment="Right" Text="{x:Bind stopDateString}" TextWrapping="NoWrap" 
+                <TextBlock Grid.Column="2" TextAlignment="Right" Text="{x:Bind stopTimeString}" TextWrapping="NoWrap" 
         			       HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" x:Phase="4"/>
             </Grid>
+            <!-- RECORDING DETAILS -->
+            <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,4,0,0" 
+                            Visibility="{x:Bind RecordingDetailsVisibility, Mode=OneWay}" 
+                            ContentTemplate="{StaticResource RecordingDetails}" 
+                            DataContext="{x:Bind Mode=OneWay}" HorizontalContentAlignment="Stretch"/>
+
+            
         </Grid>
     </DataTemplate>
+    <DataTemplate x:Key="RecordingDetails" x:DataType="local:RecordingViewModel">
+        <Grid x:Name="grRecordingDetails" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,0,0,0" Text="Channel :" Style="{StaticResource BodyTextBlockStyle}" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" Text="{Binding channelName}" Style="{StaticResource CaptionTextBlockStyle}"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,0,0,0" Text="Creator :" Style="{StaticResource BodyTextBlockStyle}"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" Text="{Binding creator}" Style="{StaticResource CaptionTextBlockStyle}"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,0,0,0" Text="Schedule State :" Style="{StaticResource BodyTextBlockStyle}"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Margin="10,0,0,0" Text="{Binding status}" Style="{StaticResource CaptionTextBlockStyle}"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,0,0,0" Text="Size :" Style="{StaticResource BodyTextBlockStyle}"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Margin="10,0,0,0" Text="{Binding filesizeGB}" Style="{StaticResource CaptionTextBlockStyle}"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Margin="5,0,0,0" Text="URL :" Style="{StaticResource BodyTextBlockStyle}"/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Margin="10,0,0,0" Text="{Binding url}" Style="{StaticResource CaptionTextBlockStyle}"/>
 
+            <TextBlock Grid.Row="5" Margin="5,20,0,0" HorizontalAlignment="Left" Text="Description :" Style="{StaticResource BodyTextBlockStyle}"/>
+            <TextBlock Grid.Row="6" Grid.ColumnSpan="2" TextWrapping="Wrap" Margin="5,0,0,0" Text="{Binding Path=description}" Style="{StaticResource CaptionTextBlockStyle}"/>
+        </Grid>
+    </DataTemplate>
     <DataTemplate x:Key="EPGItem" x:DataType="local:EPGItemViewModel">
-        <Grid x:Name="MainGrid" RenderTransformOrigin="0.5,0.5" Background="Transparent">
+        <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" 
+              BorderBrush="{ThemeResource SystemControlBackgroundBaseMediumLowBrush}" BorderThickness="1" Padding="4">
+            <Grid.Resources>
+                <Storyboard x:Name="PulseRecordingIcon">
+                    <DoubleAnimation From="1" To="0" Duration="0:0:1" AutoReverse="True" 
+                                     RepeatBehavior="Forever" Storyboard.TargetProperty="Opacity" 
+                                     Storyboard.TargetName="RecordingIcon"/>
+                </Storyboard>
+                <Storyboard x:Name="StaticRecordingIcon">
+                    <DoubleAnimation To="1" Duration="0:0:0" Storyboard.TargetProperty="Opacity" 
+                                     Storyboard.TargetName="RecordingIcon"/>
+                </Storyboard>
+            </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <!-- BACKDROP WHICH CHANGES WHEN THE ITEMS ISSELECTED PROPERTY IS SET TO TRUE OR FALSE-->
-            <Rectangle x:Name="HeaderBackdrop" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Opacity="0.5" Fill="{x:Bind EPGItemBackground, Mode=OneWay}"/>
+            <Rectangle x:Name="HeaderBackdrop" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" Margin="-4" Opacity="0.5" Fill="{x:Bind EPGItemBackground, Mode=OneWay}"/>
 
             <!-- RECORDING STATUS INDICATOR-->
             <Image x:Name="RecordingIcon" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" Visibility="{x:Bind RecordingStatusIndicatorVisibility, Mode=OneWay}"
-                        Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Source="{x:Bind RecordingIcon, Mode=OneWay}"/>
+                        Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Source="{x:Bind RecordingIcon, Mode=OneWay}">
+                <Interactivity:Interaction.Behaviors>
+                    <Core:DataTriggerBehavior Binding="{Binding dvrState, Mode=OneWay}"  Value="recording">
+                        <Media:ControlStoryboardAction Storyboard="{StaticResource PulseRecordingIcon}" />
+                    </Core:DataTriggerBehavior>
+                    <Core:DataTriggerBehavior Binding="{Binding dvrState, Mode=OneWay}"  Value="scheduled">
+                        <Media:ControlStoryboardAction Storyboard="{StaticResource StaticRecordingIcon}" />
+                    </Core:DataTriggerBehavior>
+                </Interactivity:Interaction.Behaviors>
+            </Image>
 
             <!-- EPG TITLE AND DESCRIPTION-->
             <Grid Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5,0,5,0" >
@@ -359,9 +742,8 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.ColumnSpan="3" TextWrapping="NoWrap" TextTrimming="WordEllipsis" 
                                     Text="{x:Bind title}" Margin="0,0,0,0" Style="{StaticResource BaseTextBlockStyle}" x:Phase="0"/>
-                <TextBlock Grid.Row="0" Grid.ColumnSpan="3" FontSize="10" Text="{x:Bind eventId}" HorizontalAlignment="Right" x:Phase="5"/>
                 <TextBlock Grid.Row="1" Grid.ColumnSpan="3" TextWrapping="NoWrap" 
-								    Style="{ThemeResource SubTitleAccent}" Text="{x:Bind info}" x:Phase="1"/>
+								     Text="{x:Bind info}" Style="{StaticResource BaseTextBlockStyle}" Foreground="{ThemeResource SystemControlForegroundAccentBrush}" x:Phase="1"/>
             </Grid>
 
             <!-- PROGRESS INDICATOR-->
@@ -385,12 +767,122 @@
         			       HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" x:Phase="4"/>
             </Grid>
             <!-- EPG ITEM DETAILS-->
-            <ContentControl Grid.Row="2" Visibility="{x:Bind EPGItemDetailsVisibility, Mode=OneWay}" Grid.Column="0" Grid.ColumnSpan="2" ContentTemplate="{StaticResource ChannelCurrentEPGItemDetails}" 
+            <ContentControl Grid.Row="2" Visibility="{x:Bind EPGItemDetailsVisibility, Mode=OneWay}" ContentTemplate="{StaticResource ChannelCurrentEPGItemDetails}" 
                             DataContext="{x:Bind Mode=OneWay}" HorizontalContentAlignment="Stretch"/>
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="SelectedEPGItemDataTemplate" x:DataType="local:TVHead_ViewModel">
+    <DataTemplate x:Key="AutoRecordingsListDataTemplate" x:DataType="local:AutoRecordingListViewModel">
+        <Grid>
+            <ListView ItemsSource="{Binding aitems, Mode=OneWay}"
+                              ContinuumNavigationTransitionInfo.ExitElementContainer="True"
+                              Style="{StaticResource myListViewStyle}"
+                              ItemClick="{x:Bind AutoRecording_Clicked}"
+                              IsItemClickEnabled="True"
+                              SelectionMode="{x:Bind MultiSelectMode, Mode=OneWay}">
+                <ListView.GroupStyle>
+                    <GroupStyle HidesIfEmpty="False" HeaderTemplate="{StaticResource ListViewHeaderTemplate}"/>
+                </ListView.GroupStyle>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="0,0,0,5" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <ContentControl ContentTemplate="{StaticResource AutoRecordingDataTemplate}" HorizontalContentAlignment="Stretch"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="AutoRecordingDataTemplate" x:DataType="local:AutoRecordingViewModel">
+        <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" 
+              BorderBrush="{ThemeResource SystemControlBackgroundBaseMediumLowBrush}" 
+              BorderThickness="1" Padding="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="55"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            
+            <!-- AUTORECORDING BACKDROP -->
+            <Rectangle x:Name="HeaderBackdrop"  Grid.Row="0" Grid.Column="0"  Grid.RowSpan="2" Grid.ColumnSpan="2" Opacity="0.5" Margin="-4"  Fill="{x:Bind AutoRecordingBackground, Mode=OneWay}"/>
+
+            <!-- AUTORECORDING CHANNEL ICON-->
+            <Image Grid.Column="0" Grid.Row="0" Source="{x:Bind channel_icon, Mode=OneWay}" Width="50" Height="50" HorizontalAlignment="Center" 
+                   VerticalAlignment="Center" Canvas.ZIndex="99" x:Phase="10"/>
+            <!-- INDICATOR IF THE AUTORECORDING IS ENABLED OR NOT -->
+            <ToggleSwitch Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                          IsEnabled="False" IsOn="{x:Bind enabled, Mode=OneWay}" Style="{StaticResource BorderlessToggleSwitchStyle}"/>
+
+            <!-- AUTORECORDING CONTENT-->
+            <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <!--<TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource BaseTextBlockStyle}"
+                           Text="{Binding displayName}" VerticalAlignment="Center"/>-->
+                <TextBlock Grid.Row="0" Style="{StaticResource BaseTextBlockStyle }"
+                           Text="{Binding title}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding channelname}" Style="{StaticResource BaseTextBlockStyle}" Foreground="{ThemeResource SystemControlForegroundAccentBrush}" Grid.Row="1" VerticalAlignment="Center"
+                           />
+                <!--<TextBlock Text="{Binding recordingDays}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center"
+                           Style="{StaticResource CaptionTextBlockStyle}"/>-->
+
+                <!-- AUTORECORDING ON WHICH DAYS-->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Grid.Column="0" IsChecked="{x:Bind RecordingOnDay[0]}" IsEnabled="False" Style="{StaticResource DayCheckBoxStyle}">
+                        <TextBlock Text="{x:Bind RecordingDays[0]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                    </CheckBox>
+                    <CheckBox Grid.Column="1" IsChecked="{x:Bind RecordingOnDay[1]}" IsEnabled="False" Style="{StaticResource DayCheckBoxStyle}">
+                        <TextBlock Text="{x:Bind RecordingDays[1]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                    </CheckBox>
+                    <CheckBox Grid.Column="2" IsChecked="{x:Bind RecordingOnDay[2]}" IsEnabled="False" Style="{StaticResource DayCheckBoxStyle}">
+                        <TextBlock Text="{x:Bind RecordingDays[2]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                    </CheckBox>
+                    <CheckBox Grid.Column="3" IsChecked="{x:Bind RecordingOnDay[3]}" IsEnabled="False" Style="{StaticResource DayCheckBoxStyle}">
+                        <TextBlock Text="{x:Bind RecordingDays[3]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                    </CheckBox>
+                    <CheckBox Grid.Column="4" IsChecked="{x:Bind RecordingOnDay[4]}" IsEnabled="False" Style="{StaticResource DayCheckBoxStyle}">
+                        <TextBlock Text="{x:Bind RecordingDays[4]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                    </CheckBox>
+                    <CheckBox Grid.Column="5" IsChecked="{x:Bind RecordingOnDay[5]}" IsEnabled="False" Style="{StaticResource DayCheckBoxStyle}">
+                        <TextBlock Text="{x:Bind RecordingDays[5]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                    </CheckBox>
+                    <CheckBox Grid.Column="6" IsChecked="{x:Bind RecordingOnDay[6]}" IsEnabled="False" Style="{StaticResource DayCheckBoxStyle}">
+                        <TextBlock Text="{x:Bind RecordingDays[6]}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                    </CheckBox>
+                </Grid>
+            </Grid>
+
+            
+            
+        </Grid>
+    </DataTemplate>
+    
+    
+    
+    <DataTemplate x:Key="SelectedEPGItemDataTemplate" x:DataType="local:TVHead_ViewModel" >
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
@@ -501,7 +993,9 @@
         </Border>
     </DataTemplate>
 
-
+    
+    
+    
     <DataTemplate x:Key="EPGItemDetails" x:DataType="local:EPGItemViewModel">
         <Grid>
             <Grid.RowDefinitions>
@@ -518,6 +1012,7 @@
             <Border Grid.Row="0" HorizontalAlignment="Stretch">
                 <TextBlock Text="{x:Bind title}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
             </Border>
+            <TextBlock Grid.Row="0"  FontSize="10" Text="{x:Bind eventId}" HorizontalAlignment="Right" x:Phase="5"/>
             <Border Grid.Row="1" HorizontalAlignment="Stretch">
                 <TextBlock Text="{x:Bind subtitle}" Foreground="{ThemeResource SystemControlBackgroundAccentBrush}" 
                            FontWeight="Bold"  Style="{StaticResource BaseTextBlockStyle}" HorizontalAlignment="Center"/>
@@ -561,13 +1056,14 @@
     <DataTemplate x:Key="ChannelCurrentEPGItemDetails" x:DataType="local:EPGItemViewModel">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="8"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" Height="1" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}"/>
+            <!--<Border Grid.Row="0" Height="1" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundAccentBrush}"/>-->
+            <TextBlock Grid.Row="1" Grid.ColumnSpan="3" FontSize="10" Text="{x:Bind eventId}" HorizontalAlignment="Right" x:Phase="5"/>
             <TextBlock Grid.Row="1"  Text="Genre" 
                        Margin="0" FontWeight="Bold"  Style="{StaticResource BodyTextBlockStyle}"/>
             <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,0,10,0"
@@ -822,11 +1318,17 @@
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
                             <Button x:Uid="btntestconnection" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"  x:Name="btnTestConnection"  Content="Test Connection"/>
-                            <TextBlock x:Name="tbTestResult" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0"  VerticalAlignment="Center" Style="{ThemeResource SubTitleAccent}"/>
+                            <TextBlock x:Name="tbTestResult" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0"  VerticalAlignment="Center"/>
                             <ProgressBar x:Name="pbTestResult" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" Background="Transparent" Height="10" IsIndeterminate="False" VerticalAlignment="Center"/>
                         </Grid>
                         <TextBlock x:Name="tbLanguage" x:Uid="tbLanguage" Margin="0,20,0,0"  Text="Language"/>
-                        <ComboBox x:Name="cbLanguage" ItemsSource="{Binding supportedLanguages.languages}"/>
+                        <ComboBox x:Name="cbLanguage" HorizontalAlignment="Stretch" ItemsSource="{Binding supportedLanguages.languages}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding val}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                         <!--<TextBlock x:Name="tbUseDarkTheme" Margin="0,20,0,0"  Text="Preferred Theme" Style="{StaticResource FlyoutPickerTitleTextBlockStyle}"/>
                         <TextBlock x:Name="tbUseDarkThemeCaption" Margin="0,5,0,0"  Text="Select the theme color you want to use for TV Head (requires restart)" TextWrapping="WrapWholeWords" Style="{StaticResource CaptionTextBlockStyle}"/>
                         <StackPanel Orientation="Horizontal">
@@ -860,388 +1362,18 @@
         </Grid>
     </DataTemplate>
 
-    <Style x:Key="TVHeadAppBarToggleButton" TargetType="AppBarToggleButton">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
-        <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="Width" Value="68"/>
-        <Setter Property="UseSystemFocusVisuals" Value="True" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="AppBarToggleButton">
-                    <Grid
-                        x:Name="Root"
-                        MinWidth="{TemplateBinding MinWidth}"
-                        MaxWidth="{TemplateBinding MaxWidth}"
-                        Background="{TemplateBinding Background}">
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="ApplicationViewStates">
-                                <VisualState x:Name="FullSize"/>
-                                <VisualState x:Name="Compact">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Overflow">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRoot" Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckedHighlightBackground" Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-                                        </ObjectAnimationUsingKeyFrames>-->
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowTextLabel" Storyboard.TargetProperty="Visibility">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal">
-                                    <Storyboard>
-                                        <PointerUpThemeAnimation Storyboard.TargetName="OverflowContentRoot" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="PointerOver">
-                                    <Storyboard>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="AccentOverlayBackground" Storyboard.TargetProperty="Fill">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListLowBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>-->
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowTextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>-->
-                                        <PointerUpThemeAnimation Storyboard.TargetName="OverflowContentRoot" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Pressed">
-                                    <Storyboard>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="AccentOverlayBackground" Storyboard.TargetProperty="Fill">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListMediumBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>-->
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowTextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <PointerDownThemeAnimation Storyboard.TargetName="OverflowContentRoot"/>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Disabled">
-                                    <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseMediumLowBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseMediumLowBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseMediumLowBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowTextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseMediumLowBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Checked">
-                                    <Storyboard>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckedHighlightBackground" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"/>
-                                        </ObjectAnimationUsingKeyFrames>-->
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <PointerUpThemeAnimation Storyboard.TargetName="OverflowContentRoot" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="CheckedPointerOver">
-                                    <Storyboard>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckedHighlightBackground" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"/>
-                                        </ObjectAnimationUsingKeyFrames>-->
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="AccentOverlayBackground" Storyboard.TargetProperty="Fill">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>-->
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowTextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <PointerUpThemeAnimation Storyboard.TargetName="OverflowContentRoot" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="CheckedPressed">
-                                    <Storyboard>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckedHighlightBackground" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"/>
-                                        </ObjectAnimationUsingKeyFrames>-->
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="AccentOverlayBackground" Storyboard.TargetProperty="Fill">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListMediumBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>-->
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowTextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <PointerDownThemeAnimation Storyboard.TargetName="OverflowContentRoot"/>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="CheckedDisabled">
-                                    <Storyboard>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckedHighlightBackground" Storyboard.TargetProperty="Fill">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="CheckedHighlightBackground" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"/>
-                                        </ObjectAnimationUsingKeyFrames>-->
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Content" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowCheckGlyph" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="OverflowTextLabel" Storyboard.TargetProperty="Foreground">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
-                                        </ObjectAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="InputModeStates">
-                                <VisualState x:Name="InputModeDefault" />
-                                <VisualState x:Name="TouchInputMode" >
-                                    <VisualState.Setters>
-                                        <Setter Target="OverflowTextLabel.Padding" Value="0,11,0,13" />
-                                        <Setter Target="OverflowCheckGlyph.Margin" Value="12,12,12,12" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
+    <DataTemplate x:Key="ListViewJumpListTemplate">
+        <Border HorizontalAlignment="Stretch">
+            <TextBlock Grid.Column="0" Text="{Binding Group.KeyString}" 
+                               Style="{StaticResource BaseTextBlockStyle}" VerticalAlignment="Center"/>
+        </Border>
+    </DataTemplate>
 
-                        <Rectangle x:Name="CheckedHighlightBackground" Fill="{ThemeResource SystemControlHighlightAccentBrush}" Opacity="0" Visibility="Collapsed"/>
-                        <Rectangle x:Name="AccentOverlayBackground" Visibility="Collapsed"/>
+    <DataTemplate x:Key="ListViewHeaderTemplate">
+        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TextBlock Text="{Binding KeyString}"  VerticalAlignment="Center" 
+                               HorizontalAlignment="Left" Style="{StaticResource BaseTextBlockStyle}"/>
+        </Border>
+    </DataTemplate>
 
-                        <StackPanel x:Name="ContentRoot" MinHeight="{ThemeResource AppBarThemeCompactHeight}">
-                            <ContentPresenter
-                                x:Name="Content"
-                                Height="20"
-                                Margin="0,14,0,4"
-                                Content="{TemplateBinding Icon}"
-                                Foreground="{TemplateBinding Foreground}"
-                                HorizontalAlignment="Stretch"
-                                AutomationProperties.AccessibilityView="Raw"/>
-                            <TextBlock
-                                x:Name="TextLabel"
-                                Text="{TemplateBinding Label}"
-                                Foreground="{TemplateBinding Foreground}"
-                                FontSize="12"
-                                FontFamily="{TemplateBinding FontFamily}"
-                                TextAlignment="Center"
-                                TextWrapping="Wrap"
-                                Margin="0,0,0,6"/>
-                        </StackPanel>
-
-                        <Grid x:Name="OverflowContentRoot" >
-                            <TextBlock
-                                x:Name="OverflowCheckGlyph"
-                                Text="&#xE73E;"
-                                Foreground="{TemplateBinding Foreground}"
-                                FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                FontSize="16"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Height="14"
-                                Width="14"
-                                Margin="12,6,12,6"
-                                Opacity="0"
-                                Visibility="Collapsed"/>
-
-                            <TextBlock
-                                x:Name="OverflowTextLabel"
-                                Text="{TemplateBinding Label}"
-                                Foreground="{TemplateBinding Foreground}"
-                                FontSize="15"
-                                FontFamily="{TemplateBinding FontFamily}"
-                                TextAlignment="Left"
-                                TextTrimming="Clip"
-                                TextWrapping="NoWrap"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Center"
-                                Margin="38,0,12,0"
-                                Padding="0,5,0,7"
-                                Visibility="Collapsed"/>
-                        </Grid>
-
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="TVHeadContentDialog" TargetType="ContentDialog">
-        <Setter Property="Foreground" Value="{ThemeResource SystemControlPageTextBaseHighBrush}" />
-        <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Top" />
-        <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="MaxHeight" Value="{ThemeResource ContentDialogMaxHeight}" />
-        <Setter Property="MinHeight" Value="{ThemeResource ContentDialogMinHeight}" />
-        <Setter Property="MaxWidth" Value="{ThemeResource ContentDialogMaxWidth}" />
-        <Setter Property="MinWidth" Value="{ThemeResource ContentDialogMinWidth}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ContentDialog">
-                    <Border x:Name="Container">
-                        <Grid x:Name="LayoutRoot">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Border x:Name="BackgroundElement"
-                                    Background="{TemplateBinding Background}"
-                                    FlowDirection="{TemplateBinding FlowDirection}"
-                                    BorderThickness="{ThemeResource ContentDialogBorderWidth}"
-                                    BorderBrush="{ThemeResource SystemControlForegroundAccentBrush}"
-                                    MaxWidth="{TemplateBinding MaxWidth}"
-                                    MaxHeight="{TemplateBinding MaxHeight}"
-                                    MinWidth="{TemplateBinding MinWidth}"
-                                    MinHeight="{TemplateBinding MinHeight}" >
-                                <Grid x:Name="DialogSpace" VerticalAlignment="Stretch">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <ScrollViewer x:Name="ContentScrollViewer"
-                                            HorizontalScrollBarVisibility="Disabled"
-                                            VerticalScrollBarVisibility="Disabled"
-                                            ZoomMode="Disabled"
-                                            Margin="{ThemeResource ContentDialogContentScrollViewerMargin}"
-                                            IsTabStop="False">
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="*" />
-                                            </Grid.RowDefinitions>
-                                            <ContentControl x:Name="Title"
-                                                Margin="{ThemeResource ContentDialogTitleMargin}"
-                                                Content="{TemplateBinding Title}"
-                                                ContentTemplate="{TemplateBinding TitleTemplate}"
-                                                FontSize="20"
-                                                FontFamily="XamlAutoFontFamily"
-                                                FontWeight="Normal"
-                                                Foreground="{TemplateBinding Foreground}"
-                                                HorizontalAlignment="Left"
-                                                VerticalAlignment="Top"
-                                                IsTabStop="False"
-                                                MaxHeight="{ThemeResource ContentDialogTitleMaxHeight}" >
-                                                <ContentControl.Template>
-                                                    <ControlTemplate TargetType="ContentControl">
-                                                        <ContentPresenter
-                                                            Content="{TemplateBinding Content}"
-                                                            MaxLines="2"
-                                                            TextWrapping="Wrap"
-                                                            ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                            Margin="{TemplateBinding Padding}"
-                                                            ContentTransitions="{TemplateBinding ContentTransitions}"
-                                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                                                    </ControlTemplate>
-                                                </ContentControl.Template>
-                                            </ContentControl>
-                                            <ContentPresenter x:Name="Content"
-                                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                Content="{TemplateBinding Content}"
-                                                FontSize="{ThemeResource ControlContentThemeFontSize}"
-                                                FontFamily="{ThemeResource ContentControlThemeFontFamily}"
-                                                Margin="{ThemeResource ContentDialogContentMargin}"
-                                                Foreground="{TemplateBinding Foreground}"
-                                                Grid.Row="1"
-                                                TextWrapping="Wrap" />
-                                        </Grid>
-                                    </ScrollViewer>
-                                    <Grid x:Name="CommandSpace" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-                                        <Border x:Name="Button1Host"
-                                            Margin="{ThemeResource ContentDialogButton1HostMargin}"
-                                            MinWidth="{ThemeResource ContentDialogButtonMinWidth}"
-                                            MaxWidth="{ThemeResource ContentDialogButtonMaxWidth}"
-                                            Height="{ThemeResource ContentDialogButtonHeight}"
-                                            HorizontalAlignment="Stretch" />
-                                        <Border x:Name="Button2Host"
-                                            Margin="{ThemeResource ContentDialogButton2HostMargin}"
-                                            MinWidth="{ThemeResource ContentDialogButtonMinWidth}"
-                                            MaxWidth="{ThemeResource ContentDialogButtonMaxWidth}"
-                                            Height="{ThemeResource ContentDialogButtonHeight}"
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Stretch" />
-                                    </Grid>
-                                </Grid>
-                            </Border>
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    
 </ResourceDictionary>

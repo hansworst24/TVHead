@@ -1,5 +1,5 @@
 ﻿
-Imports TVHead_81.ViewModels
+'Imports TVHead_81.ViewModels
 
 Public NotInheritable Class api40
     Private settings As TVHead_Settings = CType(Application.Current, Application).DefaultViewModel.TVHeadSettings
@@ -18,9 +18,9 @@ Public NotInheritable Class api40
         Return settings.GetFullURL() + String.Format("/comet/poll?boxid={0}&immediate=0", boxid)
     End Function
 
-    Public Function apiGetServiceDetails(svc As ServiceViewModel) As String
+    Public Function apiGetServiceDetails(uuid As String) As String
         '/api/service/streams?uuid=UUID'
-        Return settings.GetFullURL() + String.Format("/api/service/streams?uuid={0}", svc.uuid)
+        Return settings.GetFullURL() + String.Format("/api/service/streams?uuid={0}", uuid)
     End Function
 
     Public Function apiGetConnections() As String
@@ -98,7 +98,7 @@ Public NotInheritable Class api40
     End Function
 
     Public Function apiDeleteRecording(uuid As String) As String
-        Return settings.GetFullURL() + "/api/idnode/delete?uuid=" + uuid
+        Return settings.GetFullURL() + "/api/idnode/delete?uuid=" + uuid.ToString
     End Function
 
     Public Function apiLoadIDNode(uuid As String) As String
@@ -118,16 +118,20 @@ Public NotInheritable Class api40
     End Function
 
     Public Function apiAddManualRecording(rec As RecordingViewModel) As String
-        'conf={"disp_title":"blaat","start":1418170200,"start_extra":0,"stop":1419381600,"stop_extra":0,"channel":"b8f6c9a16f836735bc546b9a51abed26","config_name":"5281d3bed2bb4cff1a70f9f64ab4d760","comment":""}
-        'Return settings.GetFullURL() + "/api/dvr/entry/create?conf=" + Uri.EscapeDataString(String.Format("{{""disp_title"":""{0}"",""start"":{1},""stop"":{2},""channel"":""{3}"",""config_name"":""{4}"",""comment"":""{5}""}}",
-        '                                                     rec.title,
-        '                                                     TimeToUnix(rec.startDate.Date.Add(New TimeSpan(rec.startTime.Hour, rec.startTime.Minute, rec.startTime.Second)).ToUniversalTime),
-        '                                                     TimeToUnix(rec.stopDate.Date.Add(New TimeSpan(rec.stopTime.Hour, rec.stopTime.Minute, rec.stopTime.Second)).ToUniversalTime),
-        '                                                     rec.channelUuid,
-        '                                                     rec.configUuid,
-        '                                                     "Created by TV Head"))
-        Return ""
-
+        'conf = {"disp_title":  "blaat","start":1418170200,"start_extra":0,"stop":1419381600,"stop_extra":0,"channel":"b8f6c9a16f836735bc546b9a51abed26","config_name":"5281d3bed2bb4cff1a70f9f64ab4d760","comment":""}
+        Return settings.GetFullURL() + String.Format("/api/dvr/entry/create?conf={{" &
+                                                     """disp_title"":""{0}""" &
+                                                     ",""start"":{1}" &
+                                                     ",""stop"":{2}" &
+                                                     ",""channel"":""{3}""" &
+                                                     ",""config_name"":""{4}""" &
+                                                     ",""comment"":""{5}""}}",
+                                        rec.title,
+                                        rec.start,
+                                        rec.stop,
+                                        rec.channelUuid,
+                                        rec.config_name,
+                                        rec.comment)
     End Function
     Public Function apiUpdateManualRecording(r As RecordingViewModel) As String
         'Return settings.GetFullURL() + String.Format("/api/idnode/save?node={{" &
@@ -168,21 +172,21 @@ Public NotInheritable Class api40
                     ",""uuid"":""{10}""" &
                     ",""comment"":""{11}""}}]",
                     r.enabled.ToString.ToLower,
-                    System.Net.WebUtility.UrlEncode(r.name),
-                    System.Net.WebUtility.UrlEncode(r.title),
+                    Net.WebUtility.UrlEncode(r.name),
+                    Net.WebUtility.UrlEncode(r.title),
                     r.channel,
-                    r.tagUuid,
+                    r.tag,
                     r.contenttype,
                     IntListToStringArray(r.weekdays),
                     r.start,
                     r.start_window,
-                    r.configUuid,
-                    r.id,
-                    System.Net.WebUtility.UrlEncode("Edited by TV Head"))
+                    r.config,
+                    r.uuid,
+                    Net.WebUtility.UrlEncode(r.comment))
     End Function
 
     Public Function apiCreateAutoRecording(r As AutoRecordingViewModel) As String
-        Return settings.GetFullURL() + "/api/dvr/autorec/create?conf=" + Uri.EscapeDataString(String.Format("{{" &
+        Return settings.GetFullURL() + String.Format("/api/dvr/autorec/create?conf={{" &
                    """enabled"":{0}" &
                    ",""name"":""{1}""" &
                    ",""title"":""{2}""" &
@@ -195,16 +199,16 @@ Public NotInheritable Class api40
                    ",""config_name"":""{9}""" &
                    ",""comment"":""{10}""}}",
                    r.enabled.ToString.ToLower,
-                   r.name,
-                   r.title,
+                   Net.WebUtility.UrlEncode(r.name),
+                   Net.WebUtility.UrlEncode(r.title),
                    r.channel,
-                   r.tagUuid,
+                   r.tag,
                    r.contenttype,
                    IntListToStringArray(r.weekdays),
                    r.start,
                    r.start_window,
-                   r.configUuid,
-                   "Edited by TV Head"))
+                   r.config,
+                   Net.WebUtility.UrlEncode(r.comment))
     End Function
 
     Public Function apiCreateAutoRecordingBySeries(eventId As String, Optional dvrconfig As DVRConfigViewModel = Nothing) As String
@@ -265,329 +269,323 @@ Public NotInheritable Class api40
 
 End Class
 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' CLASSES REQUIRED TO CAPTURE JSON RESULTS OF TVHEADEND SERVER 3.9 / 4.X
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Public Class TVHAdapter
+    Public Property notificationClass As String 'Is only used when consuming /comet/poll long polling messages
+    Public Property uuid As String
+    Public Property input As String
+    Public Property stream As String
+    Public Property subs As Integer
+    Public Property weight As Integer
+    Public Property signal As Integer
+    Public Property signal_scale As Integer
+    Public Property ber As Long
+    Public Property snr As Integer
+    Public Property snr_scale As Integer
+    Public Property unc As Integer
+    Public Property bps As Integer
+    Public Property te As Integer
+    Public Property cc As Integer
+    Public Property ec_bit As Integer
+    Public Property tc_bit As Integer
+    Public Property ec_block As Integer
+    Public Property tc_block As Integer
+End Class
+
+Public Class TVHAdapterList
+    Public Property entries As List(Of TVHAdapter)
+End Class
+
+Public Class TVHAutoRecordingList
+    Public Property entries As List(Of TVHAutoRecording)
+    Public Property total As Integer
+End Class
+
+Public Class TVHAutoRecording
+    Public Property brand As String
+    Public Property channel As String
+    Public Property comment As String
+    Public Property config_name As String
+    Public Property content_type As Integer
+    Public Property creator As String
+    Public Property enabled As Boolean
+    Public Property maxduration As Integer
+    Public Property name As String
+    Public Property minduration As Integer
+    Public Property pri As Integer
+    Public Property retention As Integer
+    Public Property season As String
+    Public Property serieslink As String
+    Public Property start As String
+    Public Property start_window As String
+    Public Property start_extra As Integer
+    Public Property start_real As Long
+    Public Property status As String
+    Public Property stop_extra As Integer
+    Public Property tag As String
+    Public Property timerec As String
+    Public Property title As String
+    Public Property uuid As String
+    Public Property weekdays As List(Of Integer)
+
+    Public Sub New()
+        weekdays = New List(Of Integer)
+        start = "Any"
+        start_window = "Any"
+    End Sub
+End Class
+
+Public Class TVHChannel
+
+    Public Property uuid As String
+    Public Property enabled As Boolean
+    Public Property name As String
+    Public Property number As Integer
+    Public Property icon As String
+    Public Property icon_public_url As String
+    Public Property epgauto As Boolean
+    Public Property epggrab As List(Of String)
+    Public Property dvr_pre_time As Integer
+    Public Property dvr_pst_time As Integer
+    Public Property services As String()
+    Public Property tags As String()
+    Public Property bouquet As String
+End Class
+
+Public Class TVHChannelList
+    Public Property entries As TVHChannel()
+    Public Property total As Integer
+End Class
+
+Public Class TVHChannelTagList
+    Public Property entries As New List(Of TVHChannelTag)
+    Public Property total As Integer
+End Class
+
+Public Class TVHChannelTag
+    Public Property comment As String
+    Public Property enabled As Boolean
+    Public Property icon As String
+    Public Property icon_public_url As String
+    Public Property internal As Boolean
+    Public Property name As String
+    Public Property [private] As Boolean
+    Public Property titled_icon As Boolean
+    Public Property uuid As String
+End Class
+
+Public Class TVHCometPollResponse
+    '{"boxid":"fffdd6a9c5cca67c954cd4993791b0b6fe856855","messages":[{"notificationClass":"accessUpdate","username":"","address":"192.168.168.2","dvr":1,"admin":1,"time":1447886277,"cookie_expires":7,"info_area":"login,storage,time","freediskspace":3112701001728,"totaldiskspace":12000220413952},{"notificationClass":"setServerIpPort","ip":"192.168.168.2","port":9981}]}pi@raspberrypi ~ $ curl -GET "http://192.168.168.2:9981/comet/poll?boxid=&immediate=0"
+
+    Public Property boxid As String
+    'Public Property messages As String()
+
+End Class
+
+Public Class TVHCometInputStatus
+    Public Property boxid As String
+    Public Property messages As TVHAdapter()
+End Class
+
+Public Class TVHConnectionList
+    Public Property entries As List(Of TVHConnection)
+
+End Class
+
+Public Class TVHConnection
+    Public Property id As Integer
+    Public Property peer As String
+    Public Property started As Long
+    Public Property type As String
+    Public Property user As String
+End Class
+
+Public Class TVHDVRConfig
+    Public Property key As String
+    Public Property val As String
+End Class
+
+Public Class TVHDVRConfigList
+    Public Property entries As New List(Of TVHDVRConfig)
+End Class
+
+Public Class TVHEPGEvent
+    Public Property eventId As Long                     '137935
+    Public Property episodeId As Long                   '137936
+    Public Property episodeUri As String                'crid://bds.tv/50527985#00100000000CC7EF"
+    Public Property serieslinkId As Integer             '473686
+    Public Property serieslinkUri As String             'crid://eventis.nl/00000000-0000-1000-0008-00000000B083"
+    Public Property channelName As String               'TV Oranje
+    Public Property channelUuid As String               '234ae68c0c685386fda3a4f622eb8910
+    Public Property channelNumber As String             '361
+    Public Property channelIcon As String               '/1_0_1_4D23_12_600_FFFF0000_0_0_0.png or imagecache/276
+    Public Property start As Long                       '1416898800
+    Public Property [stop] As Long                      '1416934800
+    Public Property title As String                     'TV Oranje Nonstop
+    Public Property subtitle As String                  'Dom programma
+    Public Property description As String               'Nederlands muziekprogramma. Muziekprogramma met non-stop clips van eigen bodem. Stem op je favoriete clip via de website: www.tvoranje.nl.
+    Public Property genre As List(Of Integer)            '[96]
+    Public Property dvrUuid As String
+    Public Property dvrState As String
+    Public Property nextEventId As Integer              '139715
 
 
-Namespace tvh40
+End Class
 
-    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    ' CLASSES REQUIRED TO CAPTURE JSON RESULTS OF TVHEADEND SERVER 3.9.21xx
-    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    Public Class Adapter
-        Public Property notificationClass As String 'Is only used when consuming /comet/poll long polling messages
-        Public Property uuid As String
-        Public Property input As String
-        Public Property stream As String
-        Public Property subs As Integer
-        Public Property weight As Integer
-        Public Property signal As Integer
-        Public Property signal_scale As Integer
-        Public Property ber As Long
-        Public Property snr As Integer
-        Public Property snr_scale As Integer
-        Public Property unc As Integer
-        Public Property bps As Integer
-        Public Property te As Integer
-        Public Property cc As Integer
-        Public Property ec_bit As Integer
-        Public Property tc_bit As Integer
-        Public Property ec_block As Integer
-        Public Property tc_block As Integer
-    End Class
+Public Class TVHEPGEventList
+    Public Property entries As List(Of TVHEPGEvent)
+    Public Property totalCount As Integer
+End Class
 
-    Public Class AdapterList
-        Public Property entries As List(Of Adapter)
-    End Class
+Public Class TVHGenre
+    Public Property key As Integer                       'key=00a2cc05aa0a930aca7d371fa4c0b0f7
+    Public Property val As String
+End Class
 
-    Public Class AutoRecordingList
-        Public Property entries As List(Of AutoRecording)
-        Public Property total As Integer
-    End Class
+Public Class TVHGenreList
+    Public Property entries As List(Of TVHGenre)                      'key=16
+End Class
 
-    Public Class AutoRecording
-        Public Property brand As String
-        Public Property channel As String
-        Public Property comment As String
-        Public Property config_name As String
-        Public Property content_type As Integer
-        Public Property creator As String
-        Public Property enabled As Boolean
-        Public Property maxduration As Integer
-        Public Property name As String
-        Public Property minduration As Integer
-        Public Property pri As Integer
-        Public Property retention As Integer
-        Public Property season As String
-        Public Property serieslink As String
-        Public Property start As String
-        Public Property start_window As String
-        Public Property start_extra As Integer
-        Public Property start_real As Long
-        Public Property status As String
-        Public Property stop_extra As Integer
-        Public Property tag As String
-        Public Property timerec As String
-        Public Property title As String
-        Public Property uuid As String
-        Public Property weekdays As List(Of Integer)
-    End Class
+Public Class TVHMux
+    Public Property constellation As String
+    Public Property delsys As String
+    Public Property enabled As Boolean
+    Public Property epg As Integer
+    Public Property fec As String
+    Public Property frequency As Integer
+    Public Property name As String
+    Public Property network As String
+    Public Property num_chn As Integer
+    Public Property num_svc As Integer
+    Public Property onid As Integer
+    Public Property pmt_06_ac3 As Boolean
+    Public Property scan_result As Integer
+    Public Property scan_state As Integer
+    Public Property symbolrate As Integer
+    Public Property tsid As Integer
+    Public Property uuid As String
+End Class
 
-    Public Class Channel
+Public Class TVHMuxList
+    Public Property entries As List(Of TVHMux)
+End Class
 
-        Public Property uuid As String
-        Public Property enabled As Boolean
-        Public Property name As String
-        Public Property number As Integer
-        Public Property icon As String
-        Public Property icon_public_url As String
-        Public Property epgauto As Boolean
-        Public Property epggrab As List(Of String)
-        Public Property dvr_pre_time As Integer
-        Public Property dvr_pst_time As Integer
-        Public Property services As String()
-        Public Property tags As String()
-        Public Property bouquet As String
-    End Class
+Public Class RootObject
+    Public Property values As List(Of Array)
+End Class
 
-    Public Class ChannelList
-        Public Property entries As Channel()
-        Public Property total As Integer
-    End Class
+Public Class TVHRecording
+    Public Property autorec As String
+    Public Property broadcast As Integer
+    Public Property channel As String 'Contains the uuid of the recording's channel 
+    Public Property channel_icon As String
+    Public Property channelname As String 'Contains the name of the recording's channel
+    Public Property comment As String
+    Public Property config_name As String 'Actually contains the uuid of the DVR Profile used (not the name)
+    Public Property container As Integer
+    Public Property content_type As Integer
+    Public Property creator As String
+    Public Property description As RootObject
+    Public Property disp_description As String
+    Public Property disp_subtitle As String
+    Public Property disp_title As String
+    Public Property duplicate As Integer
+    Public Property duration As Integer
+    Public Property dvb_eid As Integer
+    Public Property episode As Long
+    Public Property errorcode As Integer
+    Public Property errors As Integer
+    Public Property filename As String
+    Public Property filesize As Long
+    Public Property noresched As Boolean
+    Public Property pri As Integer
+    Public Property retention As Integer
+    Public Property sched_status As String
+    Public Property start As Long
+    Public Property start_extra As Integer
+    Public Property start_real As Long
+    Public Property status As String 'This is a more user-friendly-to-read version of sched_status
+    Public Property [stop] As Long
+    Public Property stop_extra As Integer
+    Public Property stop_real As Long
+    Public Property timerec As String
+    Public Property title As RootObject
+    Public Property url As String
+    Public Property uuid As String
+End Class
 
-    Public Class ChannelTagList
-        Public Property entries As New List(Of ChannelTag)
-        Public Property total As Integer
-    End Class
+Public Class TVHRecordingList
+    Public Property entries As List(Of TVHRecording)
+    Public Property total As Integer
+End Class
 
-    Public Class ChannelTag
-        Public Property comment As String
-        Public Property enabled As Boolean
-        Public Property icon As String
-        Public Property icon_public_url As String
-        Public Property internal As Boolean
-        Public Property name As String
-        Public Property [private] As Boolean
-        Public Property titled_icon As Boolean
-        Public Property uuid As String
-    End Class
+Public Class TVHServerInfo
+    Public Property sw_version As String
+    Public Property name As String
+    Public Property api_version As Integer
+End Class
 
-    Public Class CometPollResponse
-        '{"boxid":"fffdd6a9c5cca67c954cd4993791b0b6fe856855","messages":[{"notificationClass":"accessUpdate","username":"","address":"192.168.168.2","dvr":1,"admin":1,"time":1447886277,"cookie_expires":7,"info_area":"login,storage,time","freediskspace":3112701001728,"totaldiskspace":12000220413952},{"notificationClass":"setServerIpPort","ip":"192.168.168.2","port":9981}]}pi@raspberrypi ~ $ curl -GET "http://192.168.168.2:9981/comet/poll?boxid=&immediate=0"
+Public Class TVHService
+    Public Property auto As Integer
+    Public Property caid As String
+    Public Property created As Integer
+    Public Property dvb_ignore_eit As Boolean
+    Public Property dvb_servicetype As Integer
+    Public Property enabled As Boolean
+    Public Property encrypted As Boolean
+    Public Property force_caid As Integer
+    Public Property last_seen As Integer
+    Public Property lcn As Integer
+    Public Property lcn_minor As Integer
+    Public Property lcn2 As Integer
+    Public Property multiplex As String
+    Public Property network As String
+    Public Property prefcapid As Integer
+    Public Property prefcapid_lock As Integer
+    Public Property provider As String
+    Public Property sid As Integer
+    Public Property svcname As String
+    Public Property uuid As String
+End Class
 
-        Public Property boxid As String
-        'Public Property messages As String()
+Public Class TVHServiceList
+    Public Property entries As List(Of TVHService)
+End Class
 
-    End Class
+Public Class TVHServiceDetail
+    Public Property pid As Integer
+    Public Property type As String
+    Public Property language As String
+    Public Property index As Integer
+    Public Property details As String
+End Class
 
-    Public Class CometInputStatus
-        Public Property boxid As String
-        Public Property messages As Adapter()
-    End Class
+Public Class TVHServiceDetailList
+    'servicedetails/_dev_dvb_adapter1_Sit2_DVB_T2_C396000000_00c3?_dc=1419938362449 
+    Public Property fstreams As List(Of TVHServiceDetail)
+End Class
 
-    Public Class ConnectionList
-        Public Property entries As List(Of Connection)
+Public Class TVHSubscription
+    '       api/status/subscriptions'
+    ' {"entries": [{"id": 718,"start": 1419862190,"errors": 0,"state": "Running","title": "DVR: kees","channel": "NPO 3","service": "ZIGGO/404MHz/NPO 3"},{"id": 709,"start": 1419850839,"errors": 0,"state": "Running","title": "DVR: fff","channel": "RTL 5","service": "ZIGGO/778MHz/RTL 5"}],"totalCount": 2}root@KIPKLUIF:~#
+    Public Property id As Integer
+    Public Property start As Integer
+    Public Property errors As Integer
+    Public Property state As String
+    Public Property title As String
+    Public Property channel As String
+    Public Property service As String
+    Public Property hostname As String
+    Public Property username As String
+    Public Property descramble As String
 
-    End Class
+End Class
 
-    Public Class Connection
-        Public Property id As Integer
-        Public Property peer As String
-        Public Property started As Long
-        Public Property type As String
-        Public Property user As String
-    End Class
-
-    Public Class DVRConfig
-        Public Property key As String
-        Public Property val As String
-    End Class
-
-    Public Class DVRConfigList
-        Public Property entries As New List(Of DVRConfig)
-    End Class
-
-    Public Class EPGEvent
-        Public Sub New()
-
-        End Sub
-
-        Public Property eventId As Long                     '137935
-        Public Property episodeId As Long                   '137936
-        Public Property episodeUri As String                'crid://bds.tv/50527985#00100000000CC7EF"
-        Public Property serieslinkId As Integer             '473686
-        Public Property serieslinkUri As String             'crid://eventis.nl/00000000-0000-1000-0008-00000000B083"
-        Public Property channelName As String               'TV Oranje
-        Public Property channelUuid As String               '234ae68c0c685386fda3a4f622eb8910
-        Public Property channelNumber As String             '361
-        Public Property channelIcon As String               '/1_0_1_4D23_12_600_FFFF0000_0_0_0.png or imagecache/276
-        Public Property start As Long                       '1416898800
-        Public Property [stop] As Long                      '1416934800
-        Public Property title As String                     'TV Oranje Nonstop
-        Public Property subtitle As String                  'Dom programma
-        Public Property description As String               'Nederlands muziekprogramma. Muziekprogramma met non-stop clips van eigen bodem. Stem op je favoriete clip via de website: www.tvoranje.nl.
-        Public Property genre As List(Of Integer)            '[96]
-        Public Property dvrUuid As String
-        Public Property dvrState As String
-        Public Property nextEventId As Integer              '139715
-
-
-    End Class
-
-    Public Class EPGEventList
-        Public Property entries As List(Of EPGEvent)
-        Public Property totalCount As Integer
-    End Class
-
-    Public Class Genre
-        Public Property key As Integer                       'key=00a2cc05aa0a930aca7d371fa4c0b0f7
-        Public Property val As String
-    End Class
-
-    Public Class GenreList
-        Public Property entries As List(Of Genre)                      'key=16
-    End Class
-
-    Public Class Mux
-        Public Property constellation As String
-        Public Property delsys As String
-        Public Property enabled As Boolean
-        Public Property epg As Integer
-        Public Property fec As String
-        Public Property frequency As Integer
-        Public Property name As String
-        Public Property network As String
-        Public Property num_chn As Integer
-        Public Property num_svc As Integer
-        Public Property onid As Integer
-        Public Property pmt_06_ac3 As Boolean
-        Public Property scan_result As Integer
-        Public Property scan_state As Integer
-        Public Property symbolrate As Integer
-        Public Property tsid As Integer
-        Public Property uuid As String
-    End Class
-
-    Public Class MuxList
-        Public Property entries As List(Of Mux)
-    End Class
-
-    Public Class RootObject
-        Public Property values As List(Of Array)
-    End Class
-
-    Public Class Recording
-        Public Property autorec As String
-        Public Property broadcast As Integer
-        Public Property channel As String 'Contains the uuid of the recording's channel 
-        Public Property channel_icon As String
-        Public Property channelname As String 'Contains the name of the recording's channel
-        Public Property config_name As String 'Actually contains the uuid of the DVR Profile used (not the name)
-        Public Property container As Integer
-        Public Property content_type As Integer
-        Public Property creator As String
-        Public Property description As RootObject
-        Public Property disp_description As String
-        Public Property disp_subtitle As String
-        Public Property disp_title As String
-        Public Property duplicate As Integer
-        Public Property duration As Integer
-        Public Property dvb_eid As Integer
-        Public Property episode As Long
-        Public Property errorcode As Integer
-        Public Property errors As Integer
-        Public Property filename As String
-        Public Property filesize As Long
-        Public Property noresched As Boolean
-        Public Property pri As Integer
-        Public Property retention As Integer
-        Public Property sched_status As String
-        Public Property start As Long
-        Public Property start_extra As Integer
-        Public Property start_real As Long
-        Public Property status As String 'This is a more user-friendly-to-read version of sched_status
-        Public Property [stop] As Long
-        Public Property stop_extra As Integer
-        Public Property stop_real As Long
-        Public Property timerec As String
-        Public Property title As RootObject
-        Public Property url As String
-        Public Property uuid As String
-    End Class
-
-    Public Class RecordingList
-        Public Property entries As List(Of Recording)
-        Public Property total As Integer
-    End Class
-
-    Public Class ServerInfo
-        Public Property sw_version As String
-        Public Property name As String
-        Public Property api_version As Integer
-    End Class
-
-    Public Class Service
-        Public Property auto As Integer
-        Public Property caid As String
-        Public Property created As Integer
-        Public Property dvb_ignore_eit As Boolean
-        Public Property dvb_servicetype As Integer
-        Public Property enabled As Boolean
-        Public Property encrypted As Boolean
-        Public Property force_caid As Integer
-        Public Property last_seen As Integer
-        Public Property lcn As Integer
-        Public Property lcn_minor As Integer
-        Public Property lcn2 As Integer
-        Public Property multiplex As String
-        Public Property network As String
-        Public Property prefcapid As Integer
-        Public Property prefcapid_lock As Integer
-        Public Property provider As String
-        Public Property sid As Integer
-        Public Property svcname As String
-        Public Property uuid As String
-    End Class
-
-    Public Class ServiceList
-        Public Property entries As List(Of Service)
-    End Class
-
-    Public Class ServiceDetail
-        Public Property pid As Integer
-        Public Property type As String
-        Public Property language As String
-        Public Property index As Integer
-        Public Property details As String
-    End Class
-
-    Public Class ServiceDetailList
-        'servicedetails/_dev_dvb_adapter1_Sit2_DVB_T2_C396000000_00c3?_dc=1419938362449 
-        Public Property fstreams As List(Of ServiceDetail)
-    End Class
-
-    Public Class Subscription
-        '       api/status/subscriptions'
-        ' {"entries": [{"id": 718,"start": 1419862190,"errors": 0,"state": "Running","title": "DVR: kees","channel": "NPO 3","service": "ZIGGO/404MHz/NPO 3"},{"id": 709,"start": 1419850839,"errors": 0,"state": "Running","title": "DVR: fff","channel": "RTL 5","service": "ZIGGO/778MHz/RTL 5"}],"totalCount": 2}root@KIPKLUIF:~#
-        Public Property id As Integer
-        Public Property start As Integer
-        Public Property errors As Integer
-        Public Property state As String
-        Public Property title As String
-        Public Property channel As String
-        Public Property service As String
-        Public Property hostname As String
-        Public Property username As String
-        Public Property descramble As String
-
-    End Class
-
-    Public Class SubscriptionList
-        Public Property entries As List(Of Subscription)
-    End Class
-
-
-
-
-End Namespace
+Public Class TVHSubscriptionList
+    Public Property entries As List(Of TVHSubscription)
+End Class
 
 
 

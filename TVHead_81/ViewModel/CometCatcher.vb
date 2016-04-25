@@ -258,11 +258,11 @@ Public Class CometCatcher
                                                     End If
                                                     'Update the EPG Event if it is the currentEPGItem for a Channel
                                                     Dim channel As ChannelViewModel = (From c In vm.Channels.items Where c.uuid = newEPGEvent.channelUuid Select c).FirstOrDefault()
-                                                    If Not channel Is Nothing AndAlso channel.currentEPGItem.eventId = newEPGEvent.eventId Then
-                                                        WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Updating programme {0} : {1}", newEPGEvent.title, m.ToString()))
-                                                        Await channel.RefreshCurrentEPGItem(newEPGEvent)
-                                                    End If
-                                                Next
+                                                If Not channel Is Nothing AndAlso channel.epgitems.currentEPGItem.eventId = newEPGEvent.eventId Then
+                                                    WriteToDebug("TVHead_ViewModel.CatchComets()", String.Format("Updating programme {0} : {1}", newEPGEvent.title, m.ToString()))
+                                                    Await channel.RefreshCurrentEPGItem(newEPGEvent)
+                                                End If
+                                            Next
                                             End If
 
                                             If Not epg_message.create Is Nothing Then

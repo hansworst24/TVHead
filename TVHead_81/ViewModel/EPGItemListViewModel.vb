@@ -59,6 +59,14 @@ Public Class EPGItemListViewModel
     End Sub
 
 
+    Public Sub ClearSelections()
+        If Not items Is Nothing Then
+            For Each item In items
+                item.IsSelected = False
+            Next
+        End If
+    End Sub
+
     ''' <summary>
     ''' Selects the clicked EPGItem in the EPGItemListViewModel.
     ''' </summary>

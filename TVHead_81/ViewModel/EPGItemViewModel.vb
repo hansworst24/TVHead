@@ -6,7 +6,7 @@ Imports Windows.UI
 
 Public Class EPGItemViewModel
     Inherits ViewModelBase
-    Private _EPGItem As tvh40.EPGEvent
+    Private _EPGItem As TVHEPGEvent
 
 #Region "Properties"
 
@@ -69,12 +69,12 @@ Public Class EPGItemViewModel
     End Property
     Public ReadOnly Property endDate As DateTime
         Get
-            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime Else Return UnixToDateTime(_EPGItem.stop).ToLocalTime
+            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime Else Return UnixToLocalDateTime(_EPGItem.stop).ToLocalTime
         End Get
     End Property
     Public ReadOnly Property endDateString As String
         Get
-            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime.ToString("t") Else Return UnixToDateTime(_EPGItem.stop).ToLocalTime.ToString("t")
+            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime.ToString("t") Else Return UnixToLocalDateTime(_EPGItem.stop).ToLocalTime.ToString("t")
         End Get
     End Property
     Public ReadOnly Property episodeId As Long
@@ -253,12 +253,12 @@ Public Class EPGItemViewModel
     End Property
     Public ReadOnly Property startDate As DateTime
         Get
-            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime Else Return UnixToDateTime(_EPGItem.start).ToLocalTime
+            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime Else Return UnixToLocalDateTime(_EPGItem.start).ToLocalTime
         End Get
     End Property
     Public ReadOnly Property startDateString As String
         Get
-            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime.ToString("t") Else Return UnixToDateTime(_EPGItem.start).ToLocalTime.ToString("t")
+            If _EPGItem.eventId = 0 Then Return Date.Now.ToLocalTime.ToString("t") Else Return UnixToLocalDateTime(_EPGItem.start).ToLocalTime.ToString("t")
         End Get
     End Property
     Public ReadOnly Property [stop] As Integer
@@ -423,7 +423,7 @@ Public Class EPGItemViewModel
     Public Sub New()
         Dim vm = CType(Application.Current, Application).DefaultViewModel
         If Not vm Is Nothing Then
-            _EPGItem = New tvh40.EPGEvent With {.title = vm.loader.GetString("NoInformationAvailable"), .description = "", .dvrUuid = "", .dvrState = "", .eventId = 0}
+            _EPGItem = New TVHEPGEvent With {.title = vm.loader.GetString("NoInformationAvailable"), .description = "", .dvrUuid = "", .dvrState = "", .eventId = 0}
         End If
         Status = "Existing"
     End Sub
@@ -433,7 +433,7 @@ Public Class EPGItemViewModel
     ''' </summary>
     ''' <param name="epg_item"></param>
     ''' <remarks></remarks>
-    Public Sub New(epg_item As tvh40.EPGEvent)
+    Public Sub New(epg_item As TVHEPGEvent)
         _EPGItem = epg_item
         'IsRecorded = 1
         RecordButtonEnabled = False

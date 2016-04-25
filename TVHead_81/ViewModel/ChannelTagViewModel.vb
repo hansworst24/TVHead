@@ -90,7 +90,7 @@ Public Class ChannelTagViewModel
 
 
 
-    Public Sub New(ChannelTag As tvh40.ChannelTag)
+    Public Sub New(ChannelTag As TVHChannelTag)
         comment = ChannelTag.comment
         enabled = ChannelTag.enabled
         internal = ChannelTag.internal

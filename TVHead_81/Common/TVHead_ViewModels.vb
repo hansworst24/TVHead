@@ -599,7 +599,7 @@ Namespace ViewModels
         Private Property _currentMux As String
 
 
-        Public Sub New(a As tvh40.Adapter)
+        Public Sub New(a As TVHAdapter)
             name = a.input
             snr = a.snr
             snr_scale = a.snr_scale
@@ -697,7 +697,7 @@ Namespace ViewModels
     Public Class SubscriptionViewModel
         Inherits ViewModelBase
 
-        Private _subscription As tvh40.Subscription
+        Private _subscription As TVHSubscription
 
         Public ReadOnly Property id As Integer
             Get
@@ -794,7 +794,7 @@ Namespace ViewModels
 
         Public ReadOnly Property starttime As DateTime
             Get
-                Return UnixToDateTime(_subscription.start)
+                Return UnixToLocalDateTime(_subscription.start)
             End Get
         End Property
 
@@ -835,7 +835,7 @@ Namespace ViewModels
             End Get
         End Property
 
-        Public Sub New(s As tvh40.Subscription)
+        Public Sub New(s As TVHSubscription)
             _subscription = s
         End Sub
 
@@ -907,7 +907,7 @@ Namespace ViewModels
             End Set
         End Property
 
-        Public Sub New(ServerInfo As tvh40.ServerInfo)
+        Public Sub New(ServerInfo As TVHServerInfo)
             name = ServerInfo.name
             sw_version = "3.9"
             api_version = ServerInfo.api_version
@@ -1045,7 +1045,7 @@ Namespace ViewModels
 
 
 
-        Public Sub New(Service As tvh40.Service)
+        Public Sub New(Service As TVHService)
             uuid = Service.uuid
             enabled = Service.enabled
             multiplex = Service.multiplex
@@ -1054,7 +1054,7 @@ Namespace ViewModels
             encrypted = Service.encrypted
             svcname = Service.svcname
             network = Service.network
-            created = UnixToDateTime(Service.created).ToString(System.Globalization.DateTimeFormatInfo.CurrentInfo.LongDatePattern)
+            created = UnixToLocalDateTime(Service.created).ToString(System.Globalization.DateTimeFormatInfo.CurrentInfo.LongDatePattern)
             ExpandedView = "Normal"
         End Sub
 
@@ -1098,7 +1098,7 @@ Namespace ViewModels
         Public Property tsid As Integer
         Public Property uuid As String
 
-        Public Sub New(Mux As tvh40.Mux)
+        Public Sub New(Mux As TVHMux)
             name = Mux.name
             uuid = Mux.uuid
             scan_result = Mux.scan_result
@@ -1123,7 +1123,7 @@ Namespace ViewModels
 
 
 
-        Public Sub New(sd As tvh40.ServiceDetail)
+        Public Sub New(sd As TVHServiceDetail)
             index = sd.index
             pid = sd.pid
             type = sd.type
@@ -1156,35 +1156,7 @@ Namespace ViewModels
         End Sub
     End Class
 
-    Public Class DVRConfigListViewModel
-        Public Property items As New List(Of DVRConfigViewModel)
-        Public Property dataLoaded As Boolean
 
-        Public Async Function Load() As Task
-            RunOnUIThread(Async Sub()
-                              items.Clear()
-                              items = (Await LoadDVRConfigs()).ToList()
-                              dataLoaded = True
-                          End Sub)
-        End Function
-    End Class
-
-
-    Public Class DVRConfigViewModel
-        Public Property name As String
-        Public Property identifier As String
-
-        Public Sub New(dvrconfig As tvh40.DVRConfig)
-            name = dvrconfig.val
-            identifier = dvrconfig.key
-        End Sub
-
-
-
-        Public Sub New()
-
-        End Sub
-    End Class
 
 
     Public Class AddRecordingViewModel
@@ -1319,7 +1291,7 @@ Namespace ViewModels
         Public Property type As String
         Public Property user As String
 
-        Public Sub New(c As tvh40.Connection)
+        Public Sub New(c As TVHConnection)
             id = c.id
             peer = c.peer
             started = c.started
@@ -1335,56 +1307,5 @@ Namespace ViewModels
 
     'End Class
 
-    Public Class ContentTypeListViewModel
-        Public Property items As New List(Of ContentTypeViewModel)
-        Public Property allitems As New List(Of ContentTypeViewModel)
-        Public Property dataLoaded As Boolean
 
-        Public Async Function Load() As Task
-            WriteToDebug("ContentTypeListViewModel.Load()", "executed")
-            Dim response As New List(Of ContentTypeViewModel)
-            Dim json_allitems As String
-            Dim json_items As String
-            Try
-                json_allitems = Await (Await (New Downloader).DownloadJSON((New api40).apiGetContentTypes(True))).Content.ReadAsStringAsync
-                json_items = Await (Await (New Downloader).DownloadJSON((New api40).apiGetContentTypes(False))).Content.ReadAsStringAsync
-            Catch ex As Exception
-                WriteToDebug("ContentTypeListViewModel.Load()", "stop-error")
-                Return
-            End Try
-            If Not json_allitems = "" Then
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.GenreList)(json_allitems)
-                RunOnUIThread(Sub()
-                                  For Each f In deserialized.entries
-                                      'Small hack to ensure we avoid having ContentType 0 in the list
-                                      If f.key <> 0 Then
-                                          allitems.Add(New ContentTypeViewModel(f))
-                                      End If
-                                  Next
-                              End Sub)
-            End If
-            If Not json_items = "" Then
-                Dim deserialized = JsonConvert.DeserializeObject(Of tvh40.GenreList)(json_items)
-                RunOnUIThread(Sub()
-                                  For Each f In deserialized.entries
-                                      'Small hack to ensure we avoid having ContentType 0 in the list
-                                      If f.key <> 0 Then
-                                          items.Add(New ContentTypeViewModel(f))
-                                      End If
-                                  Next
-                              End Sub)
-            End If
-            dataLoaded = True
-        End Function
-    End Class
-
-    Public Class ContentTypeViewModel
-        Public Property uuid As Integer
-        Public Property name As String
-
-        Public Sub New(c As tvh40.Genre)
-            uuid = c.key
-            name = c.val
-        End Sub
-    End Class
 End Namespace

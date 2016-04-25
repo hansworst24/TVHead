@@ -108,7 +108,7 @@ Public Class ChannelListViewModel
                 SelectChannel(ChannelHolded)
                 Await ChannelHolded.LoadEPG()
                 vm.SelectedChannel = ChannelHolded
-                vm.selectedEPGItem = ChannelHolded.currentEPGItem
+                vm.selectedEPGItem = ChannelHolded.epgitems.currentEPGItem
                 vm.SelectedPivotIndex = 1
             End If
         End If
@@ -127,7 +127,7 @@ Public Class ChannelListViewModel
         SelectChannel(clickedChannel)
         If vm.IsRunningOnWideScreen Then Await clickedChannel.LoadEPG()
         If vm.IsRunningOnWideScreen Then vm.SelectedChannel = clickedChannel
-        vm.selectedEPGItem = clickedChannel.currentEPGItem
+        vm.selectedEPGItem = clickedChannel.epgitems.currentEPGItem
     End Sub
 
 End Class

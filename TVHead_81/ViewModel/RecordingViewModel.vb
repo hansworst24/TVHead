@@ -1,156 +1,11 @@
 ﻿Imports GalaSoft.MvvmLight
-Imports GalaSoft.MvvmLight.Command
+Imports Newtonsoft.Json
+Imports Windows.UI
 
 Public Class RecordingViewModel
     Inherits ViewModelBase
 
-    Private _recording As tvh40.Recording
-
-    Public Property ExpandCollapseCommand As RelayCommand
-        Get
-            Return New RelayCommand(Sub()
-                                        '    WriteToDebug("RecordingViewModel.ExpanseCollapse", "start")
-                                        '    Dim rlist As New ObservableCollection(Of Group(Of RecordingViewModel))
-                                        '    Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
-                                        '    Select Case vm.PivotSelectedIndex
-                                        '        Case 2
-                                        '            rlist = vm.UpcomingRecordings.groupeditems
-                                        '        Case 3
-                                        '            rlist = vm.FinishedRecordings.groupeditems
-                                        '        Case 4
-                                        '            rlist = vm.FailedRecordings.groupeditems
-                                        '    End Select
-                                        '    For Each group In rlist
-                                        '        For Each epgitem In group
-                                        '            If epgitem Is Me Then
-                                        '                If Me.ExpandedView = "Collapsed" Then Me.ExpandedView = "Visible" Else Me.ExpandedView = "Collapsed"
-                                        '            Else
-                                        '                epgitem.ExpandedView = "Collapsed"
-                                        '            End If
-                                        '        Next
-                                        '    Next
-                                        '    WriteToDebug("RecordingViewModel.ExpanseCollapse", "Stop")
-                                    End Sub)
-        End Get
-        Set(value As RelayCommand)
-        End Set
-    End Property
-
-    Public Property UpdateSelectedChannel As RelayCommand
-        Get
-            Return New RelayCommand(Sub()
-                                        'WriteToDebug("RecordingViewModel.UpdateSelectedChannel", "start")
-                                        'If TypeOf x Is ChannelViewModel Then
-                                        '    Dim selectedChannel As ChannelViewModel = CType(x, ChannelViewModel)
-                                        '    Me.channelUuid = selectedChannel.channelUuid
-                                        '    Me.channel = selectedChannel.name
-                                        '    ChannelSelectionFlyOutIsOpen = False
-                                        '    WriteToDebug("RecordingViewModel.UpdateSelectedChannel", "Stop")
-                                        'End If
-                                    End Sub)
-        End Get
-        Set(value As RelayCommand)
-        End Set
-    End Property
-
-    Public Property UpdateSelectedDVRConfig As RelayCommand
-        Get
-            Return New RelayCommand(Sub()
-                                        'WriteToDebug("RecordingViewModel.UpdateSelectedDVRConfig", "start")
-                                        'If TypeOf x Is DVRConfigViewModel Then
-                                        '    Dim selectedDVRConfig As DVRConfigViewModel = CType(x, DVRConfigViewModel)
-                                        '    Me.configName = selectedDVRConfig.name
-                                        '    Me.configUuid = selectedDVRConfig.identifier
-                                        '    DVRConfigSelectionFlyOutIsOpen = False
-                                        '    WriteToDebug("RecordingViewModel.UpdateSelectedDVRConfig", "Stop")
-                                        'End If
-                                    End Sub)
-        End Get
-        Set(value As RelayCommand)
-        End Set
-    End Property
-
-    Public Property SaveRecording As RelayCommand
-        Get
-            Return New RelayCommand(Async Sub()
-                                        WriteToDebug("RecordingViewModel.SaveRecording()", "start")
-                                        'Dim app As App = CType(Application.Current, Application)
-                                        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
-
-                                        Dim r As tvhCommandResponse
-                                        If Me.uuid = "" Then
-                                            r = Await AddManualRecording(Me)
-                                        Else
-                                            r = Await UpdateManualRecording(Me)
-                                        End If
-
-                                        If r.success = 1 Then
-                                            If Not vm.TVHeadSettings.LongPollingEnabled Then
-                                                'vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
-                                                '                                .msg = vm.loader.GetString("RecordingStartSuccess")})
-
-                                            End If
-                                            WriteToDebug("TVHead_ViewModel.SaveRecording()", "Recording Saved")
-                                        Else
-                                            If Not vm.TVHeadSettings.LongPollingEnabled Then
-                                                'vm.ToastMessages.AddMessage(New ToastMessageViewModel With {.secondsToShow = 3,
-                                                '                                .msg = vm.loader.GetString("RecordingStartErrorContent")})
-
-                                            End If
-                                            WriteToDebug("TVHead_ViewModel.SaveRecording()", "Recording Failed")
-                                        End If
-                                        If Not vm.TVHeadSettings.LongPollingEnabled Then
-                                            ' Await vm.UpcomingRecordings.Reload(True)
-                                        End If
-                                        Dim content = Window.Current.Content
-                                        Dim frame = CType(content, Frame)
-                                        frame.GoBack()
-                                        Window.Current.Activate()
-                                        WriteToDebug("RecordingViewModel.SaveRecording", "Stop")
-                                    End Sub)
-
-        End Get
-        Set(value As RelayCommand)
-        End Set
-    End Property
-
-    Public Property CancelRecordingEditing As RelayCommand
-        Get
-            Return New RelayCommand(Sub()
-                                        WriteToDebug("RecordingViewModel.CancelRecordingEditing", "start")
-                                        Dim content = Window.Current.Content
-                                        Dim frame = CType(content, Frame)
-                                        frame.GoBack()
-                                        WriteToDebug("RecordingViewModel.CancelRecordingEditing", "Stop")
-
-                                    End Sub)
-
-        End Get
-        Set(value As RelayCommand)
-        End Set
-    End Property
-
-    Private Property _ChannelSelectionFlyOutIsOpen As Boolean
-    Public Property ChannelSelectionFlyOutIsOpen As Boolean
-        Get
-            Return _ChannelSelectionFlyOutIsOpen
-        End Get
-        Set(value As Boolean)
-            _ChannelSelectionFlyOutIsOpen = value
-            RaisePropertyChanged("ChannelSelectionFlyOutIsOpen")
-        End Set
-    End Property
-
-    Private Property _DVRConfigSelectionFlyOutIsOpen As Boolean
-    Public Property DVRConfigSelectionFlyOutIsOpen As Boolean
-        Get
-            Return _DVRConfigSelectionFlyOutIsOpen
-        End Get
-        Set(value As Boolean)
-            _DVRConfigSelectionFlyOutIsOpen = value
-            RaisePropertyChanged("DVRConfigSelectionFlyOutIsOpen")
-        End Set
-    End Property
+    Protected Friend _recording As TVHRecording
 
     Public ReadOnly Property channelName As String
         Get
@@ -179,7 +34,15 @@ Public Class RecordingViewModel
             End If
         End Get
     End Property
-    Public ReadOnly Property configName As String
+    Public Property comment As String
+        Get
+            Return _recording.comment
+        End Get
+        Set(value As String)
+            _recording.comment = value
+        End Set
+    End Property
+    Public ReadOnly Property config_name As String
         Get
             Return _recording.config_name
         End Get
@@ -222,6 +85,17 @@ Public Class RecordingViewModel
         'End Set
 
     End Property
+    Private _IsExpanded As Boolean
+    Public Property IsExpanded As Boolean
+        Get
+            Return _IsExpanded
+        End Get
+        Set(ByVal value As Boolean)
+            _IsExpanded = value
+            RaisePropertyChanged("IsExpanded")
+            RaisePropertyChanged("RecordingDetailsVisibility")
+        End Set
+    End Property
     Private Property _IsRecorded As Integer
     Public Property IsRecorded As Integer
         Get
@@ -238,18 +112,20 @@ Public Class RecordingViewModel
             Return _IsSelected
         End Get
         Set(value As Boolean)
-            _IsSelected = value
-
-            RaisePropertyChanged("IsSelected")
+            If value <> _IsSelected Then
+                _IsSelected = value
+                RaisePropertyChanged("IsSelected")
+                RaisePropertyChanged("RecordingBackground")
+            End If
         End Set
     End Property
     Public ReadOnly Property percentcompleted As Double
         Get
-            If (stopDate > Date.MinValue) And (startDate > Date.MinValue) And (Date.Now > startDate) Then
-                If Date.Now > stopDate Then
+            If (_recording.start < TimeToUnix(Date.Now.ToUniversalTime)) Then
+                If TimeToUnix(Date.Now.ToUniversalTime) > _recording.stop Then
                     Return 1
                 Else
-                    Return Math.Round((Date.Now - startDate).TotalSeconds / (stopDate - startDate).TotalSeconds, 2)
+                    Return Math.Round((TimeToUnix(Date.Now.ToUniversalTime) - _recording.start) / (_recording.stop - _recording.start), 2)
                 End If
             Else
                 Return 0
@@ -259,6 +135,21 @@ Public Class RecordingViewModel
     Public ReadOnly Property pri As String
         Get
             Return _recording.pri
+        End Get
+    End Property
+    Public ReadOnly Property RecordingBackground As SolidColorBrush
+        Get
+            If IsSelected Then
+                Return CType(Application.Current.Resources("SystemControlHighlightAccentBrush"), SolidColorBrush)
+            Else
+                Return New SolidColorBrush(Colors.Transparent)
+            End If
+
+        End Get
+    End Property
+    Public ReadOnly Property RecordingDetailsVisibility As String
+        Get
+            If IsExpanded Then Return "Visible" Else Return "Collapsed"
         End Get
     End Property
     Public ReadOnly Property RecordingIcon As String
@@ -272,35 +163,48 @@ Public Class RecordingViewModel
             End Select
         End Get
     End Property
-    Public ReadOnly Property title As String
-        Get
-            Return _recording.disp_title
-        End Get
-    End Property
     Public ReadOnly Property sched_status As String
         Get
             Return _recording.sched_status
         End Get
     End Property
+    Public ReadOnly Property start As Long
+        Get
+            Return _recording.start
+        End Get
+    End Property
     Public ReadOnly Property startDate As DateTime
         Get
-            Return UnixToDateTime(_recording.start).ToLocalTime
+            Return UnixToLocalDateTime(_recording.start).ToLocalTime
         End Get
     End Property
-    Public ReadOnly Property startDateString As String
+    Public ReadOnly Property startTimeString As String
         Get
-            Return startDate.ToString("t")
+            Return UnixToLocalDateTime(_recording.start).ToString("t")
         End Get
     End Property
-    Public ReadOnly Property stopDate As DateTime
+    Public ReadOnly Property status As String
         Get
-            Return UnixToDateTime(_recording.stop).ToLocalTime
+            Return _recording.status
         End Get
     End Property
-    Public ReadOnly Property stopDateString As String
+    Public ReadOnly Property [stop] As Long
         Get
-            Return stopDate.ToString("t")
+            Return _recording.stop
         End Get
+    End Property
+    Public ReadOnly Property stopTimeString As String
+        Get
+            Return UnixToLocalDateTime(_recording.stop).ToString("t")
+        End Get
+    End Property
+    Public Property title As String
+        Get
+            Return _recording.disp_title
+        End Get
+        Set(value As String)
+            _recording.disp_title = value
+        End Set
     End Property
     Public ReadOnly Property uuid As String
         Get
@@ -313,10 +217,44 @@ Public Class RecordingViewModel
         End Get
     End Property
 
+    ''' <summary>
+    ''' Saves the Recording on the TVH Server.
+    ''' </summary>
+    ''' <returns></returns>
+    Public Async Function Save() As Task(Of tvhCommandResponse)
+        WriteToDebug("RecordingViewModel.Save()", "executed")
+        Dim vm As TVHead_ViewModel = (CType(Application.Current, Application)).DefaultViewModel
+        Dim tvh40api As New api40
+        Dim response As New tvhCommandResponse
+        Try
+            Dim json_result As String
+            If Me.uuid = "" Then
+                'If the recording we are trying to save doesn't have a uuid, we assume it's a blank (new) autorecording
+                json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiAddManualRecording(Me))).Content.ReadAsStringAsync
+            Else
+                json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiUpdateManualRecording(Me))).Content.ReadAsStringAsync
+            End If
+            If Not (json_result Is Nothing) Then
+                Dim deserialized = JsonConvert.DeserializeObject(Of tvhCommandResponse)(json_result)
+                response.success = 1
+            End If
+        Catch ex As Exception
+            WriteToDebug("RecordingViewModel.Save()", ex.InnerException.ToString)
+            response.success = 0
+        End Try
+        Return response
+    End Function
+
+    ''' <summary>
+    ''' Updates the RecordingViewModel with new Model data, and triggers the RaisePropertyChanged for the 
+    ''' relevant properties to reflect the updated values on the screen
+    ''' </summary>
+    ''' <param name="updatedRecording"></param>
     Public Sub Update(updatedRecording As RecordingViewModel)
         _recording = updatedRecording._recording
         RunOnUIThread(Sub()
-                          RaisePropertyChanged("sched_state")
+                          RaisePropertyChanged("sched_status")
+                          RaisePropertyChanged("RecordingIcon")
                           RaisePropertyChanged("filesizeGB")
                           RaisePropertyChanged("percentcompleted")
                       End Sub)
@@ -326,32 +264,62 @@ Public Class RecordingViewModel
     ''' Sends a command to the TVH server to abort the recording.
     ''' </summary>
     ''' <returns></returns>
-    Public Async Function Abort() As Task(Of RecordingReturnValue)
-        'Initiates the deletion of a recording
-        Dim retValue As RecordingReturnValue
-        retValue = Await AbortRecording(Me.uuid)
-        Dim vm As TVHead_ViewModel = CType(Application.Current, Application).DefaultViewModel
-        If retValue.tvhResponse.success = 1 Then
-            If Not vm.TVHeadSettings.LongPollingEnabled Then
-                vm.UpcomingRecordings.RemoveRecording(Me.uuid, True)
-                vm.FinishedRecordings.RemoveRecording(Me.uuid, True)
-                vm.FailedRecordings.RemoveRecording(Me.uuid, True)
-                If Not vm.SelectedChannel Is Nothing AndAlso Me.channelUuid = vm.SelectedChannel.uuid Then
-                    vm.SelectedChannel.RefreshEPG(True)
-                End If
-                Dim c As ChannelViewModel = (From chan In vm.Channels.items Where chan.currentEPGItem.dvrUuid = Me.uuid).FirstOrDefault()
-                If Not c Is Nothing Then
-                    c.RefreshCurrentEPGItem(Nothing, True)
-                End If
-            End If
-        Else
-            WriteToDebug("TVHead_ViewModel.RecordingAbort()", "Recording Failed")
-        End If
+    Public Async Function Abort() As Task(Of tvhCommandResponse)
+        'Initiates the aborting of a recording
+        Dim tvh40api As New api40
+        Dim retValue As New tvhCommandResponse
+        Try
+            Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiAbortRecording(uuid))).Content.ReadAsStringAsync
+            retValue.success = 1
+        Catch ex As Exception
+            WriteToDebug("RecordingViewModel.Cancel()", ex.Message.ToString)
+            retValue.success = 0
+        End Try
         Return retValue
     End Function
 
-    Public Sub New(recordingModel As tvh40.Recording)
+    ''' <summary>
+    ''' Sends a command to the TVH server to delete the recording.
+    ''' </summary>
+    ''' <returns></returns>
+    Public Async Function Delete() As Task(Of tvhCommandResponse)
+        'Initiates the deletion of a recording
+        Dim tvh40api As New api40
+        Dim retValue As New tvhCommandResponse
+        Try
+            Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiDeleteRecording(uuid))).Content.ReadAsStringAsync
+            retValue.success = 1
+        Catch ex As Exception
+            WriteToDebug("RecordingViewModel.Delete()", ex.Message.ToString)
+            retValue.success = 0
+        End Try
+        Return retValue
+    End Function
+
+    ''' <summary>
+    ''' Sends a command to the TVH server to stop the recording.
+    ''' </summary>
+    ''' <returns></returns>
+    Public Async Function Cancel() As Task(Of tvhCommandResponse)
+        'Initiates the stopping of a recording
+        Dim tvh40api As New api40
+        Dim retValue As New tvhCommandResponse
+        Try
+            Dim json_result = Await (Await (New Downloader).DownloadJSON(tvh40api.apiStopRecording(uuid))).Content.ReadAsStringAsync
+            retValue.success = 1
+        Catch ex As Exception
+            WriteToDebug("RecordingViewModel.Cancel()", ex.Message.ToString)
+            retValue.success = 0
+        End Try
+        Return retValue
+    End Function
+
+    Public Sub New(recordingModel As TVHRecording)
         ' Create a new Viewmodel based on a 3.9 TVH JSON entry
         _recording = recordingModel
+    End Sub
+
+    Public Sub New()
+
     End Sub
 End Class

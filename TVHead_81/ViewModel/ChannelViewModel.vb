@@ -5,7 +5,7 @@ Imports Windows.UI
 
 Public Class ChannelViewModel
     Inherits ViewModelBase
-    Private _channel As tvh40.Channel
+    Private _channel As TVHChannel
     Public ReadOnly Property ch_icon As String
         Get
             Return _channel.icon_public_url
@@ -45,12 +45,12 @@ Public Class ChannelViewModel
             End If
         End Get
     End Property
-    Public ReadOnly Property currentEPGItem As EPGItemViewModel
-        Get
-            If epgitems.items.Count > 0 Then Return epgitems.items(0) Else Return New EPGItemViewModel
-            'Return _currentEPGItem
-        End Get
-    End Property
+    'Public ReadOnly Property currentEPGItem As EPGItemViewModel
+    '    Get
+    '        If epgitems.items.Count > 0 Then Return epgitems.items(0) Else Return New EPGItemViewModel
+    '        'Return _currentEPGItem
+    '    End Get
+    'End Property
     Public ReadOnly Property CurrentEPGItemDetailsVisibility As String
         Get
             If IsExpanded Then Return "Visible" Else Return "Collapsed"
@@ -155,9 +155,9 @@ Public Class ChannelViewModel
             Dim json_result As String
             If response.IsSuccessStatusCode Then
                 json_result = Await response.Content.ReadAsStringAsync
-                Dim deserialized As tvh40.EPGEventList
+                Dim deserialized As TVHEPGEventList
                 Try
-                    deserialized = JsonConvert.DeserializeObject(Of tvh40.EPGEventList)(json_result)
+                    deserialized = JsonConvert.DeserializeObject(Of TVHEPGEventList)(json_result)
                     Dim zut As New List(Of EPGItemViewModel)
                     If deserialized.entries.Count > 0 Then
                         For Each entry In deserialized.entries.OrderBy(Function(x) x.start)
@@ -283,7 +283,7 @@ Public Class ChannelViewModel
     End Function
 
     Public Sub New()
-        _channel = New tvh40.Channel
+        _channel = New TVHChannel
         epgitems = New EPGItemListViewModel
         epgItemsLoaded = False
         epgitemsAvailable = True
@@ -291,7 +291,7 @@ Public Class ChannelViewModel
         IsSelected = False
     End Sub
 
-    Public Sub New(channel As tvh40.Channel)
+    Public Sub New(channel As TVHChannel)
         _channel = channel
         epgitems = New EPGItemListViewModel
         epgItemsLoaded = False

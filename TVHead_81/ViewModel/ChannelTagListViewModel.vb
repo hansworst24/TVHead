@@ -52,7 +52,7 @@ Public Class ChannelTagListViewModel
             Return
         End Try
         If Not json_result = "" Then
-            Dim dsChannelTagList = JsonConvert.DeserializeObject(Of tvh40.ChannelTagList)(json_result)
+            Dim dsChannelTagList = JsonConvert.DeserializeObject(Of TVHChannelTagList)(json_result)
             For Each retrievedChannelTag In dsChannelTagList.entries.OrderBy(Function(x) x.name)
                 items.Add(New ChannelTagViewModel(retrievedChannelTag))
             Next
